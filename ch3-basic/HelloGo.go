@@ -32,7 +32,6 @@ func process(inputChan <-chan string, userid string)  {
 
 		input := <- inputChan
 		if input == "EOF"{
-			fmt.Println("Bye!")
 			break
 		}
 
@@ -84,6 +83,7 @@ func main()  {
 	 	fmt.Scanf("%s", &input)
 	 	channel <- input
 		 if input == "EOF"{
+			 fmt.Println("Bye!")
 			 break
 		 }
 
