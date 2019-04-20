@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"time"
 )
 
 // 基于图灵API一个简单的聊天机器人
@@ -49,7 +50,11 @@ func process(inputChan <-chan string, userid string)  {
 
 		req.Header.Set("Content-Type", "application/json;charset=UTF-8")
 
-		client := http.Client{}
+		client := http.Client{
+			Timeout: 2 * time.Second,
+
+		}
+
 
 		resp, err := client.Do(req)
 
@@ -75,6 +80,8 @@ func main()  {
 	fmt.Println("Enter 'EOF' to shut down: ")
 
 	channel := make(chan string)
+
+	defer close(channel)
 
 	go process(channel, string(rand.Int63()))
 
