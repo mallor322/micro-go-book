@@ -18,4 +18,5 @@ func main()  {
 	flag.Parse()
 	fmt.Printf("I am %v %v, and my id is %v\n", *surname, personalName, *id)
 
+
 }
