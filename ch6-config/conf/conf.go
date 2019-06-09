@@ -3,6 +3,7 @@ package conf
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	_ "github.com/streadway/amqp"
 	"log"
 	"net/http"
 )
@@ -15,26 +16,26 @@ const (
 	kConfigType    = "CONFIG_TYPE"
 )
 
-
 var (
-	Profile ProfileConfig
+	Resume ResumeConfig
 )
 
-type ProfileConfig struct {
-	Name      string
-	Age 	int
-	Sex     string
+type ResumeConfig struct {
+	Name string
+	Age  int
+	Sex  string
 }
 
 func init() {
 	viper.AutomaticEnv()
 	initDefault()
+	go config.StartListener(viper.Get(kAppName), viper.GetString("amqp_server_url"), viper.GetString("config_event_bus"))
 
 	if err := loadRemoteConfig(); err != nil {
 		log.Fatal("Fail to load config", err)
 	}
 
-	if err := sub("profile", &Profile); err != nil {
+	if err := sub("resume", &Resume); err != nil {
 		log.Fatal("Fail to parse config", err)
 	}
 }
