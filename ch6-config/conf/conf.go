@@ -1,11 +1,13 @@
 package conf
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
 	_ "github.com/streadway/amqp"
 	"log"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -14,6 +16,7 @@ const (
 	kConfigLabel   = "CONFIG_LABEL"
 	kConfigProfile = "CONFIG_PROFILE"
 	kConfigType    = "CONFIG_TYPE"
+	kAmqpURI       = "AmqpURI"
 )
 
 var (
@@ -29,7 +32,7 @@ type ResumeConfig struct {
 func init() {
 	viper.AutomaticEnv()
 	initDefault()
-	go config.StartListener(viper.Get(kAppName), viper.GetString("amqp_server_url"), viper.GetString("config_event_bus"))
+	go StartListener(viper.GetString(kAppName), viper.GetString(kAmqpURI), "springCloudBus")
 
 	if err := loadRemoteConfig(); err != nil {
 		log.Fatal("Fail to load config", err)
@@ -46,6 +49,26 @@ func initDefault() {
 	viper.SetDefault(kConfigLabel, "master")
 	viper.SetDefault(kConfigProfile, "dev")
 	viper.SetDefault(kConfigType, "yaml")
+	viper.SetDefault(kAmqpURI, "amqp://admin:admin@106.15.233.99:5672")
+
+}
+func handleRefreshEvent(body []byte, consumerTag string) {
+	updateToken := &UpdateToken{}
+	err := json.Unmarshal(body, updateToken)
+	if err != nil {
+		log.Printf("Problem parsing UpdateToken: %v", err.Error())
+	} else {
+		if strings.Contains(updateToken.DestinationService, consumerTag) {
+			log.Println("Reloading Viper config from Spring Cloud Config server")
+			go loadRemoteConfig()
+			// Consumertag is same as application name.
+			/*LoadConfigurationFromBranch(
+			viper.GetString("configServerUrl"),
+			consumerTag,
+			viper.GetString("profile"),
+			viper.GetString("configBranch"))*/
+		}
+	}
 }
 
 func loadRemoteConfig() (err error) {
