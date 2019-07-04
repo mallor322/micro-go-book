@@ -54,7 +54,6 @@ func main() {
 	// create tracer.
 	tracer, err := zipkin.NewTracer(
 		recorder,
-		zipkin.ClientServerSameSpan(sameSpan),
 		zipkin.TraceID128Bit(traceID128Bit),
 	)
 	if err != nil {

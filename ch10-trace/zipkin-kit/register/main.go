@@ -43,15 +43,15 @@ func main() {
 
 	fieldKeys := []string{"method"}
 	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-		Namespace: "raysonxin",
+		Namespace: "aoho",
 		Subsystem: "arithmetic_service",
 		Name:      "request_count",
 		Help:      "Number of requests received.",
 	}, fieldKeys)
 
 	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "raysonxin",
-		Subsystem: "arithemetic_service",
+		Namespace: "aoho",
+		Subsystem: "arithmetic_service",
 		Name:      "request_latency",
 		Help:      "Total duration of requests in microseconds.",
 	}, fieldKeys)
