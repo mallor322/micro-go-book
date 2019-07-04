@@ -10,8 +10,8 @@ require (
 	github.com/hashicorp/consul/api v1.1.0
 	github.com/juju/ratelimit v1.0.1
 	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect
-	github.com/opentracing/opentracing-go v1.1.0 // indirect
-	github.com/openzipkin-contrib/zipkin-go-opentracing v0.3.5 // indirect
+	github.com/opentracing/opentracing-go v1.1.0
+	github.com/openzipkin-contrib/zipkin-go-opentracing v0.3.5
 	github.com/openzipkin/zipkin-go v0.1.6
 	github.com/pborman/uuid v1.2.0
 	github.com/prometheus/client_golang v1.0.0
