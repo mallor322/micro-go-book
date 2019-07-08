@@ -1,152 +1,46 @@
-package main
+package ch7_discovery
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"time"
+	"log"
+	"net"
 )
 
-type InstanceInfo struct {
+type ConsulClient interface {
 
-	ID string `json:"ID"`
-	Name string `json:"name"`
-	Tags []string `json:"Tags,omitempty"`
-	Address string `json:"Address"`
-	Port int `json:"Port"`
-	Meta map[string]string `json:"Meta,omitempty"`
-	EnableTagOverride bool `json:"EnableTagOverride"`
-	Check `json:"Check,omitempty"`
-	Weights `json:"Weights,omitempty"`
+	/**
+	 * 服务注册接口
+	 */
+	Register(serviceName, instanceId, healthCheckUrl string, instancePort int, meta map[string]string, logger *log.Logger) bool
 
-}
+	/**
+	 * 服务注销接口
+	 */
+	DeRegister(instanceId string, logger *log.Logger) bool
 
-type Check struct {
 
-	DeregisterCriticalServiceAfter string `json:"DeregisterCriticalServiceAfter"`
-	Args []string `json:"Args,omitempty"`
-	HTTP string `json:"HTTP"`
-	Interval string `json:"Interval,omitempty"`
-	TTL string `json:"TTL,omitempty"`
+	/**
+	 * 发现服务实例接口
+	 */
+	DiscoverServices(serviceName string) []string
 
 }
 
-type Weights struct {
-
-	Passing int `json:"Passing"`
-	Warning int `json:"Warning"`
-
-}
-
-
-
-
-func CheckHealth(writer http.ResponseWriter, reader *http.Request)  {
-	fmt.Print("Health check starts at ")
-	fmt.Println(time.Now())
-	fmt.Fprintln(writer, "Server is OK!")
-}
-
-
-var consulAddress = "http://10.224.19.186:8500/";
-var registerUrl = consulAddress + "v1/agent/service/register"
-var unregisterUrl = consulAddress + "v1/agent/service/deregister/"
-var healthServiceUrl = consulAddress + "v1/agent/health/service/name/";
-
-
-
-func RegisterService(instanceInfo *InstanceInfo) bool{
-
-	if instanceInfo == nil {
-		fmt.Println("InstanceInfo could not be NIL!")
-		return false
-	}
-
-	byteData,_ := json.Marshal(instanceInfo)
-
-	req, err := http.NewRequest("PUT",
-		registerUrl,
-		bytes.NewReader(byteData))
-
-	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
-
-	client := http.Client{}
-
-	resp, err := client.Do(req)
-
+func GetLocalIpAddress() string{
+	addrs, err := net.InterfaceAddrs()
 
 	if err != nil {
-		fmt.Println("Register Service Error!")
-	}else {
-		body, _ := ioutil.ReadAll(resp.Body)
-		if body == nil || len(body) == 0 {
-			fmt.Println("Register Service Success!")
-			return true;
-		}else {
-			fmt.Println("Register Service Error!")
-		}
+		return "127.0.0.1"
 	}
-	return false
-}
 
-func UnregisterService(serviceId string) bool {
+	for _, address := range addrs {
 
-	req, err := http.NewRequest("PUT",
-		unregisterUrl + serviceId, nil)
-
-	client := http.Client{}
-	resp, err := client.Do(req)
-
-	if err != nil {
-		fmt.Println("Unregister Service Error!")
-	}else {
-		body, _ := ioutil.ReadAll(resp.Body)
-		if body == nil || len(body) == 0 {
-			fmt.Println("Unregister Service Success!")
-			return true
-		}else {
-			fmt.Println("unregister Service Error!")
-		}
-	}
-	return false
-}
-
-
-func QueryInstanceListByServiceName(serviceName string) []InstanceInfo{
-
-
-	req, err := http.NewRequest("GET",
-		healthServiceUrl + serviceName, nil)
-
-	client := http.Client{}
-	resp, err := client.Do(req)
-
-	if err != nil {
-		fmt.Println("Unregister Service Error!")
-	}else {
-		body, _ := ioutil.ReadAll(resp.Body)
-		if body == nil || len(body) == 0 {
-			return nil
-		}else {
-			var serviceList [] struct {
-				Service InstanceInfo `json:"Service"`
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
 			}
-			json.Unmarshal(body, &serviceList)
-			serviceInfos := make([]InstanceInfo, len(serviceList))
-			for i:= 0 ; i < len(serviceInfos) ; i++{
-				serviceInfos[i] = serviceList[i].Service;
-			}
-			return serviceInfos
+
 		}
 	}
-	return nil
+	return "127.0.0.1"
 }
-
-
-
-
-
-
-
