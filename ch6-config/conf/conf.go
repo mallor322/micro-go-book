@@ -58,15 +58,11 @@ func handleRefreshEvent(body []byte, consumerTag string) {
 	if err != nil {
 		log.Printf("Problem parsing UpdateToken: %v", err.Error())
 	} else {
+		log.Println(consumerTag, updateToken.DestinationService)
 		if strings.Contains(updateToken.DestinationService, consumerTag) {
 			log.Println("Reloading Viper config from Spring Cloud Config server")
-			go loadRemoteConfig()
-			// Consumertag is same as application name.
-			/*LoadConfigurationFromBranch(
-			viper.GetString("configServerUrl"),
-			consumerTag,
-			viper.GetString("profile"),
-			viper.GetString("configBranch"))*/
+			loadRemoteConfig()
+			log.Println(viper.GetString("resume.name"))
 		}
 	}
 }
