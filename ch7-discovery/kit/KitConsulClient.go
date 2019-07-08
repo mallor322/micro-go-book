@@ -78,7 +78,7 @@ func (consulClient *ConsulClient) DeRegister(instanceId string, logger *log.Logg
 	return true
 }
 
-func (consulClient *ConsulClient) DiscoverServices(serviceName string) []string {
+func (consulClient *ConsulClient) DiscoverServices(serviceName string) []interface{} {
 
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
 	if err != nil{
