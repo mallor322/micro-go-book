@@ -2,7 +2,6 @@ package kit
 
 import (
 	ch7discovery "ch7-discovery"
-	"encoding/json"
 	"github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
 	"log"
