@@ -16,6 +16,7 @@ require (
 	github.com/openzipkin/zipkin-go v0.1.6
 	github.com/pborman/uuid v1.2.0
 	github.com/prometheus/client_golang v1.0.0
+	github.com/satori/go.uuid v1.2.0 // indirect
 	golang.org/x/time v0.0.0-00010101000000-000000000000
 )
 
