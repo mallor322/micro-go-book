@@ -27,6 +27,20 @@ func startUseCalculateHttpListener(host string, port int)  {
 	}
 }
 
+func main()  {
+
+	hystrix.ConfigureCommand("Calculate.calculate", hystrix.CommandConfig{
+		Timeout:hystrix.DefaultTimeout,
+		MaxConcurrentRequests:hystrix.DefaultMaxConcurrent,
+		RequestVolumeThreshold:4,
+		SleepWindow:hystrix.DefaultSleepWindow * 10,
+		ErrorPercentThreshold:hystrix.DefaultErrorPercentThreshold,
+	})
+
+	startService("UseCalculate", "127.0.0.1", 10086, startUseCalculateHttpListener)
+
+}
+
 
 func useCalculate(writer http.ResponseWriter, reader *http.Request)  {
 	a, _:= strconv.Atoi(reader.URL.Query().Get("a"))
@@ -45,53 +59,53 @@ func useCalculate(writer http.ResponseWriter, reader *http.Request)  {
 	}
 }
 
+
+
+
 func getCalculateResult(a, b int) (string, error) {
+
 	serviceName := "Calculate"
 
-	instances := consulClient.DiscoverServices(serviceName)
+	var result string
 
-	if instances == nil || len(instances) == 0 {
-		logger.Println("No " + serviceName + " instances are working!")
-		return "", errors.New("No " + serviceName + " instances are working")
-	}
+	err := hystrix.Do("Calculate.calculate", func() error{
 
-	// 随机选取一个服务实例进行计算
-	selectInstance := instances[rand.Intn(len(instances))].(*api.AgentService)
+		instances := consulClient.DiscoverServices(serviceName)
 
-	requestUrl := url.URL{
-		Scheme:"http",
-		Host:selectInstance.Address + ":" + strconv.Itoa(selectInstance.Port),
-		Path:"/calculate",
-		RawQuery:"a=" + strconv.Itoa(a) + "&b=" + strconv.Itoa(b),
-	}
+		if instances == nil || len(instances) == 0 {
+			logger.Println("No Calculate instances are working!")
+			return errors.New("No Calculate instances are working")
+		}
 
-	output := make(chan string, 1)
+		// 随机选取一个服务实例进行计算
+		rand.Seed(time.Now().UnixNano())
+		selectInstance := instances[rand.Intn(len(instances))].(*api.AgentService)
 
-	hystrix.Go(serviceName+ "." + "calculate", func() error{
+		requestUrl := url.URL{
+			Scheme:"http",
+			Host:selectInstance.Address + ":" + strconv.Itoa(selectInstance.Port),
+			Path:"/calculate",
+			RawQuery:"a=" + strconv.Itoa(a) + "&b=" + strconv.Itoa(b),
+		}
+
 		resp, err := http.Get(requestUrl.String())
 		if err != nil{
 			return err
 		}
 		body, _ := ioutil.ReadAll(resp.Body)
-		output <- string(body)
+		result = string(body)
 
 		return nil
 
-	}, nil)
+	}, func(e error) error {
+		return errors.New("Http errors！")
+	})
 
-	select {
-	case val := <- output:
-		return val, nil
-	case <-time.After(2 * time.Second): // 超时设置
-		return "", errors.New("timeout!")
+	if err == nil {
+		return result, nil
+	}else {
+		return "", err
 	}
-
-
 }
 
-func main()  {
 
-	rand.Seed(time.Now().UnixNano())
-	startService("UseCalculate", "127.0.0.1", 10086, startUseCalculateHttpListener)
-
-}

@@ -16,8 +16,9 @@ var server *http.Server
 
 
 
+//
 func checkHealth(writer http.ResponseWriter, reader *http.Request)  {
-	logger.Println("Health check starts!")
+	logger.Println("Health check!")
 	_, err := fmt.Fprintln(writer, "Server is OK!")
 	if err != nil{
 		logger.Println(err)

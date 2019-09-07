@@ -8,7 +8,6 @@ import (
 
 func startCalculateHttpListener(host string, port int)  {
 	server = &http.Server{
-		// GetLocalIpAddress用于获取本地IP，可以手动写入
 		Addr: host + ":" +strconv.Itoa(port),
 	}
 	http.HandleFunc("/health", checkHealth)
@@ -30,9 +29,6 @@ func calculate(writer http.ResponseWriter, reader *http.Request)  {
 	}
 }
 
-
 func main()  {
-
 	startService("Calculate", "127.0.0.1", 10085, startCalculateHttpListener)
-
 }
