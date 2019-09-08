@@ -15,9 +15,12 @@ import (
 
 func startUseCalculateHttpListener(host string, port int)  {
 	server = &http.Server{
-		// GetLocalIpAddress用于获取本地IP，可以手动写入
 		Addr: host + ":" +strconv.Itoa(port),
 	}
+	// 启动 hystrixStreamHandler 推送统计数据
+	hystrixStreamHandler := hystrix.NewStreamHandler()
+	hystrixStreamHandler.Start()
+	http.Handle("/hystrix/stream",hystrixStreamHandler)
 	http.HandleFunc("/health", checkHealth)
 	http.HandleFunc("/use/calculate", useCalculate)
 	http.HandleFunc("/discovery", discoveryService)
@@ -33,7 +36,7 @@ func main()  {
 		RequestVolumeThreshold:4,
 	})
 
-	startService("UseCalculate", "127.0.0.1", 10086, startUseCalculateHttpListener)
+	startService("UseCalculate", "", 10086, startUseCalculateHttpListener)
 
 }
 
@@ -54,7 +57,6 @@ func useCalculate(writer http.ResponseWriter, reader *http.Request)  {
 		logger.Println(err)
 	}
 }
-
 
 
 
