@@ -30,11 +30,7 @@ func startUseCalculateHttpListener(host string, port int)  {
 func main()  {
 
 	hystrix.ConfigureCommand("Calculate.calculate", hystrix.CommandConfig{
-		Timeout:hystrix.DefaultTimeout,
-		MaxConcurrentRequests:hystrix.DefaultMaxConcurrent,
 		RequestVolumeThreshold:4,
-		SleepWindow:hystrix.DefaultSleepWindow * 10,
-		ErrorPercentThreshold:hystrix.DefaultErrorPercentThreshold,
 	})
 
 	startService("UseCalculate", "127.0.0.1", 10086, startUseCalculateHttpListener)
