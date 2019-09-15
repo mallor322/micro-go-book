@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
+	_ "errors"
 	"github.com/go-kit/kit/endpoint"
 	"golang.org/x/time/rate"
 	"time"
