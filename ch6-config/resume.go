@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ch6-config/conf"
 	"fmt"
+	"github.com/keets2012/Micro-Go-Pracrise/ch6-config/conf"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
