@@ -17,6 +17,10 @@ type ClientDetails struct {
 	AuthorizedGrantTypes []string
 }
 
+func (clientDetails *ClientDetails) IsMatch(clientId string, clientSecret string) bool {
+	return clientId == clientDetails.ClientId && clientSecret == clientDetails.ClientSecret
+}
+
 type ClientDetailService interface {
 	GetClientDetailByClientId(clientId string) (*ClientDetails, error)
 }

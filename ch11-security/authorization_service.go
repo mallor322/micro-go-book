@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"encoding/base64"
 	"github.com/keets2012/Micro-Go-Pracrise/basic"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func startAuthorizationHttpListener(host string, port int)  {
@@ -13,12 +14,14 @@ func startAuthorizationHttpListener(host string, port int)  {
 	}
 	http.HandleFunc("/health", basic.CheckHealth)
 	http.HandleFunc("/discovery", basic.DiscoveryService)
-	http.Handle("/oauth/token", clientAuthorizationMiddleware(http.HandlerFunc(getOAuthToken)))
+	http.Handle("/oauth/token", OAuthContextMiddleware(clientAuthorizationMiddleware(http.HandlerFunc(getOAuthToken))))
 	err := basic.Server.ListenAndServe()
 	if err != nil{
 		basic.Logger.Println("Service is going to close...")
 	}
 }
+
+
 
 func clientAuthorizationMiddleware(next http.Handler) http.Handler{
 
@@ -34,12 +37,29 @@ func clientAuthorizationMiddleware(next http.Handler) http.Handler{
 			http.Error(w, "Please provide the clientId and clientSecret in authorization", http.StatusForbidden)
 		}
 
-		//decodeBytes, err := base64.StdEncoding.DecodeString(authorization)
-		//if err != nil{
-		//	http.Error(w, "Please provide corrent base64 encoding", http.StatusForbidden)
-		//}
+		decodeBytes, err := base64.StdEncoding.DecodeString(authorization)
 
-		fmt.Println("authorization is " + authorization)
+		if err != nil{
+			http.Error(w, "Please provide correct base64 encoding", http.StatusForbidden)
+		}
+
+
+		decodeStrings := strings.SplitN(string(decodeBytes), ":", 2)
+
+		clientId := decodeStrings[0]
+		clientSecret := decodeStrings[1]
+
+		clientDetails, err := clientDetailsService.GetClientDetailByClientId(clientId)
+
+		if err != nil{
+			http.Error(w, err.Error(), http.StatusForbidden)
+		}
+
+		if !clientDetails.IsMatch(clientId, clientSecret){
+			http.Error(w, "Please provide correct client information", http.StatusForbidden)
+
+		}
+
 
 		next.ServeHTTP(w, r)
 
@@ -54,16 +74,17 @@ func getOAuthToken(writer http.ResponseWriter, reader *http.Request)  {
 
 
 
-//clientDetailsService *ClientDetailsService
+var clientDetailsService ClientDetailService
 
 
 func main()  {
-
-
-
-	//clientDetailsService := NewInMemoryClientDetailService({
-	//
-	//
-	//})
+	clientDetailsService = NewInMemoryClientDetailService([] *ClientDetails{&ClientDetails{
+		"clientId",
+			"clientSercet",
+			1800,
+			18000,
+			"http://127.0.0.1",
+			[] string{"password", "authorization_code"},
+	}})
 	basic.StartService("Authorization", "127.0.0.1", 10087, startAuthorizationHttpListener)
 }
