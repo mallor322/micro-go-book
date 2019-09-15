@@ -1,9 +1,9 @@
 package config
 
 import (
-	"SecKill/sk_layer/service/srv_limit"
-	"SecKill/sk_layer/service/srv_product"
-	"SecKill/sk_layer/service/srv_user"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_limit"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_product"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_user"
 	"go.etcd.io/etcd/clientv3"
 	"github.com/go-redis/redis"
 	"sync"

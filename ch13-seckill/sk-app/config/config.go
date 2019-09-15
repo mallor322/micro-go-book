@@ -1,7 +1,7 @@
 package config
 
 import (
-	"go.etcd.io/etcd/clientv3"
+	"github.com/coreos/etcd/clientv3"
 	"github.com/go-redis/redis"
 	"sync"
 )

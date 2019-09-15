@@ -1,11 +1,11 @@
 package setup
 
 import (
-	"SecKill/sk_proxy/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"context"
 	"encoding/json"
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/mvcc/mvccpb"
+	"github.com/coreos/etcd/clientv3"
+	"github.com/coreos/etcd/mvcc/mvccpb"
 	"log"
 	"time"
 )

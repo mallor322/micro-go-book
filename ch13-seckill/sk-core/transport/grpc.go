@@ -3,7 +3,7 @@ package transport
 import (
 	"context"
 	"github.com/go-kit/kit/transport/grpc"
-	"SecKill/pb"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 )
 
 type grpcServer struct {

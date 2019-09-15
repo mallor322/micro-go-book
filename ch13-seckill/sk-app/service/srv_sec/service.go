@@ -1,9 +1,9 @@
 package srv_sec
 
 import (
-	"SecKill/sk_proxy/config"
-	"SecKill/sk_proxy/service/srv_err"
-	"SecKill/sk_proxy/service/srv_limit"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_err"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_limit"
 	"fmt"
 	"log"
 	"time"

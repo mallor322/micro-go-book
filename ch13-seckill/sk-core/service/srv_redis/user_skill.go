@@ -1,9 +1,9 @@
 package srv_redis
 
 import (
-	"SecKill/sk_layer/config"
-	"SecKill/sk_layer/service/srv_err"
-	"SecKill/sk_layer/service/srv_user"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_err"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_user"
 	"crypto/md5"
 	"fmt"
 	"log"

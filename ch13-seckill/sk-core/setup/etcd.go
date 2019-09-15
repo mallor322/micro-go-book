@@ -1,8 +1,8 @@
 package setup
 
 import (
-	"SecKill/sk_layer/config"
-	"SecKill/sk_layer/logic"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/logic"
 	"go.etcd.io/etcd/clientv3"
 	"log"
 	"time"

@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"SecKill/sk_admin/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
 	"go.etcd.io/etcd/clientv3"
 	"log"
 	"time"
