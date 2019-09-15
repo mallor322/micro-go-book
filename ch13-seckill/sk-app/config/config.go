@@ -1,12 +1,8 @@
 package config
 
 import (
-<<<<<<< HEAD
 	"github.com/coreos/etcd/clientv3"
 	"github.com/go-redis/redis"
-=======
-	"go.etcd.io/etcd/clientv3"
->>>>>>> d6a6299c202bb0c2f9a974d4a2c3ecd63c98ddee
 	"sync"
 )
 
@@ -37,6 +33,18 @@ type AccessLimitConf struct {
 	IPMinAccessLimit   int //IP每分钟访问限制
 	UserMinAccessLimit int //用户每分钟访问限制
 }
+
+
+type RedisConf struct {
+	RedisConn            *redis.Client //链接
+	Proxy2layerQueueName string        //队列名称
+	Layer2proxyQueueName string        //队列名称
+	IdBlackListHash      string        //用户黑名单hash表
+	IpBlackListHash      string        //IP黑名单Hash表
+	IdBlackListQueue     string        //用户黑名单队列
+	IpBlackListQueue     string        //IP黑名单队列
+}
+
 
 type SecKillConf struct {
 	RedisConf *RedisConf
