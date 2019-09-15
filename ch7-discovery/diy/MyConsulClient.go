@@ -21,7 +21,6 @@ type InstanceInfo struct {
 	EnableTagOverride bool                       `json:"EnableTagOverride"` // 是否允许标签覆盖
 	Check             `json:"Check,omitempty"`   // 健康检查相关配置
 	Weights           `json:"Weights,omitempty"` // 权重
-
 }
 
 type Check struct {
@@ -30,7 +29,6 @@ type Check struct {
 	HTTP                           string   `json:"HTTP"`                           // 健康检查地址
 	Interval                       string   `json:"Interval,omitempty"`             // Consul 主动检查间隔
 	TTL                            string   `json:"TTL,omitempty"`                  // 服务实例主动维持心跳间隔，与Interval只存其一
-
 }
 
 type Weights struct {

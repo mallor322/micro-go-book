@@ -2,15 +2,15 @@ package discovery
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
+	_ "encoding/json"
+	_ "errors"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/sd"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"io"
-	"net/http"
+	_ "net/http"
 	"net/url"
-	"strconv"
+	_ "strconv"
 	"strings"
 )
 
