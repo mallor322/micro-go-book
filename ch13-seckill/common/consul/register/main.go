@@ -1,20 +1,11 @@
 package register
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"github.com/go-kit/kit/log"
-	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
-	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
-	"github.com/openzipkin/zipkin-go"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
-
 	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 

@@ -1,9 +1,8 @@
 package setup
 
 import (
-	"SecKill/sk_admin/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gohouse/gorose"
 )
 
@@ -38,5 +37,5 @@ func InitMysql(hostMysql, portMysql, userMysql, pwdMysql, dbMysql string) {
 		return
 	}
 
-	config.SecAdminConfCtx.DbConf = &config.DbConf{DbConn: connection}
+	config.SecAdminConfCtx.DbConf = &config.DbConf{DbConn: *connection}
 }

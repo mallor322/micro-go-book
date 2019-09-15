@@ -1,8 +1,8 @@
 package setup
 
 import (
-	"SecKill/sk_admin/controller/activity"
-	"SecKill/sk_admin/controller/product"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/controller/activity"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/controller/product"
 	"github.com/gin-gonic/gin"
 )
 

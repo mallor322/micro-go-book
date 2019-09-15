@@ -2,9 +2,7 @@ package register
 
 import (
 	"context"
-	"errors"
 	"github.com/go-kit/kit/endpoint"
-	"strings"
 )
 
 // CalculateEndpoint define endpoint

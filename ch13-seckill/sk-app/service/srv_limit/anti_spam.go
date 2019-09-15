@@ -1,7 +1,7 @@
 package srv_limit
 
 import (
-	"SecKill/sk_proxy/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"fmt"
 	"log"
 	"sync"

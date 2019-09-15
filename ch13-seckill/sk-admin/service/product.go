@@ -1,7 +1,7 @@
 package service
 
 import (
-	"SecKill/sk_admin/model"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	"log"
 )
 

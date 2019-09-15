@@ -1,12 +1,12 @@
 package service
 
 import (
-	"SecKill/sk_admin/config"
-	"SecKill/sk_admin/model"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Unknwon/com"
+	"github.com/unknwon/com"
 	"log"
 	"time"
 )

@@ -1,9 +1,9 @@
 package activity
 
 import (
-	"SecKill/sk_admin/model"
-	"SecKill/sk_admin/service"
-	"github.com/Unknwon/com"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
+	"github.com/unknwon/com"
 	"github.com/gin-gonic/gin"
 	"log"
 )

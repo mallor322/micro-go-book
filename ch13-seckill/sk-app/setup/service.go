@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"SecKill/sk_proxy/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strings"

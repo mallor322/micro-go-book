@@ -1,7 +1,7 @@
 package main
 
 import (
-	"SecKill/sk_layer/setup"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/setup"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

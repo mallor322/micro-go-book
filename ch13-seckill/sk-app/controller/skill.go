@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"SecKill/sk_proxy/service/srv_sec"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_sec"
 	"fmt"
-	"github.com/Unknwon/com"
+	"github.com/unknwon/com"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strings"

@@ -1,14 +1,12 @@
 package setup
 
 import (
-	"SecKill/sk_layer/config"
-	"SecKill/sk_layer/service/srv_product"
-	"SecKill/sk_layer/service/srv_redis"
-	"SecKill/sk_layer/service/srv_user"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_product"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_redis"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_user"
+
 	"fmt"
-	"github.com/go-kit/kit/log"
-	"net/http"
-	"context"
 	"os"
 	"os/signal"
 	"syscall"
@@ -38,27 +36,27 @@ func RunService() {
 	srv_redis.RunProcess()
 
 
-	ctx := context.Background()
+	//ctx := context.Background()
 	errChan := make(chan error)
 
-	var svc Service
-	svc = ArithmeticService{}
-	endpoint := MakeArithmeticEndpoint(svc)
+	//var svc Service
+	//svc = ArithmeticService{}
+	//endpoint := MakeArithmeticEndpoint(svc)
 
-	var logger log.Logger
-	{
-		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
-		logger = log.With(logger, "caller", log.DefaultCaller)
-	}
+	//var logger log.Logger
+	//{
+	//	logger = log.NewLogfmtLogger(os.Stderr)
+	//	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
+	//	logger = log.With(logger, "caller", log.DefaultCaller)
+	//}
+	//
+	//r := MakeHttpHandler(ctx, endpoint, logger)
 
-	r := MakeHttpHandler(ctx, endpoint, logger)
-
-	go func() {
-		fmt.Println("Http Server start at port:9000")
-		handler := r
-		errChan <- http.ListenAndServe(":9000", handler)
-	}()
+	//go func() {
+	//	fmt.Println("Http Server start at port:9000")
+	//	handler := r
+	//	errChan <- http.ListenAndServe(":9000", handler)
+	//}()
 
 	go func() {
 		c := make(chan os.Signal, 1)

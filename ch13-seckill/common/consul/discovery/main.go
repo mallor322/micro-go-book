@@ -1,2 +1,2 @@
-package discover
+package discovery
 

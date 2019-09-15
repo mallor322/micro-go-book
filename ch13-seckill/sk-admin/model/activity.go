@@ -1,7 +1,7 @@
 package model
 
 import (
-	"SecKill/sk_admin/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
 	"log"
 )
 
@@ -52,7 +52,7 @@ func (p *ActivityModel) getTableName() string {
 }
 
 func (p *ActivityModel) GetActivityList() ([]map[string]interface{}, error) {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.GetInstance()
+	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
 	list, err := conn.Table(p.getTableName()).Order("activity_id desc").Get()
 	if err != nil {
 		log.Printf("Error : %v", err)
@@ -62,7 +62,7 @@ func (p *ActivityModel) GetActivityList() ([]map[string]interface{}, error) {
 }
 
 func (p *ActivityModel) CreateActivity(activity *Activity) error {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.GetInstance()
+	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
 	_, err := conn.Table(p.getTableName()).Data(
 		map[string]interface{}{
 			"activity_name": activity.ActivityName,

@@ -1,7 +1,7 @@
 package endpoints
 
 import (
-	"SecKill/sk_layer/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service"
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
@@ -40,7 +40,7 @@ func MakeArithmeticEndpoint(svc service.Service) endpoint.Endpoint {
 		a = req.A
 		b = req.B
 
-		res, calError = svc.SecKill(ctx, req.RequestType, a, b)
+		//res, calError = svc.SecKill(ctx, req.RequestType, a, b)
 
 		return ArithmeticResponse{Result: res, Error: calError}, nil
 	}
@@ -49,15 +49,15 @@ func MakeArithmeticEndpoint(svc service.Service) endpoint.Endpoint {
 
 func (ae ArithmeticEndpoints) Calculate(ctx context.Context, reqType string, a, b int) (res int, err error) {
 	//ctx := context.Background()
-	resp, err := ae.CalculateEndpoint(ctx, ArithmeticRequest{
-		RequestType: reqType,
-		A:           a,
-		B:           b,
-	})
+	//resp, err := ae.CalculateEndpoint(ctx, ArithmeticRequest{
+	//	RequestType: reqType,
+	//	A:           a,
+	//	B:           b,
+	//})
 	if err != nil {
 		return 0, err
 	}
-	response := resp.(ArithmeticResponse)
-	return response.Result, nil
+	//response := resp.(ArithmeticResponse)
+	//return response.Result, nil
 }
 

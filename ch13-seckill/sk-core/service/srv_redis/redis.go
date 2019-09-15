@@ -1,7 +1,7 @@
 package srv_redis
 
 import (
-	"SecKill/sk_layer/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
 	"encoding/json"
 	"fmt"
 	"log"

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"SecKill/sk_admin/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
 	"log"
 )
 
@@ -24,7 +24,7 @@ func (p *ProductModel) getTableName() string {
 }
 
 func (p *ProductModel) GetProductList() ([]map[string]interface{}, error) {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.GetInstance()
+	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
 	list, err := conn.Table(p.getTableName()).Get()
 	if err != nil {
 		log.Printf("Error : %v", err)
@@ -34,7 +34,7 @@ func (p *ProductModel) GetProductList() ([]map[string]interface{}, error) {
 }
 
 func (p *ProductModel) CreateProduct(product *Product) error {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.GetInstance()
+	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
 	_, err := conn.Table(p.getTableName()).Data(map[string]interface{}{
 		"product_name": product.ProductName,
 		"total":        product.Total,

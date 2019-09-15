@@ -1,14 +1,14 @@
 package logic
 
 import (
-	"SecKill/sk_layer/config"
-	"SecKill/sk_layer/service/srv_limit"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_limit"
 	"context"
 	"encoding/json"
-	"go.etcd.io/etcd/mvcc/mvccpb"
 	"log"
 	"time"
 )
+//"go.etcd.io/etcd/mvcc/mvccpb"
 
 //从Etcd中加载商品数据
 func LoadProductFromEtcd() {
@@ -64,7 +64,7 @@ func initSecProductWatcher() {
 func watchSecProductKey() {
 	key := config.SecLayerCtx.EtcdConf.EtcdSecProductKey
 
-	var err error
+	//var err error
 	for {
 		rch := config.SecLayerCtx.EtcdConf.EtcdConn.Watch(context.Background(), key)
 		var secProductInfo []*config.SecProductInfoConf
@@ -73,20 +73,20 @@ func watchSecProductKey() {
 		for wrsp := range rch {
 			for _, ev := range wrsp.Events {
 				//删除事件
-				if ev.Type == mvccpb.DELETE {
-					log.Printf("key[%s] 's config deleted", key)
-					continue
-				}
-
-				//更新事件
-				if ev.Type == mvccpb.PUT && string(ev.Kv.Key) == key {
-					err = json.Unmarshal(ev.Kv.Value, &secProductInfo)
-					if err != nil {
-						log.Printf("key [%s], Unmarshal[%s]. Error : %v", key, err)
-						getConfSucc = false
-						continue
-					}
-				}
+				//if ev.Type.EnumDescriptor() == mvccpb.DELETE.EnumDescriptor() {
+				//	log.Printf("key[%s] 's config deleted", key)
+				//	continue
+				//}
+				//
+				////更新事件
+				//if ev.Type.EnumDescriptor() == mvccpb.PUT.EnumDescriptor() && string(ev.Kv.Key) == key {
+				//	err = json.Unmarshal(ev.Kv.Value, &secProductInfo)
+				//	if err != nil {
+				//		log.Printf("key [%s], Unmarshal[%s]. Error : %v", key, err)
+				//		getConfSucc = false
+				//		continue
+				//	}
+				//}
 				log.Printf("get config from etcd, %s %q : %q\n", ev.Type, ev.Kv.Key, ev.Kv.Value)
 			}
 
