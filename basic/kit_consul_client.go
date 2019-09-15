@@ -1,4 +1,4 @@
-package main
+package basic
 
 import (
 	"github.com/go-kit/kit/sd/consul"
@@ -30,7 +30,7 @@ type ConsulClient interface {
 	 * 发现服务实例接口
 	 * @param serviceName 服务名
 	 */
-	DiscoverServices(serviceName string) []interface{}
+	DiscoverServices(serviceName string, logger *log.Logger) []interface{}
 }
 
 type ConsulClientInstance struct {
@@ -78,10 +78,10 @@ func (consulClient *ConsulClientInstance)Register(serviceName, instanceId, healt
 	err := consulClient.client.Register(serviceRegistration)
 
 	if err != nil{
-		log.Println("Register Service Error!")
+		logger.Println("Register Service Error!")
 		return false
 	}
-	log.Println("Register Service Success!")
+	logger.Println("Register Service Success!")
 	return true
 }
 
@@ -98,17 +98,17 @@ func (consulClient *ConsulClientInstance) DeRegister(instanceId string, logger *
 		logger.Println("Deregister Service Error!")
 		return false
 	}
-	log.Println("Deregister Service Success!")
+	logger.Println("Deregister Service Success!")
 
 	return true
 }
 
-func (consulClient *ConsulClientInstance) DiscoverServices(serviceName string) []interface{} {
+func (consulClient *ConsulClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
 
 	// 根据服务名请求服务实例列表，可以添加额外的筛选参数
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
 	if err != nil{
-		log.Println("Discover Service Error!")
+		logger.Println("Discover Service Error!")
 		return nil
 	}
 

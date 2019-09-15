@@ -1,4 +1,4 @@
-package main
+package basic
 
 import (
 	"encoding/json"
@@ -12,26 +12,26 @@ import (
 	"syscall"
 )
 
-var server *http.Server
+var Server *http.Server
 
 
 
 //
-func checkHealth(writer http.ResponseWriter, reader *http.Request)  {
-	logger.Println("Health check!")
+func CheckHealth(writer http.ResponseWriter, reader *http.Request)  {
+	Logger.Println("Health check!")
 	_, err := fmt.Fprintln(writer, "Server is OK!")
 	if err != nil{
-		logger.Println(err)
+		Logger.Println(err)
 	}
 }
 
-func discoveryService(writer http.ResponseWriter, reader *http.Request)  {
+func DiscoveryService(writer http.ResponseWriter, reader *http.Request)  {
 	serviceName := reader.URL.Query().Get("serviceName")
-	instances := consulClient.DiscoverServices(serviceName)
+	instances := ConsulService.DiscoverServices(serviceName, Logger)
 	writer.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(writer).Encode(instances)
 	if err != nil{
-		logger.Println(err)
+		Logger.Println(err)
 	}
 }
 
@@ -42,9 +42,9 @@ func closeServer( waitGroup *sync.WaitGroup, exit <-chan os.Signal, instanceId s
 	// 主线程等待
 	waitGroup.Add(1)
 	// 服务注销
-	consulClient.DeRegister(instanceId, logger)
+	ConsulService.DeRegister(instanceId, logger)
 	// 关闭 http 服务器
-	err := server.Shutdown(nil)
+	err := Server.Shutdown(nil)
 	if err != nil{
 		log.Println(err)
 	}
@@ -52,20 +52,20 @@ func closeServer( waitGroup *sync.WaitGroup, exit <-chan os.Signal, instanceId s
 	waitGroup.Done()
 }
 
-func startService(serviceName string, host string, port int, serviceFunc func(host string, port int))  {
+func StartService(serviceName string, host string, port int, serviceFunc func(host string, port int))  {
 
 	// 1.实例化一个 Consul 客户端，此处实例化了原生态实现版本
-	consulClient = New("127.0.0.1", 8500)
+	ConsulService = New("127.0.0.1", 8500)
 	//// 实例失败，停止服务
-	if consulClient == nil{
+	if ConsulService == nil{
 		panic(0)
 	}
 
 	// 通过 go.uuid 获取一个服务实例ID
 	instanceId := uuid.NewV4().String()
-	logger = log.New(os.Stderr, "", log.LstdFlags)
+	Logger = log.New(os.Stderr, "", log.LstdFlags)
 	// 服务注册
-	if !consulClient.Register(serviceName, instanceId, "/health", host, port, nil, logger) {
+	if !ConsulService.Register(serviceName, instanceId, "/health", host, port, nil, Logger) {
 		// 注册失败，服务启动失败
 		panic(0)
 	}
@@ -76,7 +76,7 @@ func startService(serviceName string, host string, port int, serviceFunc func(ho
 	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
 	var waitGroup sync.WaitGroup
 	// 注册关闭事件，等待 ctrl + c 系统信号通知服务关闭
-	go closeServer(&waitGroup, exit, instanceId, logger)
+	go closeServer(&waitGroup, exit, instanceId, Logger)
 
 	// 3. 在主线程启动http服务器
 	serviceFunc(host, port)
@@ -87,6 +87,6 @@ func startService(serviceName string, host string, port int, serviceFunc func(ho
 
 }
 
-var consulClient ConsulClient
-var logger *log.Logger
+var ConsulService ConsulClient
+var Logger *log.Logger
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/hashicorp/consul/api"
+	"github.com/keets2012/Micro-Go-Pracrise/basic"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -14,19 +15,19 @@ import (
 )
 
 func startUseCalculateHttpListener(host string, port int)  {
-	server = &http.Server{
+	basic.Server = &http.Server{
 		Addr: host + ":" +strconv.Itoa(port),
 	}
 	// 启动 hystrixStreamHandler 推送统计数据
 	hystrixStreamHandler := hystrix.NewStreamHandler()
 	hystrixStreamHandler.Start()
 	http.Handle("/hystrix/stream",hystrixStreamHandler)
-	http.HandleFunc("/health", checkHealth)
+	http.HandleFunc("/health", basic.CheckHealth)
 	http.HandleFunc("/use/calculate", useCalculate)
-	http.HandleFunc("/discovery", discoveryService)
-	err := server.ListenAndServe()
+	http.HandleFunc("/discovery", basic.DiscoveryService)
+	err := basic.Server.ListenAndServe()
 	if err != nil{
-		logger.Println("Service is going to close...")
+		basic.Logger.Println("Service is going to close...")
 	}
 }
 
@@ -36,7 +37,7 @@ func main()  {
 		RequestVolumeThreshold:4,
 	})
 
-	startService("UseCalculate", "", 10086, startUseCalculateHttpListener)
+	basic.StartService("UseCalculate", "", 10086, startUseCalculateHttpListener)
 
 }
 
@@ -54,7 +55,7 @@ func useCalculate(writer http.ResponseWriter, reader *http.Request)  {
 	}
 
 	if err != nil{
-		logger.Println(err)
+		basic.Logger.Println(err)
 	}
 }
 
@@ -68,10 +69,10 @@ func getCalculateResult(a, b int) (string, error) {
 
 	err := hystrix.Do("Calculate.calculate", func() error{
 
-		instances := consulClient.DiscoverServices(serviceName)
+		instances := basic.ConsulService.DiscoverServices(serviceName, basic.Logger)
 
 		if instances == nil || len(instances) == 0 {
-			logger.Println("No Calculate instances are working!")
+			basic.Logger.Println("No Calculate instances are working!")
 			return errors.New("No Calculate instances are working")
 		}
 
