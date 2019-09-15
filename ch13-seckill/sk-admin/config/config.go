@@ -1,8 +1,8 @@
 package config
 
 import (
-	"go.etcd.io/etcd/clientv3"
 	"github.com/gohouse/gorose"
+	"go.etcd.io/etcd/clientv3"
 )
 
 var SecAdminConfCtx = &SecAdminConf{}

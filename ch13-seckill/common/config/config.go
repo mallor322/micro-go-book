@@ -19,16 +19,6 @@ const (
 	kAmqpURI       = "AmqpURI"
 )
 
-var (
-	Resume ResumeConfig
-)
-
-type ResumeConfig struct {
-	Name string
-	Age  int
-	Sex  string
-}
-
 func init() {
 	viper.AutomaticEnv()
 	initDefault()
@@ -38,14 +28,20 @@ func init() {
 		log.Fatal("Fail to load config", err)
 	}
 
-	if err := sub("resume", &Resume); err != nil {
+	if err := sub("redis", &Redis); err != nil {
+		log.Fatal("Fail to parse config", err)
+	}
+	if err := sub("etcd", &Etcd); err != nil {
+		log.Fatal("Fail to parse config", err)
+	}
+	if err := sub("service", &SecKill); err != nil {
 		log.Fatal("Fail to parse config", err)
 	}
 }
 
 func initDefault() {
-	viper.SetDefault(kAppName, "client-demo")
-	viper.SetDefault(kConfigServer, "http://localhost:8888")
+	viper.SetDefault(kAppName, "seckill")
+	viper.SetDefault(kConfigServer, "http://106.15.233.99:8888")
 	viper.SetDefault(kConfigLabel, "master")
 	viper.SetDefault(kConfigProfile, "dev")
 	viper.SetDefault(kConfigType, "yaml")

@@ -7,6 +7,7 @@ require (
 	github.com/apache/thrift v0.12.0 // indirect
 	github.com/go-kit/kit v0.9.0
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
+	github.com/go-redis/redis v6.15.5+incompatible // indirect
 	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/mux v1.6.2
 	github.com/hashicorp/consul/api v1.1.0
@@ -19,6 +20,7 @@ require (
 	github.com/prometheus/client_golang v1.0.0
 	github.com/spf13/viper v1.4.0
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
+	go.etcd.io/etcd v3.3.15+incompatible // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4
 )
 
