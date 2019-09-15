@@ -26,7 +26,7 @@ func InitEtcd(host, productKey string) {
 	}
 
 	loadSecConf(cli)
-	go waterSecProductKey(cli, config.SecKillConfCtx.EtcdConf.EtcdSecProductKey)
+	go waitSecProductKey(cli, config.SecKillConfCtx.EtcdConf.EtcdSecProductKey)
 }
 
 //加载秒杀商品信息
@@ -50,7 +50,7 @@ func loadSecConf(cli *clientv3.Client) {
 }
 
 //监听秒杀商品配置
-func waterSecProductKey(cli *clientv3.Client, key string) {
+func waitSecProductKey(cli *clientv3.Client, key string) {
 	for {
 		rch := cli.Watch(context.Background(), key)
 		var secProductInfo []*config.SecProductInfoConf
