@@ -59,8 +59,6 @@ func clientAuthorizationMiddleware(next http.Handler) http.Handler{
 			http.Error(w, "Please provide correct client information", http.StatusForbidden)
 
 		}
-
-
 		next.ServeHTTP(w, r)
 
 	})
@@ -69,12 +67,16 @@ func clientAuthorizationMiddleware(next http.Handler) http.Handler{
 
 
 func getOAuthToken(writer http.ResponseWriter, reader *http.Request)  {
+
+	return
+
 	
 }
 
 
 
 var clientDetailsService ClientDetailService
+var userDetailsService UserDetailsService
 
 
 func main()  {
@@ -85,6 +87,11 @@ func main()  {
 			18000,
 			"http://127.0.0.1",
 			[] string{"password", "authorization_code"},
+	}})
+	userDetailsService = NewInMemoryUserDetailService([] *UserDetails{&UserDetails{
+		Username:"xuan",
+		Password:"123456",
+		UserId:1,
 	}})
 	basic.StartService("Authorization", "127.0.0.1", 10087, startAuthorizationHttpListener)
 }
