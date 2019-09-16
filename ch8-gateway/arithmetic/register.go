@@ -36,13 +36,13 @@ func Register(consulHost, consulPort, svcHost, svcPort string, logger log.Logger
 
 	port, _ := strconv.Atoi(svcPort)
 
-	//设置微服务想Consul的注册信息
+	//设置微服务Consul的注册信息
 	reg := api.AgentServiceRegistration{
 		ID:      "arithmetic" + uuid.New(),
 		Name:    "arithmetic",
 		Address: svcHost,
 		Port:    port,
-		Tags:    []string{"arithmetic", "raysonxin"},
+		Tags:    []string{"arithmetic", "aoho"},
 		Check:   &check,
 	}
 

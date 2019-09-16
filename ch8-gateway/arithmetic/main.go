@@ -38,14 +38,14 @@ func main() {
 
 	fieldKeys := []string{"method"}
 	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-		Namespace: "raysonxin",
+		Namespace: "aoho",
 		Subsystem: "arithmetic_service",
 		Name:      "request_count",
 		Help:      "Number of requests received.",
 	}, fieldKeys)
 
 	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "raysonxin",
+		Namespace: "aoho",
 		Subsystem: "arithemetic_service",
 		Name:      "request_latency",
 		Help:      "Total duration of requests in microseconds.",
@@ -81,6 +81,7 @@ func main() {
 	r := MakeHttpHandler(ctx, endpts, logger)
 
 	//创建注册对象
+	//TODO replace with common consul
 	registar := Register(*consulHost, *consulPort, *serviceHost, *servicePort, logger)
 
 	go func() {
