@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
-	"github.com/streadway/amqp"
+	_ "github.com/streadway/amqp"
 	"log"
 	"net/http"
 	"strings"
