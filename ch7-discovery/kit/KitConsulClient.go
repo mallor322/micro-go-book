@@ -1,9 +1,9 @@
 package kit
 
 import (
-	"ch7-discovery"
 	"github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
+	ch7_discovery "github.com/keets2012/Micro-Go-Pracrise/ch7-discovery"
 	"log"
 	"strconv"
 )

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"ch7-discovery"
-	"ch7-discovery/diy"
 	"encoding/json"
 	"fmt"
+	ch7_discovery "github.com/keets2012/Micro-Go-Pracrise/ch7-discovery"
+	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/diy"
 	"github.com/satori/go.uuid"
 	"log"
 	"net/http"

@@ -2,8 +2,8 @@ package diy
 
 import (
 	"bytes"
-	"ch7-discovery"
 	"encoding/json"
+	ch7_discovery "github.com/keets2012/Micro-Go-Pracrise/ch7-discovery"
 	"log"
 	"net/http"
 	"strconv"

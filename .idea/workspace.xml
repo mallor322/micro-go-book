@@ -3,10 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="7c54925c-0994-42ea-bc4e-c427ef726174" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch11-security/authorization_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch11-security/authorization_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch11-security/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch11-security/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch9-resiliency/basic_service.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch9-resiliency/kit_consul_client.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch5-feature/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch5-feature/main/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch5-feature/main/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch7-discovery/diy/MyConsulClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch7-discovery/diy/MyConsulClient.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch7-discovery/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch7-discovery/go.sum" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch7-discovery/kit/KitConsulClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch7-discovery/kit/KitConsulClient.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch7-discovery/main/SayHelloService.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch7-discovery/main/SayHelloService.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,84 +36,48 @@
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ch9-resiliency/calculate_service.go">
+            <entry file="file://$PROJECT_DIR$/ch7-discovery/main/SayHelloService.go">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="391">
-                  <caret line="28" column="4" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
+                <state relative-caret-position="-2122">
+                  <caret line="5" column="17" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="17" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ch7-discovery/kit/KitConsulClient.go">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="814">
+                  <caret line="37" column="25" lean-forward="true" selection-start-line="37" selection-start-column="25" selection-end-line="37" selection-end-column="25" />
+                  <folding>
+                    <element signature="e#13#128#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ch7-discovery/diy/MyConsulClient.go">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1144">
+                  <caret line="52" column="26" lean-forward="true" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="26" />
+                  <folding>
+                    <element signature="e#13#96#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ch11-security/token_grant.go">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="66">
+                  <caret line="3" selection-start-line="3" selection-end-line="3" />
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/ch11-security/authorization_service.go">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-747">
-                  <caret line="16" column="118" selection-start-line="16" selection-start-column="118" selection-end-line="16" selection-end-column="118" />
-                  <folding>
-                    <element signature="e#23#104#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ch11-security/oauth_http_context.go">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="162">
-                  <caret line="20" column="27" selection-start-line="20" selection-start-column="5" selection-end-line="20" selection-end-column="27" />
-                  <folding>
-                    <element signature="e#14#84#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file:///usr/local/go/src/net/http/server.go">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="4048">
-                  <caret line="2438" column="5" selection-start-line="2438" selection-start-column="5" selection-end-line="2438" selection-end-column="5" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file:///usr/local/go/src/context/context.go">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="240">
-                  <caret line="150" column="4" selection-start-line="150" selection-start-column="4" selection-end-line="150" selection-end-column="4" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ch9-resiliency/hystrix_handler.go">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="142">
-                  <caret line="38" column="37" selection-start-line="38" selection-start-column="37" selection-end-line="38" selection-end-column="37" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ch9-resiliency/gateway.go">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="217">
-                  <caret line="40" column="23" selection-start-line="40" selection-start-column="23" selection-end-line="40" selection-end-column="23" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ch9-resiliency/hystrix-example.go">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="264">
-                  <caret line="17" column="20" selection-start-line="17" selection-start-column="20" selection-end-line="17" selection-end-column="20" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/ch11-security/token.go">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="286">
@@ -120,12 +87,41 @@
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ch11-security/client.go">
+            <entry file="file://$PROJECT_DIR$/ch7-discovery/ConsulClient.go">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="594">
-                  <caret line="27" column="5" selection-start-line="27" selection-start-column="5" selection-end-line="27" selection-end-column="5" />
+                <state relative-caret-position="-824">
+                  <folding>
+                    <element signature="e#23#47#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ch5-feature/main/hello.go">
+              <provider selected="true" editor-type-id="text-editor" />
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ch5-feature/main/main.go">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="132">
+                  <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+                  <folding>
+                    <element signature="e#14#54#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ch5-feature/concurrency/first_concurrency.go">
+              <provider selected="true" editor-type-id="text-editor" />
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ch5-feature/compute/add.go">
+              <provider selected="true" editor-type-id="text-editor" />
             </entry>
           </file>
         </leaf>
@@ -193,9 +189,7 @@
         <option value="$PROJECT_DIR$/gateway/register/main.go" />
         <option value="$PROJECT_DIR$/ch5-feature/concurrency/channel.go" />
         <option value="$PROJECT_DIR$/ch9-resiliency/SayHelloService.go" />
-        <option value="$PROJECT_DIR$/ch7-discovery/kit/KitConsulClient.go" />
         <option value="$PROJECT_DIR$/ch7-discovery/main/ConsulClient.go" />
-        <option value="$PROJECT_DIR$/ch7-discovery/main/SayHelloService.go" />
         <option value="$PROJECT_DIR$/ch9-resiliency/go.mod" />
         <option value="$PROJECT_DIR$/ch9-resiliency/consul_client.go" />
         <option value="$PROJECT_DIR$/ch9-resiliency/Kit_consul_client.go" />
@@ -216,6 +210,10 @@
         <option value="$PROJECT_DIR$/ch9-resiliency/OAuthContextResponseWriter.go" />
         <option value="$PROJECT_DIR$/ch11-security/oauth_http_context.go" />
         <option value="$PROJECT_DIR$/ch11-security/authorization_service.go" />
+        <option value="$PROJECT_DIR$/ch5-feature/main/main.go" />
+        <option value="$PROJECT_DIR$/ch7-discovery/main/SayHelloService.go" />
+        <option value="$PROJECT_DIR$/ch7-discovery/kit/KitConsulClient.go" />
+        <option value="$PROJECT_DIR$/ch7-discovery/diy/MyConsulClient.go" />
       </list>
     </option>
   </component>
@@ -249,7 +247,64 @@
             <path>
               <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
               <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch3-basic" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch4-web" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch5-feature" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch5-feature" type="462c0819:PsiDirectoryNode" />
+              <item name="compute" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch5-feature" type="462c0819:PsiDirectoryNode" />
+              <item name="concurrency" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch5-feature" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch5-feature" type="462c0819:PsiDirectoryNode" />
+              <item name="reflection" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
               <item name="ch7-discovery" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch7-discovery" type="462c0819:PsiDirectoryNode" />
+              <item name="diy" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch7-discovery" type="462c0819:PsiDirectoryNode" />
+              <item name="kit" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch7-discovery" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
@@ -264,31 +319,6 @@
             <path>
               <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Go Modules &lt;github.com/keets2012/Micro-Go-Pracrise&gt;" type="20ee2d1f:SyntheticLibraryElementNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Go Modules &lt;github.com/keets2012/Micro-Go-Pracrise&gt;" type="20ee2d1f:SyntheticLibraryElementNode" />
-              <item name="kit@v0.9.0" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Go Modules &lt;github.com/keets2012/Micro-Go-Pracrise&gt;" type="20ee2d1f:SyntheticLibraryElementNode" />
-              <item name="kit@v0.9.0" type="462c0819:PsiDirectoryNode" />
-              <item name="circuitbreaker" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Go Modules &lt;github.com/keets2012/Micro-Go-Pracrise&gt;" type="20ee2d1f:SyntheticLibraryElementNode" />
-              <item name="kit@v0.9.0" type="462c0819:PsiDirectoryNode" />
-              <item name="endpoint" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
@@ -399,9 +429,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="26" y="23" width="1280" height="777" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18739903" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.30936995" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -414,7 +443,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.61608094" visible="true" weight="0.33138686" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" sideWeight="0.61608094" visible="true" weight="0.33138686" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.38391906" side_tool="true" weight="0.53367877" />
       <window_info anchor="bottom" id="Messages" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -438,70 +467,6 @@
     <proxy>https://goproxy.io</proxy>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/hashicorp/consul/api@v1.1.0/health.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3872">
-          <caret line="181" column="21" selection-start-line="181" selection-start-column="21" selection-end-line="181" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/hashicorp/consul/api@v1.1.0/agent.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" column="7" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
-          <folding>
-            <element signature="e#13#77#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch7-discovery/kit/KitConsulClient.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1914">
-          <caret line="93" column="35" selection-start-line="93" selection-start-column="35" selection-end-line="93" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch7-discovery/diy/MyConsulClient.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2750">
-          <caret line="132" selection-start-line="132" selection-end-line="132" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch9-resiliency/go.sum">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch3-basic/Flag.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch3-basic/FunctionImplementor.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/go-kit/kit@v0.9.0/log/log.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="9" column="5" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gateway/gateway/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="618">
-          <caret line="63" column="36" selection-start-line="63" selection-start-column="36" selection-end-line="63" selection-end-column="36" />
-          <folding>
-            <element signature="e#14#190#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/go/src/builtin/builtin.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5742">
-          <caret line="261" column="4" selection-start-line="261" selection-start-column="4" selection-end-line="261" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/go/src/fmt/print.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5588">
@@ -513,20 +478,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="660">
           <caret line="33" column="25" selection-start-line="33" selection-start-column="4" selection-end-line="33" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch5-feature/concurrency/channel.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1804">
-          <caret line="85" column="9" selection-start-line="76" selection-start-column="8" selection-end-line="85" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch7-discovery/main/SayHelloService.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -681,13 +632,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ch11-security/token_grant.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ch9-resiliency/use_calculate_service.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-692">
@@ -751,13 +695,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ch11-security/token.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ch11-security/oauth_http_context.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
@@ -770,11 +707,95 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ch11-security/authorization_service.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-747">
-          <caret line="16" column="118" selection-start-line="16" selection-start-column="118" selection-end-line="16" selection-end-column="118" />
+        <state relative-caret-position="-807">
+          <caret line="25" column="66" selection-start-line="25" selection-start-column="54" selection-end-line="25" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/gopherjs/gopherjs@v0.0.0-20181017120253-0766667cb4d1/compiler/natives/src/sync/sync.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1511" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch5-feature/go.mod">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch5-feature/reflection/reflection.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch5-feature/concurrency/channel.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="386">
+          <caret line="85" column="9" selection-start-line="76" selection-start-column="8" selection-end-line="85" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch5-feature/concurrency/first_concurrency.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch5-feature/compute/add.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch5-feature/main/hello.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch5-feature/main/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
           <folding>
-            <element signature="e#23#104#0" expanded="true" />
+            <element signature="e#14#54#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch7-discovery/ConsulClient.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-824">
+          <folding>
+            <element signature="e#23#47#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch7-discovery/main/SayHelloService.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2122">
+          <caret line="5" column="17" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch7-discovery/kit/KitConsulClient.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="814">
+          <caret line="37" column="25" lean-forward="true" selection-start-line="37" selection-start-column="25" selection-end-line="37" selection-end-column="25" />
+          <folding>
+            <element signature="e#13#128#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch7-discovery/diy/MyConsulClient.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1144">
+          <caret line="52" column="26" lean-forward="true" selection-start-line="52" selection-start-column="26" selection-end-line="52" selection-end-column="26" />
+          <folding>
+            <element signature="e#13#96#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch11-security/token_grant.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch11-security/token.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
         </state>
       </provider>
     </entry>

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ch5-feature/compute"
 	"fmt"
+	"github.com/keets2012/Micro-Go-Pracrise/ch5-feature/compute"
 )
 
 func main()  {
