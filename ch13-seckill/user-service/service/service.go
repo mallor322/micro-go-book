@@ -1,4 +1,9 @@
-package main
+package service
+
+import (
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/model"
+	"log"
+)
 
 // Service Define a service interface
 type Service interface {
@@ -14,7 +19,13 @@ type UserService struct {
 
 // Add implement check method
 func (s UserService) check(username, password string) bool {
-	return true
+	userEntity := model.NewUserModel()
+	res, err := userEntity.CheckUser(username, password)
+	if err != nil {
+		log.Printf("ProductEntity.CreateProduct, err : %v", err)
+		return false
+	}
+	return res
 }
 
 // HealthCheck implement Service method
