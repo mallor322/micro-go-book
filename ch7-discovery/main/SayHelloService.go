@@ -17,73 +17,70 @@ import (
 
 var server *http.Server
 
-
-func sayHello(writer http.ResponseWriter, reader *http.Request)  {
+func sayHello(writer http.ResponseWriter, reader *http.Request) {
 	_, err := fmt.Fprintln(writer, "Hello World!")
-	if err != nil{
+	if err != nil {
 		logger.Println(err)
 	}
 }
 
-func startHttpListener(port int)  {
+func startHttpListener(port int) {
 	server = &http.Server{
 		// GetLocalIpAddress用于获取本地IP，可以手动写入
-		Addr: ch7_discovery.GetLocalIpAddress() + ":" +strconv.Itoa(port),
+		Addr: ch7_discovery.GetLocalIpAddress() + ":" + strconv.Itoa(port),
 	}
 	http.HandleFunc("/health", checkHealth)
 	http.HandleFunc("/sayHello", sayHello)
 	http.HandleFunc("/discovery", discoveryService)
 	err := server.ListenAndServe()
-	if err != nil{
+	if err != nil {
 		logger.Println("Service is going to close...")
 	}
 }
 
-func checkHealth(writer http.ResponseWriter, reader *http.Request)  {
+func checkHealth(writer http.ResponseWriter, reader *http.Request) {
 	logger.Println("Health check starts!")
 	_, err := fmt.Fprintln(writer, "Server is OK!")
-	if err != nil{
+	if err != nil {
 		logger.Println(err)
 	}
 }
 
-func discoveryService(writer http.ResponseWriter, reader *http.Request)  {
+func discoveryService(writer http.ResponseWriter, reader *http.Request) {
 	serviceName := reader.URL.Query().Get("serviceName")
 	instances := consulClient.DiscoverServices(serviceName)
 	writer.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(writer).Encode(instances)
-	if err != nil{
+	if err != nil {
 		logger.Println(err)
 	}
 }
 
-
-func closeServer( waitGroup *sync.WaitGroup, exit <-chan os.Signal, instanceId string, logger *log.Logger)  {
+func closeServer(waitGroup *sync.WaitGroup, exit <-chan os.Signal, instanceId string, logger *log.Logger) {
 	// 等待关闭信息通知
-	<- exit
+	<-exit
 	// 主线程等待
 	waitGroup.Add(1)
 	// 服务注销
 	consulClient.DeRegister(instanceId, logger)
 	// 关闭 http 服务器
 	err := server.Shutdown(nil)
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 	}
 	// 主线程可继续执行
 	waitGroup.Done()
 }
 
-
 var consulClient ch7_discovery.ConsulClient
 var logger *log.Logger
 
-func main()  {
+func main() {
 
 	// 1.实例化一个 Consul 客户端，此处实例化了原生态实现版本
 	consulClient = diy.New("127.0.0.1", 8500)
 	// 实例失败，停止服务
-	if consulClient == nil{
+	if consulClient == nil {
 		panic(0)
 	}
 

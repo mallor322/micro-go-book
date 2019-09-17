@@ -9,30 +9,30 @@ import (
 )
 
 type ConsulClient struct {
-	Host string // Consul Host
-	Port int 	// Consul Port
+	Host   string // Consul Host
+	Port   int    // Consul Port
 	client consul.Client
 }
 
-func New(consulHost string, consulPort int) *ConsulClient{
+func New(consulHost string, consulPort int) *ConsulClient {
 	// 通过 Consul Host 和 Consul Port 创建一个 consul.Client
 	consulConfig := api.DefaultConfig()
-	consulConfig.Address = consulHost + ":" +  strconv.Itoa(consulPort)
+	consulConfig.Address = consulHost + ":" + strconv.Itoa(consulPort)
 	apiClient, err := api.NewClient(consulConfig)
-	if err != nil{
+	if err != nil {
 		return nil
 	}
 
 	client := consul.NewClient(apiClient)
 
 	return &ConsulClient{
-		Host:consulHost,
-		Port:consulPort,
-		client:client,
+		Host:   consulHost,
+		Port:   consulPort,
+		client: client,
 	}
 }
 
-func (consulClient *ConsulClient)Register(serviceName, instanceId, healthCheckUrl string, instancePort int, meta map[string]string, logger *log.Logger) bool{
+func (consulClient *ConsulClient) Register(serviceName, instanceId, healthCheckUrl string, instancePort int, meta map[string]string, logger *log.Logger) bool {
 
 	// 获取服务实例 IP
 	instanceHost := ch7_discovery.GetLocalIpAddress()
@@ -43,18 +43,18 @@ func (consulClient *ConsulClient)Register(serviceName, instanceId, healthCheckUr
 		Name:    serviceName,
 		Address: instanceHost,
 		Port:    instancePort,
-		Meta: meta,
+		Meta:    meta,
 		Check: &api.AgentServiceCheck{
 			DeregisterCriticalServiceAfter: "30s",
 			HTTP:                           "http://" + instanceHost + ":" + strconv.Itoa(instancePort) + healthCheckUrl,
-			Interval:						"15s",
+			Interval:                       "15s",
 		},
 	}
 
 	// 2. 发送服务注册到 Consul 中
 	err := consulClient.client.Register(serviceRegistration)
 
-	if err != nil{
+	if err != nil {
 		log.Println("Register Service Error!")
 		return false
 	}
@@ -66,12 +66,12 @@ func (consulClient *ConsulClient) DeRegister(instanceId string, logger *log.Logg
 
 	// 构建包含服务实例 ID 的元数据结构体
 	serviceRegistration := &api.AgentServiceRegistration{
-		ID:      instanceId,
+		ID: instanceId,
 	}
 	// 发送服务注销请求
 	err := consulClient.client.Deregister(serviceRegistration)
 
-	if err != nil{
+	if err != nil {
 		logger.Println("Deregister Service Error!")
 		return false
 	}
@@ -84,7 +84,7 @@ func (consulClient *ConsulClient) DiscoverServices(serviceName string) []interfa
 
 	// 根据服务名请求服务实例列表，可以添加额外的筛选参数
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
-	if err != nil{
+	if err != nil {
 		log.Println("Discover Service Error!")
 		return nil
 	}
