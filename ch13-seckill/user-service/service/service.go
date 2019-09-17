@@ -7,7 +7,7 @@ import (
 
 // Service Define a service interface
 type Service interface {
-	check(username, password string) bool
+	Check(username, password string) bool
 
 	// HealthCheck check service health status
 	HealthCheck() bool
@@ -18,7 +18,7 @@ type UserService struct {
 }
 
 // Add implement check method
-func (s UserService) check(username, password string) bool {
+func (s UserService) Check(username, password string) bool {
 	userEntity := model.NewUserModel()
 	res, err := userEntity.CheckUser(username, password)
 	if err != nil {

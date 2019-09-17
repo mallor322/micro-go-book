@@ -24,7 +24,7 @@ func MakeHttpHandler(ctx context.Context, endpoints UserEndpoints, logger log.Lo
 		kithttp.ServerErrorEncoder(kithttp.DefaultErrorEncoder),
 	}
 
-	r.Methods("POST").Path("/check/{username}/{password}").Handler(kithttp.NewServer(
+	r.Methods("POST").Path("/check/valid").Handler(kithttp.NewServer(
 		endpoints.UserEndpoint,
 		decodeUserRequest,
 		encodeUserResponse,
@@ -46,25 +46,11 @@ func MakeHttpHandler(ctx context.Context, endpoints UserEndpoints, logger log.Lo
 
 // decodeArithmeticRequest decode request params to struct
 func decodeUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	vars := mux.Vars(r)
-
-	pa, ok := vars["username"]
-	if !ok {
-		return nil, ErrorBadRequest
+	var request UserRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
 	}
-
-	pb, ok := vars["password"]
-	if !ok {
-		return nil, ErrorBadRequest
-	}
-
-	username := pa
-	password := pb
-
-	return UserRequest{
-		Username: username,
-		Password: password,
-	}, nil
+	return request, nil
 }
 
 // encodeArithmeticResponse encode response to return
