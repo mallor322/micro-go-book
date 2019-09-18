@@ -6,15 +6,22 @@ import (
 )
 
 type TokenGranter interface {
-	grant(grantType string, clientId string, reader *http.Request) (*OAuth2Token, error)
+	grant(grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error)
 }
+
 
 
 type ComposeTokenGranter struct {
 	tokenGrantDict map[string] TokenGranter
 }
 
-func (tokenGranter *ComposeTokenGranter) grant(grantType string, clientId string, reader *http.Request) (*OAuth2Token, error) {
+func NewComposeTokenGranter(tokenGrantDict map[string] TokenGranter) *ComposeTokenGranter {
+	return &ComposeTokenGranter{
+		tokenGrantDict:tokenGrantDict,
+	}
+}
+
+func (tokenGranter *ComposeTokenGranter) grant(grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
 
 	dispatchGranter := tokenGranter.tokenGrantDict[grantType]
 
@@ -22,22 +29,23 @@ func (tokenGranter *ComposeTokenGranter) grant(grantType string, clientId string
 		return nil, errors.New("Grant Type " + grantType + " is not supported")
 	}
 
-	return dispatchGranter.grant(grantType, reader)
+	return dispatchGranter.grant(grantType, client, reader)
 }
 
 type UsernamePasswordTokenGranter struct {
 	supportGrantType string
 	userDetailsService UserDetailsService
+	tokenService *TokenService
 
 }
 
-func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, clientId string, reader *http.Request) (*OAuth2Token, error) {
+func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
 	if grantType != tokenGranter.supportGrantType{
 		return nil, errors.New("Target Grant Type is " + grantType + ", but current grant type is " + tokenGranter.supportGrantType)
 	}
 
-	username := reader.Form.Get("username")
-	password := reader.Form.Get("password")
+	username := reader.FormValue("username")
+	password := reader.FormValue("password")
 
 	if username == "" || password == ""{
 		return nil, errors.New( "Please provide correct user information")
@@ -52,8 +60,11 @@ func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client
 		return nil, errors.New( "Username or password is not corrent")
 	}
 
+	return tokenGranter.tokenService.CreateAccessToken(&OAuth2Details{
+		Client:client,
+		User:userDetails,
 
-
+	})
 
 }
 
