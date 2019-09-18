@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 )
 
 // CalculateEndpoint define endpoint
@@ -29,7 +30,7 @@ type UserResponse struct {
 }
 
 //  make endpoint
-func MakeUserEndpoint(svc Service) endpoint.Endpoint {
+func MakeUserEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(UserRequest)
 
@@ -42,7 +43,7 @@ func MakeUserEndpoint(svc Service) endpoint.Endpoint {
 		username = req.Username
 		password = req.Password
 
-		svc.check(username, password)
+		svc.Check(username, password)
 
 		return UserResponse{Result: res, Error: calError}, nil
 	}
@@ -57,7 +58,7 @@ type HealthResponse struct {
 }
 
 // MakeHealthCheckEndpoint 创建健康检查Endpoint
-func MakeHealthCheckEndpoint(svc Service) endpoint.Endpoint {
+func MakeHealthCheckEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		status := svc.HealthCheck()
 		return HealthResponse{status}, nil
