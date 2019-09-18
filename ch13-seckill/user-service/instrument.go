@@ -6,6 +6,7 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/metrics"
 	"github.com/juju/ratelimit"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"golang.org/x/time/rate"
 	"time"
 )
@@ -39,14 +40,14 @@ func NewTokenBucketLimitterWithBuildIn(bkt *rate.Limiter) endpoint.Middleware {
 // metricMiddleware 定义监控中间件，嵌入Service
 // 新增监控指标项：requestCount和requestLatency
 type metricMiddleware struct {
-	Service
+	service.Service
 	requestCount   metrics.Counter
 	requestLatency metrics.Histogram
 }
 
 // Metrics 封装监控方法
-func Metrics(requestCount metrics.Counter, requestLatency metrics.Histogram) ServiceMiddleware {
-	return func(next Service) Service {
+func Metrics(requestCount metrics.Counter, requestLatency metrics.Histogram) service.ServiceMiddleware {
+	return func(next service.Service) service.Service {
 		return metricMiddleware{
 			next,
 			requestCount,
@@ -62,7 +63,7 @@ func (mw metricMiddleware) Check(a, b string) (ret bool) {
 		mw.requestLatency.With(lvs...).Observe(time.Since(beign).Seconds())
 	}(time.Now())
 
-	ret = mw.Service.check(a, b)
+	ret = mw.Service.Check(a, b)
 	return ret
 }
 

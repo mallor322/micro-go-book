@@ -2,19 +2,20 @@ package main
 
 import (
 	"github.com/go-kit/kit/log"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"time"
 )
 
 // loggingMiddleware Make a new type
 // that contains Service interface and logger instance
 type loggingMiddleware struct {
-	Service
+	service.Service
 	logger log.Logger
 }
 
 // LoggingMiddleware make logging middleware
-func LoggingMiddleware(logger log.Logger) ServiceMiddleware {
-	return func(next Service) Service {
+func LoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
+	return func(next service.Service) service.Service {
 		return loggingMiddleware{next, logger}
 	}
 }
@@ -31,7 +32,7 @@ func (mw loggingMiddleware) Check(a, b string) (ret bool) {
 		)
 	}(time.Now())
 
-	ret = mw.Service.check(a, b)
+	ret = mw.Service.Check(a, b)
 	return ret
 }
 

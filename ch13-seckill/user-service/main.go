@@ -7,6 +7,8 @@ import (
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"net/http"
 	"os"
@@ -17,10 +19,15 @@ import (
 func main() {
 
 	var (
-		consulHost  = flag.String("consul.host", "", "consul ip address")
-		consulPort  = flag.String("consul.port", "", "consul port")
-		serviceHost = flag.String("service.host", "", "service ip address")
-		servicePort = flag.String("service.port", "", "service port")
+		consulHost  = flag.String("consul.host", "106.15.233.99", "consul ip address")
+		consulPort  = flag.String("consul.port", "8500", "consul port")
+		serviceHost = flag.String("service.host", "localhost", "service ip address")
+		servicePort = flag.String("service.port", "9010", "service port")
+		mysqlHost   = flag.String("mysql.host", "106.15.233.99", "consul ip address")
+		mysqlPort   = flag.String("mysql.port", "3396", "consul port")
+		mysqlUser   = flag.String("mysql.user", "root", "service ip address")
+		pwdMysql    = flag.String("mysql.pwd", "root_test", "service port")
+		dbMysql     = flag.String("mysql.db", "user", "service port")
 	)
 
 	flag.Parse()
@@ -50,8 +57,8 @@ func main() {
 		Help:      "Total duration of requests in microseconds.",
 	}, fieldKeys)
 
-	var svc Service
-	svc = UserService{}
+	var svc service.Service
+	svc = service.UserService{}
 
 	// add logging middleware
 	svc = LoggingMiddleware(logger)(svc)
@@ -71,10 +78,11 @@ func main() {
 	r := MakeHttpHandler(ctx, endpts, logger)
 
 	//创建注册对象
-	registar := register.Register(*consulHost, *consulPort, *serviceHost, *servicePort, logger)
+	registar := register.Register(*consulHost, *consulPort, *serviceHost, *servicePort, "user_service", logger)
 
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
+		setup.InitMysql(*mysqlHost, *mysqlPort, *mysqlUser, *pwdMysql, *dbMysql)
 		//启动前执行注册
 		registar.Register()
 		handler := r

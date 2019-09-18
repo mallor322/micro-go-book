@@ -1,4 +1,4 @@
-package main
+package common
 
 import (
 	"github.com/go-kit/kit/log"
@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func Register(consulHost, consulPort, svcHost, svcPort string, logger log.Logger) (registar sd.Registrar) {
+func Register(consulHost, consulPort, svcHost, svcPort string, svcName string, logger log.Logger) (registar sd.Registrar) {
 
 	// 创建Consul客户端连接
 	var client consul.Client
@@ -38,11 +38,11 @@ func Register(consulHost, consulPort, svcHost, svcPort string, logger log.Logger
 
 	//设置微服务Consul的注册信息
 	reg := api.AgentServiceRegistration{
-		ID:      "arithmetic" + uuid.New(),
-		Name:    "arithmetic",
+		ID:      svcName + uuid.New(),
+		Name:    svcName,
 		Address: svcHost,
 		Port:    port,
-		Tags:    []string{"arithmetic", "aoho"},
+		Tags:    []string{svcName, "aoho"},
 		Check:   &check,
 	}
 
