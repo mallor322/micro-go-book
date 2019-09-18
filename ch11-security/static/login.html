@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+
+<div id="app">
+
+    <el-input v-model="username" placeholder="用户名"></el-input>
+    <el-input v-model="password" placeholder="密码" show-password></el-input>
+
+    <el-button v-on:click="login">Login</el-button>
+</div>
+
+</body>
+
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.bootcss.com/qs/6.5.2/qs.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            username: "",
+            password: "",
+            visible : false,
+            cookie: ""
+        },
+        methods:{
+            login : function () {
+                const data = {
+                    "username": this.username,
+                    "password": this.password
+                };
+
+                const options = {
+                    method: 'POST',
+                    changeOrigin: true,
+                    headers: {'content-type': 'application/x-www-form-urlencoded'},
+                    data: Qs.stringify(data),
+                    url: "http://localhost:10098/login",
+                }
+
+                axios(options).then(function (response) {
+                    console.log("OK")
+                }).catch(function (err) {
+
+                })
+            }
+
+        }
+    })
+</script>
+</html>

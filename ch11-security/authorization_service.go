@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"github.com/keets2012/Micro-Go-Pracrise/basic"
 	"net/http"
 	"strconv"
@@ -14,13 +15,33 @@ func startAuthorizationHttpListener(host string, port int)  {
 	}
 	http.HandleFunc("/health", basic.CheckHealth)
 	http.HandleFunc("/discovery", basic.DiscoveryService)
+	http.HandleFunc("/login", login)
 	http.Handle("/oauth/token", OAuthContextMiddleware(clientAuthorizationMiddleware(http.HandlerFunc(getOAuthToken))))
+	http.Handle("/oauth/check_token", OAuthContextMiddleware(clientAuthorizationMiddleware(http.HandlerFunc(checkToken))))
 	err := basic.Server.ListenAndServe()
 	if err != nil{
 		basic.Logger.Println("Service is going to close...")
 	}
 }
 
+func login(writer http.ResponseWriter, reader *http.Request)  {
+	username := reader.FormValue("username")
+	password := reader.FormValue("password")
+
+	if username == "" || password == ""{
+		writer.WriteHeader(403)
+	}
+
+	userDetails, err := userDetailsService.GetUserDetailByUsername(username)
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if err == nil{
+		writer.Write([]byte(strconv.Itoa(userDetails.UserId)))
+	}else {
+		writer.WriteHeader(403)
+	}
+
+}
 
 
 func clientAuthorizationMiddleware(next http.Handler) http.Handler{
@@ -30,7 +51,6 @@ func clientAuthorizationMiddleware(next http.Handler) http.Handler{
 
 		// 对客户端信息进行校验
 		// clientId:clientSecret Base64加密
-
 		authorization := r.Header.Get("Authorization")
 
 		if authorization == ""{
@@ -59,30 +79,64 @@ func clientAuthorizationMiddleware(next http.Handler) http.Handler{
 			http.Error(w, "Please provide correct client information", http.StatusForbidden)
 
 		}
+		w.(OAuthContextResponseWriter).Set("client", clientDetails)
 		next.ServeHTTP(w, r)
-
 	})
-	
 }
-
 
 func getOAuthToken(writer http.ResponseWriter, reader *http.Request)  {
 
-	return
+	clientDetails := writer.(OAuthContextResponseWriter).Value("client")
 
-	
+	grantType := reader.URL.Query().Get("grant_type")
+
+	if grantType == ""{
+		writer.Write([]byte("Please Input grant_type"))
+		return
+	}
+
+	oauthToken, err := tokenGrant.grant(grantType, clientDetails.(*ClientDetails), reader)
+
+	if err == nil{
+		writer.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(writer).Encode(oauthToken)
+	}else {
+		writer.Write([]byte(err.Error()))
+	}
+
+}
+
+
+func checkToken(writer http.ResponseWriter, reader *http.Request) {
+	 tokenValue := reader.URL.Query().Get("token")
+
+	 if tokenValue == ""{
+		 writer.Write([]byte("Please Input token"))
+		 return
+	 }
+
+	 oauth2Details, err := tokenService.GetOAuth2DetailsByAccessToken(tokenValue)
+
+	 if err == nil{
+		 writer.Header().Set("Content-Type", "application/json")
+		 json.NewEncoder(writer).Encode(oauth2Details)
+	 }else {
+		 writer.Write([]byte(err.Error()))
+	 }
 }
 
 
 
 var clientDetailsService ClientDetailService
 var userDetailsService UserDetailsService
+var tokenGrant TokenGranter
+var tokenService *TokenService
 
 
 func main()  {
 	clientDetailsService = NewInMemoryClientDetailService([] *ClientDetails{&ClientDetails{
 		"clientId",
-			"clientSercet",
+			"clientSecret",
 			1800,
 			18000,
 			"http://127.0.0.1",
@@ -93,5 +147,23 @@ func main()  {
 		Password:"123456",
 		UserId:1,
 	}})
-	basic.StartService("Authorization", "127.0.0.1", 10087, startAuthorizationHttpListener)
+	tokenService = &TokenService{
+		tokenStore:&JwtTokenStore{
+			jwtTokenEnhancer:&JwtTokenEnhancer{
+				secretKey: []byte("abcd1234!@#$"),
+			},
+		},
+		tokenEnhancer:&JwtTokenEnhancer{
+			secretKey: []byte("abcd1234!@#$"),
+		},
+	}
+	tokenGrantDict := make(map[string] TokenGranter)
+	tokenGrantDict["password"] = &UsernamePasswordTokenGranter{
+		supportGrantType:"password",
+		userDetailsService:userDetailsService,
+		tokenService:tokenService,
+	}
+	tokenGrant = NewComposeTokenGranter(tokenGrantDict)
+
+	basic.StartService("Authorization", "127.0.0.1", 10098, startAuthorizationHttpListener)
 }
