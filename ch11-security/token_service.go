@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"strconv"
 	"time"
@@ -41,8 +40,10 @@ func (tokenService *TokenService) CreateAccessToken(oauth2Details *OAuth2Details
 		}
 	}
 
+	// 生成新的访问令牌
 	accessToken, err := tokenService.createAccessToken(refreshToken, oauth2Details)
 	if err == nil{
+		// 保存新生成令牌
 		tokenService.tokenStore.StoreAccessToken(accessToken, oauth2Details)
 		tokenService.tokenStore.StoreRefreshToken(refreshToken, oauth2Details)
 	}
@@ -55,8 +56,6 @@ func (tokenService *TokenService) createAccessToken(refreshToken *OAuth2Token, o
 	validitySeconds := oauth2Details.Client.AccessTokenValiditySeconds
 	s, _ := time.ParseDuration(strconv.Itoa(validitySeconds) + "s")
 	expiredTime := time.Now().Add(s)
-	fmt.Println(expiredTime.Unix())
-	fmt.Println(time.Now().Unix())
 	accessToken := &OAuth2Token{
 		RefreshToken:refreshToken,
 		ExpiresTime:&expiredTime,

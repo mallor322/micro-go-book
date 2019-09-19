@@ -43,7 +43,7 @@ func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client
 	if grantType != tokenGranter.supportGrantType{
 		return nil, errors.New("Target Grant Type is " + grantType + ", but current grant type is " + tokenGranter.supportGrantType)
 	}
-
+	// 从请求体中获取用户名密码
 	username := reader.FormValue("username")
 	password := reader.FormValue("password")
 
@@ -51,6 +51,7 @@ func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client
 		return nil, errors.New( "Please provide correct user information")
 	}
 
+	// 验证用户名密码是否正确
 	userDetails, err := userDetailsService.GetUserDetailByUsername(username)
 
 	if err != nil{
@@ -60,6 +61,7 @@ func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client
 		return nil, errors.New( "Username or password is not corrent")
 	}
 
+	// 根据用户信息和客户端信息生成访问令牌
 	return tokenGranter.tokenService.CreateAccessToken(&OAuth2Details{
 		Client:client,
 		User:userDetails,

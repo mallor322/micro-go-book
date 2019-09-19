@@ -16,8 +16,10 @@ func startAuthorizationHttpListener(host string, port int)  {
 	http.HandleFunc("/health", basic.CheckHealth)
 	http.HandleFunc("/discovery", basic.DiscoveryService)
 	http.HandleFunc("/login", login)
+	http.HandleFunc("/oauth/authorize", authorize)
 	http.Handle("/oauth/token", OAuthContextMiddleware(clientAuthorizationMiddleware(http.HandlerFunc(getOAuthToken))))
 	http.Handle("/oauth/check_token", OAuthContextMiddleware(clientAuthorizationMiddleware(http.HandlerFunc(checkToken))))
+
 	err := basic.Server.ListenAndServe()
 	if err != nil{
 		basic.Logger.Println("Service is going to close...")
@@ -34,6 +36,9 @@ func login(writer http.ResponseWriter, reader *http.Request)  {
 
 	userDetails, err := userDetailsService.GetUserDetailByUsername(username)
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Headers", "user-cookie")
+
+
 
 	if err == nil{
 		writer.Write([]byte(strconv.Itoa(userDetails.UserId)))
@@ -41,6 +46,11 @@ func login(writer http.ResponseWriter, reader *http.Request)  {
 		writer.WriteHeader(403)
 	}
 
+}
+
+func authorize(writer http.ResponseWriter, reader *http.Request)  {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Write([]byte("www.baidu.com"))
 }
 
 
