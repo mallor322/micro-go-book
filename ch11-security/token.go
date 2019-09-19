@@ -31,9 +31,9 @@ func (oauth2Token *OAuth2Token) IsExpired() bool  {
 }
 
 type TokenEnhancer interface {
-
+	// 组装 Token 信息
 	Enhance(oauth2Token *OAuth2Token, oauth2Details *OAuth2Details) (*OAuth2Token, error)
-
+	// 从 Token 中还原信息
 	Extract(tokenValue string) (*OAuth2Token, *OAuth2Details, error)
 
 }
@@ -99,12 +99,13 @@ func (enhancer *JwtTokenEnhancer) sign(oauth2Token *OAuth2Token, oauth2Details *
 		claims.RefreshToken = *oauth2Token.RefreshToken
 	}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenValue, err := token.SignedString(enhancer.secretKey)
 
 	if err == nil{
 		oauth2Token.TokenValue = tokenValue
+		oauth2Token.TokenType = "jwt"
 		return oauth2Token, nil;
 
 	}

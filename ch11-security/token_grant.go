@@ -52,7 +52,7 @@ func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client
 	}
 
 	// 验证用户名密码是否正确
-	userDetails, err := userDetailsService.GetUserDetailByUsername(username)
+	userDetails, err := tokenGranter.userDetailsService.GetUserDetailByUsername(username)
 
 	if err != nil{
 		return nil, errors.New( "Username "+ username +" is not exist")}
@@ -67,6 +67,28 @@ func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client
 		User:userDetails,
 
 	})
+
+}
+
+
+type RefreshTokenGranter struct {
+	supportGrantType string
+	tokenService *TokenService
+
+}
+
+func (tokenGranter *RefreshTokenGranter) grant(grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
+	if grantType != tokenGranter.supportGrantType{
+		return nil, errors.New("Target Grant Type is " + grantType + ", but current grant type is " + tokenGranter.supportGrantType)
+	}
+	// 从请求中获取刷新令牌
+	refreshTokenValue := reader.URL.Query().Get("refresh_token")
+
+	if refreshTokenValue == ""{
+		return nil, errors.New("Please input Refresh Token")
+	}
+
+	return tokenGranter.tokenService.RefreshAccessToken(refreshTokenValue)
 
 }
 
