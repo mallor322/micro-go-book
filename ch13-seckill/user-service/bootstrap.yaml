@@ -11,6 +11,6 @@ discover:
   instanceId: user-service
 
 config:
-  id: config-server
+  id: config-service
   profile: "dev"
   label: "master"
