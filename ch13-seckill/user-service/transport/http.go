@@ -1,4 +1,4 @@
-package main
+package transport
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"github.com/go-kit/kit/log"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
@@ -16,7 +17,7 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints UserEndpoints, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints endpts.UserEndpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 
 	options := []kithttp.ServerOption{
@@ -46,7 +47,7 @@ func MakeHttpHandler(ctx context.Context, endpoints UserEndpoints, logger log.Lo
 
 // decodeArithmeticRequest decode request params to struct
 func decodeUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request UserRequest
+	var request endpts.UserRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
@@ -61,5 +62,5 @@ func encodeUserResponse(ctx context.Context, w http.ResponseWriter, response int
 
 // decodeHealthCheckRequest decode request
 func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	return HealthRequest{}, nil
+	return endpts.HealthRequest{}, nil
 }

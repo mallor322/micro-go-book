@@ -22,7 +22,7 @@ func (s UserService) Check(username, password string) bool {
 	userEntity := model.NewUserModel()
 	res, err := userEntity.CheckUser(username, password)
 	if err != nil {
-		log.Printf("ProductEntity.CreateProduct, err : %v", err)
+		log.Printf("UserEntity.CreateUser, err : %v", err)
 		return false
 	}
 	return res
