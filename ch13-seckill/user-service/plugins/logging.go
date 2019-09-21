@@ -1,4 +1,4 @@
-package main
+package plugins
 
 import (
 	"context"
@@ -24,7 +24,7 @@ func LoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
 func (mw loggingMiddleware) Check(ctx context.Context, a, b string) (ret bool, err error) {
 
 	defer func(begin time.Time) {
-		mw.logger.Log(
+		_ = mw.logger.Log(
 			"function", "Check",
 			"username", a,
 			"pwd", b,
@@ -39,7 +39,7 @@ func (mw loggingMiddleware) Check(ctx context.Context, a, b string) (ret bool, e
 
 func (mw loggingMiddleware) HealthCheck() (result bool) {
 	defer func(begin time.Time) {
-		mw.logger.Log(
+		_ = mw.logger.Log(
 			"function", "HealthChcek",
 			"result", result,
 			"took", time.Since(begin),

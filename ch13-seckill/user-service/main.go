@@ -9,6 +9,7 @@ import (
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
@@ -24,7 +25,7 @@ func main() {
 		consulHost  = flag.String("consul.host", "106.15.233.99", "consul ip address")
 		consulPort  = flag.String("consul.port", "8500", "consul port")
 		serviceHost = flag.String("service.host", "localhost", "service ip address")
-		servicePort = flag.String("service.port", "9010", "service port")
+		servicePort = flag.String("service.port", "9009", "service port")
 		mysqlHost   = flag.String("mysql.host", "106.15.233.99", "consul ip address")
 		mysqlPort   = flag.String("mysql.port", "3396", "consul port")
 		mysqlUser   = flag.String("mysql.user", "root", "service ip address")
@@ -63,8 +64,8 @@ func main() {
 	svc = service.UserService{}
 
 	// add logging middleware
-	svc = LoggingMiddleware(logger)(svc)
-	svc = Metrics(requestCount, requestLatency)(svc)
+	svc = plugins.LoggingMiddleware(logger)(svc)
+	svc = plugins.Metrics(requestCount, requestLatency)(svc)
 
 	userPoint := endpoint.MakeUserEndpoint(svc)
 
