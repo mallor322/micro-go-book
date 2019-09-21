@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/go-kit/kit/log"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"time"
@@ -20,7 +21,7 @@ func LoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
 	}
 }
 
-func (mw loggingMiddleware) Check(a, b string) (ret bool) {
+func (mw loggingMiddleware) Check(ctx context.Context, a, b string) (ret bool, err error) {
 
 	defer func(begin time.Time) {
 		mw.logger.Log(
@@ -32,8 +33,8 @@ func (mw loggingMiddleware) Check(a, b string) (ret bool) {
 		)
 	}(time.Now())
 
-	ret = mw.Service.Check(a, b)
-	return ret
+	ret, err = mw.Service.Check(ctx, a, b)
+	return ret, err
 }
 
 func (mw loggingMiddleware) HealthCheck() (result bool) {

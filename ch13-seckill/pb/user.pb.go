@@ -4,6 +4,7 @@
 package pb
 
 import (
+	context "context"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"math"
@@ -137,5 +138,5 @@ var fileDescriptor_116e343673f7ffaf = []byte{
 }
 
 type UserServiceServer interface {
-	Check(context.Context, *UserRequestRequest) (*UserResponse, error)
+	Check(context.Context, *UserRequest) (*UserResponse, error)
 }

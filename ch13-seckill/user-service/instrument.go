@@ -55,7 +55,7 @@ func Metrics(requestCount metrics.Counter, requestLatency metrics.Histogram) ser
 	}
 }
 
-func (mw metricMiddleware) Check(a, b string) (ret bool) {
+func (mw metricMiddleware) Check(ctx context.Context, a, b string) (ret bool, err error) {
 
 	defer func(beign time.Time) {
 		lvs := []string{"method", "Add"}
@@ -63,8 +63,8 @@ func (mw metricMiddleware) Check(a, b string) (ret bool) {
 		mw.requestLatency.With(lvs...).Observe(time.Since(beign).Seconds())
 	}(time.Now())
 
-	ret = mw.Service.Check(a, b)
-	return ret
+	ret, err = mw.Service.Check(ctx, a, b)
+	return ret, err
 }
 
 func (mw metricMiddleware) HealthCheck() (result bool) {

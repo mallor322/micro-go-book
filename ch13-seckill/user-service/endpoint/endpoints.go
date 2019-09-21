@@ -13,6 +13,20 @@ type UserEndpoints struct {
 	HealthCheckEndpoint endpoint.Endpoint
 }
 
+func (ue UserEndpoints) Check(ctx context.Context, username string, password string) (bool, error) {
+	//ctx := context.Background()
+	resp, err := ue.UserEndpoint(ctx, UserRequest{
+		Username: username,
+		Password: password,
+	})
+	response := resp.(UserResponse)
+	return response.Result, err
+}
+
+func (ue UserEndpoints) HealthCheck() bool {
+	return false
+}
+
 var (
 	ErrInvalidRequestType = errors.New("invalid username, password")
 )
@@ -43,7 +57,7 @@ func MakeUserEndpoint(svc service.Service) endpoint.Endpoint {
 		username = req.Username
 		password = req.Password
 
-		svc.Check(username, password)
+		svc.Check(ctx, username, password)
 
 		return UserResponse{Result: res, Error: calError}, nil
 	}

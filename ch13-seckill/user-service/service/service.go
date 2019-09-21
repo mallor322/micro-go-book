@@ -1,13 +1,14 @@
 package service
 
 import (
+	"context"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/model"
 	"log"
 )
 
 // Service Define a service interface
 type Service interface {
-	Check(username, password string) bool
+	Check(ctx context.Context, username, password string) (bool, error)
 
 	// HealthCheck check service health status
 	HealthCheck() bool
@@ -18,14 +19,14 @@ type UserService struct {
 }
 
 // Add implement check method
-func (s UserService) Check(username, password string) bool {
+func (s UserService) Check(ctx context.Context, username string, password string) (bool, error) {
 	userEntity := model.NewUserModel()
 	res, err := userEntity.CheckUser(username, password)
 	if err != nil {
 		log.Printf("UserEntity.CreateUser, err : %v", err)
-		return false
+		return false, err
 	}
-	return res
+	return res, nil
 }
 
 // HealthCheck implement Service method

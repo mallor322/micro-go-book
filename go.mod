@@ -34,6 +34,7 @@ require (
 	github.com/unknwon/com v1.0.1
 	go.etcd.io/etcd v3.3.15+incompatible
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4
+	google.golang.org/grpc v1.21.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )

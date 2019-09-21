@@ -8,7 +8,9 @@ import (
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"net/http"
 	"os"
@@ -64,18 +66,18 @@ func main() {
 	svc = LoggingMiddleware(logger)(svc)
 	svc = Metrics(requestCount, requestLatency)(svc)
 
-	endpoint := MakeUserEndpoint(svc)
+	userPoint := endpoint.MakeUserEndpoint(svc)
 
 	//创建健康检查的Endpoint
-	healthEndpoint := MakeHealthCheckEndpoint(svc)
+	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
 
-	endpts := UserEndpoints{
-		UserEndpoint:        endpoint,
+	endpts := endpoint.UserEndpoints{
+		UserEndpoint:        userPoint,
 		HealthCheckEndpoint: healthEndpoint,
 	}
 
 	//创建http.Handler
-	r := MakeHttpHandler(ctx, endpts, logger)
+	r := transport.MakeHttpHandler(ctx, endpts, logger)
 
 	//创建注册对象
 	registar := register.Register(*consulHost, *consulPort, *serviceHost, *servicePort, "user_service", logger)
