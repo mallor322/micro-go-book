@@ -7,14 +7,38 @@ import (
 )
 
 var (
-	Redis RedisConf
-	Etcd EtcdConf
-	SecKill SecKillConf
+	Redis              RedisConf
+	Etcd               EtcdConf
+	SecKill            SecKillConf
+	HttpConfig         HttpConf
+	DiscoverConfig     DiscoverConf
+	ConfigServerConfig ConfigServerConf
 )
 
 type EtcdConf struct {
 	EtcdConn          *clientv3.Client //链接
 	EtcdSecProductKey string           //商品键
+}
+
+//Http配置
+type HttpConf struct {
+	Host        string
+	Port        string
+	ServiceName string
+}
+
+//服务发现与注册配置
+type DiscoverConf struct {
+	Host       string
+	Port       string
+	InstanceId string
+}
+
+//配置中心
+type ConfigServerConf struct {
+	Id      string
+	Profile string
+	Label   string
 }
 
 //redis配置
@@ -28,19 +52,16 @@ type RedisConf struct {
 	IpBlackListQueue     string        //IP黑名单队列
 }
 
-
 type SecKillConf struct {
 	CookieSecretKey string
 
 	ReferWhiteList []string //白名单
-
 
 	AccessLimitConf AccessLimitConf
 
 	RWBlackLock                  sync.RWMutex
 	WriteProxy2LayerGoroutineNum int
 	ReadProxy2LayerGoroutineNum  int
-
 }
 
 //访问限制

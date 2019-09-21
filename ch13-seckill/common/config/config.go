@@ -19,7 +19,7 @@ const (
 	kAmqpURI       = "AmqpURI"
 )
 
-func init() {
+func init2() {
 	viper.AutomaticEnv()
 	initDefault()
 	go StartListener(viper.GetString(kAppName), viper.GetString(kAmqpURI), "springCloudBus")

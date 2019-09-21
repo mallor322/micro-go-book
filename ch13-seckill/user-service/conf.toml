@@ -1,0 +1,17 @@
+#title = "Http Toml"
+
+[service]
+host = "localhost"
+port = 16
+service_name = "user-service"
+
+
+[consul]
+host = "106.15.233.99"
+port = "8500"
+instance_id = "user-service"
+
+[config]
+id = "config-server"
+profile: "dev"
+label: "master"

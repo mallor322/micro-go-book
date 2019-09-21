@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
-	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
@@ -25,10 +26,10 @@ import (
 func main() {
 
 	var (
-		consulHost  = flag.String("consul.host", "106.15.233.99", "consul ip address")
-		consulPort  = flag.String("consul.port", "8500", "consul port")
-		serviceHost = flag.String("service.host", "localhost", "service ip address")
-		servicePort = flag.String("service.port", "9009", "service port")
+		consulHost  = flag.String("consul.host", conf.DiscoverConfig.Host, "consul ip address")
+		consulPort  = flag.String("consul.port", conf.DiscoverConfig.Port, "consul port")
+		serviceHost = flag.String("service.host", conf.HttpConfig.Host, "service ip address")
+		servicePort = flag.String("service.port", conf.HttpConfig.Port, "service port")
 		mysqlHost   = flag.String("mysql.host", "106.15.233.99", "consul ip address")
 		mysqlPort   = flag.String("mysql.port", "3396", "consul port")
 		mysqlUser   = flag.String("mysql.user", "root", "service ip address")

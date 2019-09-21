@@ -1,4 +1,4 @@
-package common
+package discover
 
 import (
 	"github.com/go-kit/kit/log"
