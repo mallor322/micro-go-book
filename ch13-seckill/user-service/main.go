@@ -8,11 +8,14 @@ import (
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"google.golang.org/grpc"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,6 +34,7 @@ func main() {
 		mysqlUser   = flag.String("mysql.user", "root", "service ip address")
 		pwdMysql    = flag.String("mysql.pwd", "root_test", "service port")
 		dbMysql     = flag.String("mysql.db", "user", "service port")
+		grpcAddr    = flag.String("grpc", ":9008", "gRPC listen address.")
 	)
 
 	flag.Parse()
@@ -82,7 +86,7 @@ func main() {
 
 	//创建注册对象
 	registar := register.Register(*consulHost, *consulPort, *serviceHost, *servicePort, "user_service", logger)
-
+	//http server
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
 		mysql.InitMysql(*mysqlHost, *mysqlPort, *mysqlUser, *pwdMysql, *dbMysql)
@@ -91,7 +95,20 @@ func main() {
 		handler := r
 		errChan <- http.ListenAndServe(":"+*servicePort, handler)
 	}()
+	//grpc server
+	go func() {
+		fmt.Println("grpc Server start at port" + *grpcAddr)
+		listener, err := net.Listen("tcp", *grpcAddr)
+		if err != nil {
+			errChan <- err
+			return
+		}
 
+		handler := transport.NewGRPCServer(ctx, endpts)
+		gRPCServer := grpc.NewServer()
+		pb.RegisterUserServiceServer(gRPCServer, handler)
+		errChan <- gRPCServer.Serve(listener)
+	}()
 	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

@@ -4,9 +4,12 @@
 package pb
 
 import (
-	context "context"
+	"context"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"math"
 )
 
@@ -139,4 +142,47 @@ var fileDescriptor_116e343673f7ffaf = []byte{
 
 type UserServiceServer interface {
 	Check(context.Context, *UserRequest) (*UserResponse, error)
+}
+
+// UnimplementedUserServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedUserServiceServer struct {
+}
+
+func (*UnimplementedUserServiceServer) Calculate(ctx context.Context, req *UserRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
+}
+
+func RegisterUserServiceServer(s *grpc.Server, srv UserServiceServer) {
+	s.RegisterService(&_UserService_serviceDesc, srv)
+}
+
+var _UserService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "pb.UserService",
+	HandlerType: (*UserServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Check",
+			Handler:    _UserService_Check_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "user.proto",
+}
+
+func _UserService_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Check(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.UserService/Check",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Check(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
