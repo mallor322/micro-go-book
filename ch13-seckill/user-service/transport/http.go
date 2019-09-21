@@ -45,13 +45,14 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.UserEndpoints, logger
 	return r
 }
 
-// decodeArithmeticRequest decode request params to struct
+// decodeUserRequest decode request params to struct
 func decodeUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request endpts.UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	var userRequest endpts.UserRequest
+	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
 		return nil, err
 	}
-	return request, nil
+	return userRequest, nil
+
 }
 
 // encodeArithmeticResponse encode response to return

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/gohouse/gorose/v2"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"log"
 )
@@ -25,8 +26,8 @@ func (p *UserModel) getTableName() string {
 	return "user"
 }
 
-func (p *UserModel) GetUserList() ([]map[string]interface{}, error) {
-	conn := mysql.DbConfCtx.DbConn.Use()
+func (p *UserModel) GetUserList() ([]gorose.Data, error) {
+	conn := mysql.DB()
 	list, err := conn.Table(p.getTableName()).Get()
 	if err != nil {
 		log.Printf("Error : %v", err)
@@ -35,7 +36,7 @@ func (p *UserModel) GetUserList() ([]map[string]interface{}, error) {
 	return list, nil
 }
 func (p *UserModel) CheckUser(username string, password string) (bool, error) {
-	conn := mysql.DbConfCtx.DbConn.Use()
+	conn := mysql.DB()
 	num, err := conn.Table(p.getTableName()).Where(map[string]interface{}{"username": username, "password": password}).Count("*")
 	if err != nil {
 		log.Printf("Error : %v", err)
@@ -45,7 +46,7 @@ func (p *UserModel) CheckUser(username string, password string) (bool, error) {
 }
 
 func (p *UserModel) CreateUser(user *User) error {
-	conn := mysql.DbConfCtx.DbConn.Use()
+	conn := mysql.DB()
 	_, err := conn.Table(p.getTableName()).Data(map[string]interface{}{
 		"user_id":     user.UserId,
 		"user_name":   user.UserName,

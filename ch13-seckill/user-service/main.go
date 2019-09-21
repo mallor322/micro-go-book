@@ -7,7 +7,7 @@ import (
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
@@ -85,7 +85,7 @@ func main() {
 
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
-		setup.InitMysql(*mysqlHost, *mysqlPort, *mysqlUser, *pwdMysql, *dbMysql)
+		mysql.InitMysql(*mysqlHost, *mysqlPort, *mysqlUser, *pwdMysql, *dbMysql)
 		//启动前执行注册
 		registar.Register()
 		handler := r

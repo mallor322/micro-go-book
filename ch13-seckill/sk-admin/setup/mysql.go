@@ -1,9 +1,9 @@
 package setup
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
 	"fmt"
-	"github.com/gohouse/gorose"
+	"github.com/gohouse/gorose/v2"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
 )
 
 func InitMysql(hostMysql, portMysql, userMysql, pwdMysql, dbMysql string) {

@@ -31,13 +31,13 @@ var (
 	ErrInvalidRequestType = errors.New("invalid username, password")
 )
 
-// ArithmeticRequest define request struct
+// UserRequest define request struct
 type UserRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// ArithmeticResponse define response struct
+// UserResponse define response struct
 type UserResponse struct {
 	Result bool  `json:"result"`
 	Error  error `json:"error"`
@@ -57,8 +57,10 @@ func MakeUserEndpoint(svc service.Service) endpoint.Endpoint {
 		username = req.Username
 		password = req.Password
 
-		svc.Check(ctx, username, password)
-
+		res, calError = svc.Check(ctx, username, password)
+		if calError != nil {
+			return UserResponse{Result: false, Error: calError}, nil
+		}
 		return UserResponse{Result: res, Error: calError}, nil
 	}
 }

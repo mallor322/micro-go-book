@@ -13,8 +13,7 @@ require (
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-redis/redis v6.15.5+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
-	github.com/gohouse/converter v0.0.3 // indirect
-	github.com/gohouse/gorose v1.0.5
+	github.com/gohouse/gorose/v2 v2.1.2
 	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/mux v1.6.2
 	github.com/hashicorp/consul/api v1.1.0

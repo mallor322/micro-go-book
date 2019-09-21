@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/gohouse/gorose"
+	"github.com/gohouse/gorose/v2"
 	"go.etcd.io/etcd/clientv3"
 )
 
