@@ -1,0 +1,16 @@
+
+http:
+  host: localhost
+  port: 9090
+  serviceName: user
+
+
+discover:
+  Host: 106.15.233.99
+  port: 8500
+  instanceId: gateway-service-localhost
+
+config:
+  id: config-service
+  profile: "dev"
+  label: "master"

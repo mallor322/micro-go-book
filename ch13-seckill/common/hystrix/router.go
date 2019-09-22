@@ -1,46 +1,33 @@
-package main
+package hystrix
 
 import (
 	"errors"
 	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/go-kit/kit/log"
-	"github.com/hashicorp/consul/api"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
-	"math/rand"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"strings"
 	"sync"
 )
 
-func StartHystricBoard() {
-	//启用hystrix实时监控，监听端口为9010
-	hystrixStreamHandler := hystrix.NewStreamHandler()
-	hystrixStreamHandler.Start()
-	go func() {
-		errc <- http.ListenAndServe(net.JoinHostPort("", "9010"), hystrixStreamHandler)
-	}()
-}
-
 // HystrixRouter hystrix路由
 type HystrixRouter struct {
-	svcMap       *sync.Map      //服务实例，存储已经通过hystrix监控服务列表
-	logger       log.Logger     //日志工具
-	fallbackMsg  string         //回调消息
-	consulClient *api.Client    //consul客户端对象
-	tracer       *zipkin.Tracer //服务追踪对象
+	svcMap      *sync.Map      //服务实例，存储已经通过hystrix监控服务列表
+	logger      log.Logger     //日志工具
+	fallbackMsg string         //回调消息
+	tracer      *zipkin.Tracer //服务追踪对象
 }
 
-func Routes(client *api.Client, zikkinTracer *zipkin.Tracer, fbMsg string, logger log.Logger) http.Handler {
+func Routes(zipkinTracer *zipkin.Tracer, fbMsg string, logger log.Logger) http.Handler {
 	return HystrixRouter{
-		svcMap:       &sync.Map{},
-		logger:       logger,
-		fallbackMsg:  fbMsg,
-		consulClient: client,
-		tracer:       zikkinTracer,
+		svcMap:      &sync.Map{},
+		logger:      logger,
+		fallbackMsg: fbMsg,
+		tracer:      zipkinTracer,
 	}
 }
 
@@ -65,28 +52,18 @@ func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := hystrix.Do(serviceName, func() (err error) {
 
 		//调用consul api查询serviceNam
-		result, _, err := router.consulClient.Catalog().Service(serviceName, "", nil)
-		if err != nil {
-			router.logger.Log("ReverseProxy failed", "query service instace error", err.Error())
-			return
-		}
-
-		if len(result) == 0 {
-			router.logger.Log("ReverseProxy failed", "no such service instance", serviceName)
-			return errors.New("no such service instance")
-		}
+		serviceInstance := discover.DiscoveryService(serviceName)
 
 		director := func(req *http.Request) {
 			//重新组织请求路径，去掉服务名称部分
 			destPath := strings.Join(pathArray[2:], "/")
 
 			//随机选择一个服务实例
-			tgt := result[rand.Int()%len(result)]
-			router.logger.Log("service id", tgt.ServiceID)
+			router.logger.Log("service id", serviceInstance.Host, serviceInstance.Port)
 
 			//设置代理服务地址信息
 			req.URL.Scheme = "http"
-			req.URL.Host = fmt.Sprintf("%s:%d", tgt.ServiceAddress, tgt.ServicePort)
+			req.URL.Host = fmt.Sprintf("%s:%d", serviceInstance.Host, serviceInstance.Port)
 			req.URL.Path = "/" + destPath
 		}
 
