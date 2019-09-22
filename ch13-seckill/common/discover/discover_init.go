@@ -37,7 +37,7 @@ func DiscoveryService(serviceName string) ServiceInstance {
 		//todo 异常处理机制
 		os.Exit(1)
 	}
-	selectOne := instances[0].(api.AgentService)
+	selectOne := instances[0].(*api.AgentService)
 
 	return ServiceInstance{
 		Host:     selectOne.Address,
@@ -61,10 +61,12 @@ func Register() {
 
 	if !ConsulService.Register(instanceId, conf.HttpConfig.Host, "/health",
 		conf.HttpConfig.Port, conf.HttpConfig.ServiceName, nil, nil, Logger) {
+		Logger.Printf("register for service %s failed.", conf.HttpConfig.ServiceName)
 		// 注册失败，服务启动失败
 		panic(0)
 	}
-	return true, nil
+	Logger.Printf("deregister for service %s success.", conf.HttpConfig.ServiceName)
+
 }
 
 func Deregister() {
@@ -79,6 +81,7 @@ func Deregister() {
 		instanceId = conf.HttpConfig.ServiceName + uuid.NewV4().String()
 	}
 	if !ConsulService.DeRegister(instanceId, Logger) {
+		Logger.Printf("deregister for service %s failed.", conf.HttpConfig.ServiceName)
 		panic(0)
 	}
 }
