@@ -26,9 +26,6 @@ import (
 func main() {
 
 	var (
-		consulHost  = flag.String("consul.host", conf.DiscoverConfig.Host, "consul ip address")
-		consulPort  = flag.String("consul.port", conf.DiscoverConfig.Port, "consul port")
-		serviceHost = flag.String("service.host", conf.HttpConfig.Host, "service ip address")
 		servicePort = flag.String("service.port", conf.HttpConfig.Port, "service port")
 		mysqlHost   = flag.String("mysql.host", "106.15.233.99", "consul ip address")
 		mysqlPort   = flag.String("mysql.port", "3396", "consul port")
@@ -85,14 +82,12 @@ func main() {
 	//创建http.Handler
 	r := transport.MakeHttpHandler(ctx, endpts, logger)
 
-	//创建注册对象
-	registar := register.Register(*consulHost, *consulPort, *serviceHost, *servicePort, "user_service", logger)
 	//http server
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
 		mysql.InitMysql(*mysqlHost, *mysqlPort, *mysqlUser, *pwdMysql, *dbMysql)
 		//启动前执行注册
-		registar.Register()
+		register.Register()
 		handler := r
 		errChan <- http.ListenAndServe(":"+*servicePort, handler)
 	}()
@@ -118,6 +113,6 @@ func main() {
 
 	error := <-errChan
 	//服务退出取消注册
-	registar.Deregister()
+	register.Deregister()
 	fmt.Println(error)
 }

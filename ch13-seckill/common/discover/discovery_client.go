@@ -1,9 +1,22 @@
 package discover
 
-import "github.com/go-kit/kit/log"
+import (
+	"github.com/go-kit/kit/sd/consul"
+	"log"
+)
 
-type ConsulClient interface {
+type DiscoveryClientInstance struct {
+	Host   string //  Host
+	Port   int    //  Port
+	client consul.Client
+}
 
+type ServiceInstance struct {
+	Host     string //  Host
+	Port     int    //  Port
+	GrpcPort int
+}
+type DiscoveryClient interface {
 	/**
 	 * 服务注册接口
 	 * @param serviceName 服务名
@@ -12,7 +25,7 @@ type ConsulClient interface {
 	 * @param healthCheckUrl 健康检查地址
 	 * @param meta 服务实例元数据
 	 */
-	Register(serviceName, instanceId, healthCheckUrl string, instanceHost string, instancePort int, meta map[string]string, logger *log.Logger) bool
+	Register(instanceId, svcHost, healthCheckUrl, svcPort string, svcName string, meta map[string]string, tags []string, logger *log.Logger) bool
 
 	/**
 	 * 服务注销接口

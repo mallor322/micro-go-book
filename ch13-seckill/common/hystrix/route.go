@@ -9,12 +9,12 @@ import (
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"strings"
 	"sync"
 )
-
 
 func StartHystricBoard() {
 	//启用hystrix实时监控，监听端口为9010
@@ -24,7 +24,6 @@ func StartHystricBoard() {
 		errc <- http.ListenAndServe(net.JoinHostPort("", "9010"), hystrixStreamHandler)
 	}()
 }
-
 
 // HystrixRouter hystrix路由
 type HystrixRouter struct {

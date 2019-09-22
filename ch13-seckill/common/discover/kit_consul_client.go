@@ -7,16 +7,11 @@ import (
 	"strconv"
 )
 
-type ConsulClientInstance struct {
-	Host   string // Consul Host
-	Port   int    // Consul Port
-	client consul.Client
-}
-
-func New(consulHost string, consulPort int) *ConsulClientInstance {
+func New(consulHost string, consulPort string) *DiscoveryClientInstance {
+	port, _ := strconv.Atoi(consulPort)
 	// 通过 Consul Host 和 Consul Port 创建一个 consul.Client
 	consulConfig := api.DefaultConfig()
-	consulConfig.Address = consulHost + ":" + strconv.Itoa(consulPort)
+	consulConfig.Address = consulHost + ":" + strconv.Itoa(port)
 	apiClient, err := api.NewClient(consulConfig)
 	if err != nil {
 		return nil
@@ -24,25 +19,27 @@ func New(consulHost string, consulPort int) *ConsulClientInstance {
 
 	client := consul.NewClient(apiClient)
 
-	return &ConsulClientInstance{
+	return &DiscoveryClientInstance{
 		Host:   consulHost,
-		Port:   consulPort,
+		Port:   port,
 		client: client,
 	}
 }
 
-func (consulClient *ConsulClientInstance) Register(serviceName, instanceId, healthCheckUrl string, instanceHost string, instancePort int, meta map[string]string, logger *log.Logger) bool {
+func (consulClient *DiscoveryClientInstance) Register(instanceId, svcHost, healthCheckUrl, svcPort string, svcName string, meta map[string]string, tags []string, logger *log.Logger) bool {
+	port, _ := strconv.Atoi(svcPort)
 
 	// 1. 构建服务实例元数据
 	serviceRegistration := &api.AgentServiceRegistration{
 		ID:      instanceId,
-		Name:    serviceName,
-		Address: instanceHost,
-		Port:    instancePort,
+		Name:    svcName,
+		Address: svcHost,
+		Port:    port,
 		Meta:    meta,
+		Tags:    tags,
 		Check: &api.AgentServiceCheck{
 			DeregisterCriticalServiceAfter: "30s",
-			HTTP:                           "http://" + instanceHost + ":" + strconv.Itoa(instancePort) + healthCheckUrl,
+			HTTP:                           "http://" + svcHost + ":" + strconv.Itoa(port) + healthCheckUrl,
 			Interval:                       "15s",
 		},
 	}
@@ -58,7 +55,7 @@ func (consulClient *ConsulClientInstance) Register(serviceName, instanceId, heal
 	return true
 }
 
-func (consulClient *ConsulClientInstance) DeRegister(instanceId string, logger *log.Logger) bool {
+func (consulClient *DiscoveryClientInstance) DeRegister(instanceId string, logger *log.Logger) bool {
 
 	// 构建包含服务实例 ID 的元数据结构体
 	serviceRegistration := &api.AgentServiceRegistration{
@@ -76,7 +73,7 @@ func (consulClient *ConsulClientInstance) DeRegister(instanceId string, logger *
 	return true
 }
 
-func (consulClient *ConsulClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
+func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
 
 	// 根据服务名请求服务实例列表，可以添加额外的筛选参数
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
