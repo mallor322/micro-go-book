@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	"github.com/spf13/viper"
 	"testing"
 )

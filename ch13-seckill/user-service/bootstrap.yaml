@@ -1,14 +1,14 @@
 
 http:
   host: localhost
-  port: 8080
-  serviceName: demo-service
+  port: 9009
+  serviceName: user
 
 
 discover:
-  Host: localhost
+  Host: 106.15.233.99
   port: 8500
-  instanceId: user-service
+  instanceId: user-service-localhost
 
 config:
   id: config-service

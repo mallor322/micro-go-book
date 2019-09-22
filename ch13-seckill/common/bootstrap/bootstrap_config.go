@@ -1,4 +1,4 @@
-package conf
+package bootstrap
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ func initBootstrapConfig() {
 	//设置读取的配置文件
 	viper.SetConfigName("bootstrap")
 	//添加读取的配置文件路径
-	viper.AddConfigPath("./")
+	viper.AddConfigPath("ch13-seckill/user-service")
 	//windows环境下为%GOPATH，linux环境下为$GOPATH
 	viper.AddConfigPath("$GOPATH/src/")
 	//设置配置文件类型

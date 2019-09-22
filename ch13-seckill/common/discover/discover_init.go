@@ -3,7 +3,7 @@ package discover
 import (
 	"fmt"
 	"github.com/hashicorp/consul/api"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"
@@ -15,7 +15,7 @@ var Logger *log.Logger
 
 func init() {
 	// 1.实例化一个 Consul 客户端，此处实例化了原生态实现版本
-	ConsulService = New(conf.DiscoverConfig.Host, conf.DiscoverConfig.Port)
+	ConsulService = New(bootstrap.DiscoverConfig.Host, bootstrap.DiscoverConfig.Port)
 	Logger = log.New(os.Stderr, "", log.LstdFlags)
 
 }
@@ -53,19 +53,19 @@ func Register() {
 	}
 
 	//判空 instanceId,通过 go.uuid 获取一个服务实例ID
-	instanceId := conf.DiscoverConfig.InstanceId
+	instanceId := bootstrap.DiscoverConfig.InstanceId
 
 	if instanceId == "" {
-		instanceId = conf.HttpConfig.ServiceName + uuid.NewV4().String()
+		instanceId = bootstrap.HttpConfig.ServiceName + uuid.NewV4().String()
 	}
 
-	if !ConsulService.Register(instanceId, conf.HttpConfig.Host, "/health",
-		conf.HttpConfig.Port, conf.HttpConfig.ServiceName, nil, nil, Logger) {
-		Logger.Printf("register for service %s failed.", conf.HttpConfig.ServiceName)
+	if !ConsulService.Register(instanceId, bootstrap.HttpConfig.Host, "/health",
+		bootstrap.HttpConfig.Port, bootstrap.HttpConfig.ServiceName, nil, nil, Logger) {
+		Logger.Printf("register for service %s failed.", bootstrap.HttpConfig.ServiceName)
 		// 注册失败，服务启动失败
 		panic(0)
 	}
-	Logger.Printf("deregister for service %s success.", conf.HttpConfig.ServiceName)
+	Logger.Printf("register for service %s success.", bootstrap.HttpConfig.ServiceName)
 
 }
 
@@ -75,13 +75,13 @@ func Deregister() {
 		panic(0)
 	}
 	//判空 instanceId,通过 go.uuid 获取一个服务实例ID
-	instanceId := conf.DiscoverConfig.InstanceId
+	instanceId := bootstrap.DiscoverConfig.InstanceId
 
 	if instanceId == "" {
-		instanceId = conf.HttpConfig.ServiceName + uuid.NewV4().String()
+		instanceId = bootstrap.HttpConfig.ServiceName + uuid.NewV4().String()
 	}
 	if !ConsulService.DeRegister(instanceId, Logger) {
-		Logger.Printf("deregister for service %s failed.", conf.HttpConfig.ServiceName)
+		Logger.Printf("deregister for service %s failed.", bootstrap.HttpConfig.ServiceName)
 		panic(0)
 	}
 }

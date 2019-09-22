@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
+	_ "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
@@ -26,12 +28,7 @@ import (
 func main() {
 
 	var (
-		servicePort = flag.String("service.port", conf.HttpConfig.Port, "service port")
-		mysqlHost   = flag.String("mysql.host", "106.15.233.99", "consul ip address")
-		mysqlPort   = flag.String("mysql.port", "3396", "consul port")
-		mysqlUser   = flag.String("mysql.user", "root", "service ip address")
-		pwdMysql    = flag.String("mysql.pwd", "root_test", "service port")
-		dbMysql     = flag.String("mysql.db", "user", "service port")
+		servicePort = flag.String("service.port", bootstrap.HttpConfig.Port, "service port")
 		grpcAddr    = flag.String("grpc", ":9008", "gRPC listen address.")
 	)
 
@@ -85,7 +82,7 @@ func main() {
 	//http server
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
-		mysql.InitMysql(*mysqlHost, *mysqlPort, *mysqlUser, *pwdMysql, *dbMysql)
+		mysql.InitMysql(conf.MysqlConfig.Host, conf.MysqlConfig.Port, conf.MysqlConfig.User, conf.MysqlConfig.Pwd, conf.MysqlConfig.Db)
 		//启动前执行注册
 		register.Register()
 		handler := r

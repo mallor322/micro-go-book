@@ -7,12 +7,10 @@ import (
 )
 
 var (
-	Redis              RedisConf
-	Etcd               EtcdConf
-	SecKill            SecKillConf
-	HttpConfig         HttpConf
-	DiscoverConfig     DiscoverConf
-	ConfigServerConfig ConfigServerConf
+	Redis       RedisConf
+	Etcd        EtcdConf
+	SecKill     SecKillConf
+	MysqlConfig MysqlConf
 )
 
 type EtcdConf struct {
@@ -20,25 +18,12 @@ type EtcdConf struct {
 	EtcdSecProductKey string           //商品键
 }
 
-//Http配置
-type HttpConf struct {
-	Host        string
-	Port        string
-	ServiceName string
-}
-
-//服务发现与注册配置
-type DiscoverConf struct {
-	Host       string
-	Port       string
-	InstanceId string
-}
-
-//配置中心
-type ConfigServerConf struct {
-	Id      string
-	Profile string
-	Label   string
+type MysqlConf struct {
+	Host string
+	Port string
+	User string
+	Pwd  string
+	Db   string
 }
 
 //redis配置
