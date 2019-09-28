@@ -4,25 +4,27 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
-	_ "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
+	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -36,13 +38,6 @@ func main() {
 
 	ctx := context.Background()
 	errChan := make(chan error)
-
-	var logger log.Logger
-	{
-		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
-		logger = log.With(logger, "caller", log.DefaultCaller)
-	}
 
 	fieldKeys := []string{"method"}
 	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
@@ -58,18 +53,22 @@ func main() {
 		Name:      "request_latency",
 		Help:      "Total duration of requests in microseconds.",
 	}, fieldKeys)
+	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 100)
 
 	var svc service.Service
 	svc = service.UserService{}
 
 	// add logging middleware
-	svc = plugins.LoggingMiddleware(logger)(svc)
+	svc = plugins.LoggingMiddleware(localconfig.Logger)(svc)
 	svc = plugins.Metrics(requestCount, requestLatency)(svc)
 
 	userPoint := endpoint.MakeUserEndpoint(svc)
+	userPoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(userPoint)
+	userPoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "user-endpoint")(userPoint)
 
 	//创建健康检查的Endpoint
 	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
+	healthEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "health-endpoint")(healthEndpoint)
 
 	endpts := endpoint.UserEndpoints{
 		UserEndpoint:        userPoint,
@@ -77,7 +76,7 @@ func main() {
 	}
 
 	//创建http.Handler
-	r := transport.MakeHttpHandler(ctx, endpts, logger)
+	r := transport.MakeHttpHandler(ctx, endpts, localconfig.ZipkinTracer, localconfig.Logger)
 
 	//http server
 	go func() {
