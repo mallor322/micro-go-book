@@ -16,9 +16,11 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
+	"github.com/openzipkin/zipkin-go/propagation/b3"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"net"
 	"net/http"
 	"os"
@@ -95,8 +97,15 @@ func main() {
 			errChan <- err
 			return
 		}
+		serverTracer := kitzipkin.GRPCServerTrace(localconfig.ZipkinTracer, kitzipkin.Name("grpc-transport"))
+		tr := localconfig.ZipkinTracer
+		md := metadata.MD{}
+		parentSpan := tr.StartSpan("test")
 
-		handler := transport.NewGRPCServer(ctx, endpts)
+		b3.InjectGRPC(&md)(parentSpan.Context())
+
+		ctx := metadata.NewIncomingContext(context.Background(), md)
+		handler := transport.NewGRPCServer(ctx, endpts, serverTracer)
 		gRPCServer := grpc.NewServer()
 		pb.RegisterUserServiceServer(gRPCServer, handler)
 		errChan <- gRPCServer.Serve(listener)
