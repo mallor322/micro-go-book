@@ -11,11 +11,18 @@ var (
 	Etcd        EtcdConf
 	SecKill     SecKillConf
 	MysqlConfig MysqlConf
+	TraceConfig TraceConf
 )
 
 type EtcdConf struct {
 	EtcdConn          *clientv3.Client //链接
 	EtcdSecProductKey string           //商品键
+}
+
+type TraceConf struct {
+	Host string
+	Port string
+	Url  string
 }
 
 type MysqlConf struct {
