@@ -1,5 +1,5 @@
 
- Discovery 服务发现添加缓存
+ Discovery 服务发现添加缓存 Finish!
  RPC Client Endpoint 继承实现，增加Hytrix逻辑
  RPC 服务发现在建立连接之间进行
  OAuth迁移

@@ -43,5 +43,5 @@ type DiscoveryClient interface {
 	 * 发现服务实例接口
 	 * @param serviceName 服务名
 	 */
-	DiscoverServices(serviceName string, logger *log.Logger) []interface{}
+	DiscoverServices(serviceName string, logger *log.Logger) []*api.AgentService
 }

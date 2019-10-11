@@ -145,6 +145,7 @@ func (consulClient *ConsulClientInstance) DiscoverServices(serviceName string, l
 				}
 				var healthServices []*api.AgentService
 				for _, service := range v{
+					// 仅保留状态健康的服务实例
 					if service.Checks.AggregatedStatus() == api.HealthPassing{
 						healthServices = append(healthServices, service.Service)
 					}

@@ -2,7 +2,6 @@ package discover
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/api"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	uuid "github.com/satori/go.uuid"
 	"log"
@@ -37,7 +36,7 @@ func DiscoveryService(serviceName string) ServiceInstance {
 		//todo 异常处理机制
 		os.Exit(1)
 	}
-	selectOne := instances[0].(*api.AgentService)
+	selectOne := instances[0]
 
 	return ServiceInstance{
 		Host:     selectOne.Address,
