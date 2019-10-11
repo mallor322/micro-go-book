@@ -2,13 +2,19 @@ package discover
 
 import (
 	"github.com/go-kit/kit/sd/consul"
+	"github.com/hashicorp/consul/api"
 	"log"
+	"sync"
 )
 
 type DiscoveryClientInstance struct {
 	Host   string //  Host
 	Port   int    //  Port
+	config *api.Config
 	client consul.Client
+	mutex sync.Mutex
+	instancesMap sync.Map
+
 }
 
 type ServiceInstance struct {

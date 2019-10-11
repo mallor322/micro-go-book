@@ -3,6 +3,7 @@ package discover
 import (
 	"github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
+	"github.com/hashicorp/consul/api/watch"
 	"log"
 	"strconv"
 )
@@ -22,6 +23,7 @@ func New(consulHost string, consulPort string) *DiscoveryClientInstance {
 	return &DiscoveryClientInstance{
 		Host:   consulHost,
 		Port:   port,
+		config:consulConfig,
 		client: client,
 	}
 }
@@ -75,16 +77,74 @@ func (consulClient *DiscoveryClientInstance) DeRegister(instanceId string, logge
 
 func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
 
-	// 根据服务名请求服务实例列表，可以添加额外的筛选参数
-	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
-	if err != nil {
-		logger.Println("Discover Service Error!")
-		return nil
+	//  该服务已监控并缓存
+	instanceList, ok := consulClient.instancesMap.Load(serviceName); if ok{
+		instances := make([]interface{}, len(instanceList.([]*api.AgentService)))
+		for i := 0; i < len(instances); i++ {
+			instances[i] = instanceList.([]*api.AgentService)[i]
+		}
+		return instances
 	}
+	// 申请锁
+	consulClient.mutex.Lock()
+	//signalChan := make(chan error)
+	//time.AfterFunc(2 * time.Second, func() { signalChan <- errors.New("timeout") })
+	// 再次检查是否监控
+	instanceList, ok = consulClient.instancesMap.Load(serviceName); if ok{
+		consulClient.mutex.Unlock()
+		instances := make([]interface{}, len(instanceList.([]*api.AgentService)))
+		for i := 0; i < len(instances); i++ {
+			instances[i] = instanceList.([]*api.AgentService)[i]
+		}
+		return instances
+	} else {
+		// 注册监控
+		go func() {
+			params := make(map[string]interface{})
+			params["type"] = "service"
+			params["service"] = serviceName
+			plan, _ := watch.Parse(params)
+			plan.Handler = func(u uint64, i interface{}) {
+				if i == nil{
+					return
+				}
+				v, ok := i.([]*api.ServiceEntry)
+				if !ok || len(v) == 0 {
+					//signalChan <- nil
+					return // 数据异常，忽略
+				}
+				var healthServices []*api.AgentService
+				for _, service := range v{
+					if service.Checks.AggregatedStatus() == api.HealthPassing{
+						healthServices = append(healthServices, service.Service)
+					}
+				}
+				consulClient.instancesMap.Store(serviceName, healthServices)
+				//signalChan <- nil
+			}
+			defer plan.Stop()
+			plan.Run(consulClient.config.Address)
+		}()
+	}
+	defer consulClient.mutex.Unlock()
 
-	instances := make([]interface{}, len(entries))
-	for i := 0; i < len(instances); i++ {
-		instances[i] = entries[i].Service
+	instanceList, ok = consulClient.instancesMap.Load(serviceName); if ok{
+		instances := make([]interface{}, len(instanceList.([]*api.AgentService)))
+		for i := 0; i < len(instances); i++ {
+			instances[i] = instanceList.([]*api.AgentService)[i]
+		}
+		return instances
+	}else {
+		// 根据服务名请求服务实例列表
+		entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
+		if err != nil{
+			logger.Println("Discover Service Error!")
+			return nil
+		}
+		instances := make([]interface{}, len(entries))
+		for i := 0; i < len(instances); i++ {
+			instances[i] = entries[i].Service
+		}
+		return instances
 	}
-	return instances
 }
