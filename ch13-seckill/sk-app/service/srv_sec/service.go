@@ -1,19 +1,20 @@
 package srv_sec
 
 import (
+	"fmt"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_err"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_limit"
-	"fmt"
 	"log"
 	"time"
 )
 
 func SecInfo(productId int) (date map[string]interface{}) {
-	config.SecKillConfCtx.RWSecProductLock.RLock()
-	defer config.SecKillConfCtx.RWSecProductLock.RUnlock()
+	config.SkAppContext.RWSecProductLock.RLock()
+	defer config.SkAppContext.RWSecProductLock.RUnlock()
 
-	v, ok := config.SecKillConfCtx.SecProductInfoMap[productId]
+	v, ok := conf.SecKill.SecProductInfoMap[productId]
 	if !ok {
 		return nil
 	}
@@ -29,8 +30,8 @@ func SecInfo(productId int) (date map[string]interface{}) {
 
 func SecKill(req *config.SecRequest) (map[string]interface{}, int, error) {
 	//对Map加锁处理
-	config.SecKillConfCtx.RWSecProductLock.RLock()
-	defer config.SecKillConfCtx.RWSecProductLock.RUnlock()
+	config.SkAppContext.RWSecProductLock.RLock()
+	defer config.SkAppContext.RWSecProductLock.RUnlock()
 
 	var code int
 	err := srv_limit.UserCheck(req)
@@ -55,17 +56,17 @@ func SecKill(req *config.SecRequest) (map[string]interface{}, int, error) {
 
 	userKey := fmt.Sprintf("%d_%d", req.UserId, req.ProductId)
 	fmt.Println("userKey : ", userKey)
-	config.SecKillConfCtx.UserConnMap[userKey] = req.ResultChan
+	config.SkAppContext.UserConnMap[userKey] = req.ResultChan
 	//将请求送入通道并推入到redis队列当中
-	config.SecKillConfCtx.SecReqChan <- req
+	config.SkAppContext.SecReqChan <- req
 
 	ticker := time.NewTicker(time.Second * 10)
 
 	defer func() {
 		ticker.Stop()
-		config.SecKillConfCtx.UserConnMapLock.Lock()
-		delete(config.SecKillConfCtx.UserConnMap, userKey)
-		config.SecKillConfCtx.UserConnMapLock.Unlock()
+		config.SkAppContext.UserConnMapLock.Lock()
+		delete(config.SkAppContext.UserConnMap, userKey)
+		config.SkAppContext.UserConnMapLock.Unlock()
 	}()
 
 	select {
@@ -97,11 +98,11 @@ func NewSecRequest() *config.SecRequest {
 }
 
 func SecInfoList() ([]map[string]interface{}, int, error) {
-	config.SecKillConfCtx.RWSecProductLock.RLock()
-	defer config.SecKillConfCtx.RWSecProductLock.RUnlock()
+	config.SkAppContext.RWSecProductLock.RLock()
+	defer config.SkAppContext.RWSecProductLock.RUnlock()
 
 	var data []map[string]interface{}
-	for _, v := range config.SecKillConfCtx.SecProductInfoMap {
+	for _, v := range conf.SecKill.SecProductInfoMap {
 		item, _, err := SecInfoById(v.ProductId)
 		if err != nil {
 			log.Printf("get sec info, err : %v", err)
@@ -114,11 +115,11 @@ func SecInfoList() ([]map[string]interface{}, int, error) {
 
 func SecInfoById(productId int) (map[string]interface{}, int, error) {
 	//对Map加锁处理
-	config.SecKillConfCtx.RWSecProductLock.RLock()
-	defer config.SecKillConfCtx.RWSecProductLock.RUnlock()
+	config.SkAppContext.RWSecProductLock.RLock()
+	defer config.SkAppContext.RWSecProductLock.RUnlock()
 
 	var code int
-	v, ok := config.SecKillConfCtx.SecProductInfoMap[productId]
+	v, ok := conf.SecKill.SecProductInfoMap[productId]
 	if !ok {
 		return nil, srv_err.ErrNotFoundProductId, fmt.Errorf("not found product_id:%d", productId)
 	}

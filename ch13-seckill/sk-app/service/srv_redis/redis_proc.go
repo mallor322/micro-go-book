@@ -1,9 +1,10 @@
 package srv_redis
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"encoding/json"
 	"fmt"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"log"
 	"time"
 )
@@ -12,9 +13,9 @@ import (
 func WriteHandle() {
 	for {
 		fmt.Println("wirter data to redis.")
-		req := <-config.SecKillConfCtx.SecReqChan
+		req := <-config.SkAppContext.SecReqChan
 		fmt.Println("accessTime : ", req.AccessTime)
-		conn := config.SecKillConfCtx.RedisConf.RedisConn
+		conn := conf.Redis.RedisConn
 
 		data, err := json.Marshal(req)
 		if err != nil {
@@ -22,7 +23,7 @@ func WriteHandle() {
 			continue
 		}
 
-		err = conn.LPush(config.SecKillConfCtx.RedisConf.Proxy2layerQueueName, string(data)).Err()
+		err = conn.LPush(conf.Redis.Proxy2layerQueueName, string(data)).Err()
 		if err != nil {
 			log.Printf("lpush req failed. Error : %v, req : %v", err, req)
 			continue
@@ -34,10 +35,10 @@ func WriteHandle() {
 //从redis读取数据
 func ReadHandle() {
 	for {
-		conn := config.SecKillConfCtx.RedisConf.RedisConn
+		conn := conf.Redis.RedisConn
 
 		//阻塞弹出
-		data, err := conn.BRPop(time.Minute, config.SecKillConfCtx.RedisConf.Layer2proxyQueueName).Result()
+		data, err := conn.BRPop(time.Minute, conf.Redis.Layer2proxyQueueName).Result()
 		if err != nil {
 			log.Printf("brpop layer2proxy failed. Error : %v", err)
 			continue
@@ -52,9 +53,9 @@ func ReadHandle() {
 
 		userKey := fmt.Sprintf("%d_%d", result.UserId, result.ProductId)
 		fmt.Println("userKey : ", userKey)
-		config.SecKillConfCtx.UserConnMapLock.Lock()
-		resultChan, ok := config.SecKillConfCtx.UserConnMap[userKey]
-		config.SecKillConfCtx.UserConnMapLock.Unlock()
+		config.SkAppContext.UserConnMapLock.Lock()
+		resultChan, ok := config.SkAppContext.UserConnMap[userKey]
+		config.SkAppContext.UserConnMapLock.Unlock()
 		if !ok {
 			log.Printf("user not found : %v", userKey)
 			continue

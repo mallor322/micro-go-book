@@ -1,16 +1,17 @@
 package srv_limit
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"crypto/md5"
 	"fmt"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"log"
 )
 
 //用户检查
 func UserCheck(req *config.SecRequest) (err error) {
 	found := false
-	for _, refer := range config.SecKillConfCtx.ReferWhiteList {
+	for _, refer := range conf.SecKill.ReferWhiteList {
 		if refer == req.ClientRefence {
 			found = true
 			break
@@ -23,7 +24,7 @@ func UserCheck(req *config.SecRequest) (err error) {
 		return
 	}
 
-	authData := fmt.Sprintf("%d:%s", req.UserId, config.SecKillConfCtx.CookieSecretKey)
+	authData := fmt.Sprintf("%d:%s", req.UserId, conf.SecKill.CookieSecretKey)
 	authSign := fmt.Sprintf("%x", md5.Sum([]byte(authData)))
 
 	if authSign != req.UserAuthSign {

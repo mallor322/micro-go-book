@@ -1,21 +1,20 @@
 package setup
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
+	"github.com/go-redis/redis"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_redis"
 	"github.com/unknwon/com"
-	"github.com/go-redis/redis"
 	"log"
 	"time"
 )
 
 //初始化Redis
-func InitRedis(host string, passWord string, db int, proxy2layerQueueNameRedis, layer2proxyQueueNameRedis,
-	idBlackListHashRedis, ipBlackListHashRedis, idBlackListQueueRedis, ipBlackListQueueRedis string) {
+func InitRedis() {
 	client := redis.NewClient(&redis.Options{
-		Addr:     host,
-		Password: passWord,
-		DB:       db,
+		Addr:     "39.98.179.73:6379", //conf.Redis.Host,
+		Password: "082203",            //conf.Redis.Password,
+		DB:       conf.Redis.Db,
 	})
 
 	_, err := client.Ping().Result()
@@ -23,26 +22,20 @@ func InitRedis(host string, passWord string, db int, proxy2layerQueueNameRedis, 
 		log.Printf("Connect redis failed. Error : %v", err)
 	}
 
-	config.SecKillConfCtx.RedisConf = &config.RedisConf{
-		RedisConn:            client,
-		Proxy2layerQueueName: proxy2layerQueueNameRedis,
-		Layer2proxyQueueName: layer2proxyQueueNameRedis,
-		IdBlackListHash:      idBlackListHashRedis,
-		IpBlackListHash:      ipBlackListHashRedis,
-		IdBlackListQueue:     idBlackListQueueRedis,
-		IpBlackListQueue:     ipBlackListQueueRedis,
-	}
+	conf.Redis.RedisConn = client
+
 	loadBlackList(client)
 	initRedisProcess()
 }
 
 //加载黑名单列表
 func loadBlackList(conn *redis.Client) {
-	config.SecKillConfCtx.IPBlackMap = make(map[string]bool, 10000)
-	config.SecKillConfCtx.IDBlackMap = make(map[int]bool, 10000)
+	conf.SecKill.IPBlackMap = make(map[string]bool, 10000)
+	conf.SecKill.IDBlackMap = make(map[int]bool, 10000)
 
 	//用户Id
-	idList, err := conn.HGetAll(config.SecKillConfCtx.RedisConf.IdBlackListHash).Result()
+	idList, err := conn.HGetAll(conf.Redis.IdBlackListHash).Result()
+
 	if err != nil {
 		log.Printf("hget all failed. Error : %v", err)
 		return
@@ -54,18 +47,18 @@ func loadBlackList(conn *redis.Client) {
 			log.Printf("invalid user id [%v]", id)
 			continue
 		}
-		config.SecKillConfCtx.IDBlackMap[id] = true
+		conf.SecKill.IDBlackMap[id] = true
 	}
 
 	//用户Ip
-	ipList, err := conn.HGetAll(config.SecKillConfCtx.RedisConf.IpBlackListHash).Result()
+	ipList, err := conn.HGetAll(conf.Redis.IpBlackListHash).Result()
 	if err != nil {
 		log.Printf("hget all failed. Error : %v", err)
 		return
 	}
 
 	for _, v := range ipList {
-		config.SecKillConfCtx.IPBlackMap[v] = true
+		conf.SecKill.IPBlackMap[v] = true
 	}
 
 	go syncIpBlackList(conn)
@@ -76,18 +69,17 @@ func loadBlackList(conn *redis.Client) {
 //同步用户ID黑名单
 func syncIdBlackList(conn *redis.Client) {
 	for {
-		idArr, err := conn.BRPop(time.Minute, config.SecKillConfCtx.RedisConf.IdBlackListQueue).Result()
+		idArr, err := conn.BRPop(time.Minute, conf.Redis.IdBlackListQueue).Result()
 		if err != nil {
 			log.Printf("brpop id failed, err : %v", err)
 			continue
 		}
 		id, _ := com.StrTo(idArr[1]).Int()
-		config.SecKillConfCtx.RWBlackLock.Lock()
+		conf.SecKill.RWBlackLock.Lock()
 		{
-			config.SecKillConfCtx.IDBlackMap[id] = true
+			conf.SecKill.IDBlackMap[id] = true
 		}
-		config.SecKillConfCtx.RWBlackLock.Unlock()
-
+		conf.SecKill.RWBlackLock.Unlock()
 	}
 }
 
@@ -97,7 +89,7 @@ func syncIpBlackList(conn *redis.Client) {
 	lastTime := time.Now().Unix()
 
 	for {
-		ipArr, err := conn.BRPop(time.Minute, config.SecKillConfCtx.RedisConf.IpBlackListQueue).Result()
+		ipArr, err := conn.BRPop(time.Minute, conf.Redis.IpBlackListQueue).Result()
 		if err != nil {
 			log.Printf("brpop ip failed, err : %v", err)
 			continue
@@ -108,13 +100,13 @@ func syncIpBlackList(conn *redis.Client) {
 		ipList = append(ipList, ip)
 
 		if len(ipList) > 100 || curTime-lastTime > 5 {
-			config.SecKillConfCtx.RWBlackLock.Lock()
+			conf.SecKill.RWBlackLock.Lock()
 			{
 				for _, v := range ipList {
-					config.SecKillConfCtx.IPBlackMap[v] = true
+					conf.SecKill.IPBlackMap[v] = true
 				}
 			}
-			config.SecKillConfCtx.RWBlackLock.Unlock()
+			conf.SecKill.RWBlackLock.Lock()
 
 			lastTime = curTime
 			log.Printf("sync ip list from redis success, ip[%v]", ipList)
@@ -124,11 +116,11 @@ func syncIpBlackList(conn *redis.Client) {
 
 //初始化redis进程
 func initRedisProcess() {
-	for i := 0; i < config.SecKillConfCtx.WriteProxy2LayerGoroutineNum; i++ {
+	for i := 0; i < conf.SecKill.WriteProxy2LayerGoroutineNum; i++ {
 		go srv_redis.WriteHandle()
 	}
 
-	for i := 0; i < config.SecKillConfCtx.ReadProxy2LayerGoroutineNum; i++ {
+	for i := 0; i < conf.SecKill.ReadProxy2LayerGoroutineNum; i++ {
 		go srv_redis.ReadHandle()
 	}
 }

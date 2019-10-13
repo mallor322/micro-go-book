@@ -32,6 +32,7 @@ func CheckHealth(writer http.ResponseWriter, reader *http.Request) {
 func DiscoveryService(serviceName string) ServiceInstance {
 	instances := ConsulService.DiscoverServices(serviceName, Logger)
 	//todo lb from config center, default is random.
+
 	if len(instances) < 1 {
 		Logger.Printf("no available client for %s.", serviceName)
 		//todo 异常处理机制

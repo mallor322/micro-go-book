@@ -1,43 +1,42 @@
 package setup
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"context"
 	"encoding/json"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"log"
 	"time"
 )
 
 //初始化Etcd
-func InitEtcd(host, productKey string) {
+func InitEtcd() {
 	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   []string{host},
+		Endpoints:   []string{"39.98.179.73:2379"}, // conf.Etcd.Host
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
 		log.Printf("Connect etcd failed. Error : %v", err)
 	}
-
-	config.SecKillConfCtx.EtcdConf = &config.EtcdConf{
-		EtcdConn:          cli,
-		EtcdSecProductKey: productKey,
-	}
-
+	log.Print("Connect etcd sucess")
+	conf.Etcd.EtcdConn = cli
 	loadSecConf(cli)
-	go waitSecProductKey(cli, config.SecKillConfCtx.EtcdConf.EtcdSecProductKey)
+	go waitSecProductKey(cli, conf.Etcd.EtcdSecProductKey)
 }
 
 //加载秒杀商品信息
 func loadSecConf(cli *clientv3.Client) {
-	rsp, err := cli.Get(context.Background(), config.SecKillConfCtx.EtcdConf.EtcdSecProductKey)
+	log.Printf("Connect etcd sucess %s", conf.Etcd.EtcdSecProductKey)
+	rsp, err := cli.Get(context.Background(), "sec_kill_product") //conf.Etcd.EtcdSecProductKey
+	log.Print("Connect etcd sucess")
 	if err != nil {
+		log.Print("Connect etcd sucess")
 		log.Printf("get product info failed, err : %v", err)
 		return
 	}
-
-	var secProductInfo []*config.SecProductInfoConf
+	log.Printf("get product info ")
+	var secProductInfo []*conf.SecProductInfoConf
 	for _, v := range rsp.Kvs {
 		err := json.Unmarshal(v.Value, &secProductInfo)
 		if err != nil {
@@ -45,6 +44,7 @@ func loadSecConf(cli *clientv3.Client) {
 			return
 		}
 	}
+	log.Print("loadSecConf finished")
 
 	updateSecProductInfo(secProductInfo)
 }
@@ -53,7 +53,7 @@ func loadSecConf(cli *clientv3.Client) {
 func waitSecProductKey(cli *clientv3.Client, key string) {
 	for {
 		rch := cli.Watch(context.Background(), key)
-		var secProductInfo []*config.SecProductInfoConf
+		var secProductInfo []*conf.SecProductInfoConf
 		var getConfSucc = true
 
 		for wrsp := range rch {
@@ -81,13 +81,12 @@ func waitSecProductKey(cli *clientv3.Client, key string) {
 }
 
 //更新秒杀商品信息
-func updateSecProductInfo(secProductInfo []*config.SecProductInfoConf) {
-	tmp := make(map[int]*config.SecProductInfoConf, 1024)
+func updateSecProductInfo(secProductInfo []*conf.SecProductInfoConf) {
+	tmp := make(map[int]*conf.SecProductInfoConf, 1024)
 	for _, v := range secProductInfo {
 		tmp[v.ProductId] = v
 	}
-
-	config.SecKillConfCtx.RWSecProductLock.Lock()
-	config.SecKillConfCtx.SecProductInfoMap = tmp
-	config.SecKillConfCtx.RWSecProductLock.Unlock()
+	conf.SecKill.RWBlackLock.Lock()
+	conf.SecKill.SecProductInfoMap = tmp
+	conf.SecKill.RWBlackLock.Unlock()
 }

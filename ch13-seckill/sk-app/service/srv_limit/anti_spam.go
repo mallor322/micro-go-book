@@ -1,8 +1,9 @@
 package srv_limit
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"fmt"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"log"
 	"sync"
 )
@@ -22,7 +23,7 @@ var SecLimitMgrVars = &SecLimitMgr{
 //防作弊
 func AntiSpam(req *config.SecRequest) (err error) {
 	//判断用户Id是否在黑名单
-	_, ok := config.SecKillConfCtx.IDBlackMap[req.UserId]
+	_, ok := conf.SecKill.IDBlackMap[req.UserId]
 	if ok {
 		err = fmt.Errorf("invalid request")
 		log.Printf("user[%v] is block by id black", req.UserId)
@@ -30,7 +31,7 @@ func AntiSpam(req *config.SecRequest) (err error) {
 	}
 
 	//判断客户端IP是否在黑名单
-	_, ok = config.SecKillConfCtx.IPBlackMap[req.ClientAddr]
+	_, ok = conf.SecKill.IPBlackMap[req.ClientAddr]
 	if ok {
 		err = fmt.Errorf("invalid request")
 		log.Printf("userId[%v] ip[%v] is block by ip black", req.UserId, req.ClientAddr)
@@ -70,25 +71,25 @@ func AntiSpam(req *config.SecRequest) (err error) {
 	SecLimitMgrVars.lock.Unlock()
 
 	//判断该用户一秒内访问次数是否大于配置的最大访问次数
-	if secIdCount > config.SecKillConfCtx.AccessLimitConf.UserSecAccessLimit {
+	if secIdCount > conf.SecKill.AccessLimitConf.UserSecAccessLimit {
 		err = fmt.Errorf("invalid request")
 		return
 	}
 
 	//判断该用户一分钟内访问次数是否大于配置的最大访问次数
-	if minIdCount > config.SecKillConfCtx.AccessLimitConf.UserMinAccessLimit {
+	if minIdCount > conf.SecKill.AccessLimitConf.UserMinAccessLimit {
 		err = fmt.Errorf("invalid request")
 		return
 	}
 
 	//判断该IP一秒内访问次数是否大于配置的最大访问次数
-	if secIpCount > config.SecKillConfCtx.AccessLimitConf.IPSecAccessLimit {
+	if secIpCount > conf.SecKill.AccessLimitConf.IPSecAccessLimit {
 		err = fmt.Errorf("invalid request")
 		return
 	}
 
 	//判断该IP一分钟内访问次数是否大于配置的最大访问次数
-	if minIpCount > config.SecKillConfCtx.AccessLimitConf.IPMinAccessLimit {
+	if minIpCount > conf.SecKill.AccessLimitConf.IPMinAccessLimit {
 		err = fmt.Errorf("invalid request")
 		return
 	}
