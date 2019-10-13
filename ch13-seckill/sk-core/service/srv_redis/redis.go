@@ -1,9 +1,10 @@
 package srv_redis
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
 	"encoding/json"
 	"fmt"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
 	"log"
 	"time"
 )
@@ -33,10 +34,10 @@ func RunProcess() {
 func HandleReader() {
 	log.Println("read goroutine running")
 	for {
-		conn := config.SecLayerCtx.RedisConf.RedisConn
+		conn := conf.Redis.RedisConn
 		for {
 			//从Redis队列中取出数据
-			data, err := conn.BRPop(time.Minute, config.SecLayerCtx.RedisConf.Proxy2layerQueueName).Result()
+			data, err := conn.BRPop(time.Minute, conf.Redis.Proxy2layerQueueName).Result()
 			if err != nil {
 				log.Printf("blpop from data failed, err : %v", err)
 				continue
@@ -85,7 +86,7 @@ func HandleWrite() {
 }
 
 //将数据推入到Redis队列
-func sendToRedis(res *config.SecResponse) (err error) {
+func sendToRedis(res *config.SecResult) (err error) {
 	data, err := json.Marshal(res)
 	if err != nil {
 		log.Printf("marshal failed, err : %v", err)
@@ -93,8 +94,8 @@ func sendToRedis(res *config.SecResponse) (err error) {
 	}
 
 	fmt.Println("推入队列前~~")
-	conn := config.SecLayerCtx.RedisConf.RedisConn
-	err = conn.LPush(config.SecLayerCtx.RedisConf.Layer2proxyQueueName, string(data)).Err()
+	conn := conf.Redis.RedisConn
+	err = conn.LPush(conf.Redis.Layer2proxyQueueName, string(data)).Err()
 	fmt.Println("推入队列后~~")
 	if err != nil {
 		log.Printf("rpush layer to proxy redis queue failed, err : %v", err)

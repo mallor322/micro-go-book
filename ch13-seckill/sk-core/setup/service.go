@@ -1,40 +1,16 @@
 package setup
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_product"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_redis"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_user"
-
 	"fmt"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_redis"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
-func InitService(writeProxy2layerGoroutineNum, readLayer2proxyGoroutineNum, handleUserGoroutineNum,
-	handle2WriteChanSize, maxRequestWaitTimeout, sendToWriteChanTimeout, sendToHandleChanTimeout int64, secKillTokenPassWd string) {
-
-	config.AppConfig.WriteGoroutineNum = int(writeProxy2layerGoroutineNum)
-	config.AppConfig.ReadGoroutineNum = int(readLayer2proxyGoroutineNum)
-	config.AppConfig.HandleUserGoroutineNum = int(handleUserGoroutineNum)
-	config.AppConfig.Handle2WriteChanSize = int(handle2WriteChanSize)
-	config.AppConfig.MaxRequestWaitTimeout = int(maxRequestWaitTimeout)
-	config.AppConfig.SendToWriteChanTimeout = int(sendToWriteChanTimeout)
-	config.AppConfig.SendToHandleChanTimeout = int(sendToHandleChanTimeout)
-	config.AppConfig.TokenPassWd = secKillTokenPassWd
-
-	config.SecLayerCtx.SecLayerConf = config.AppConfig
-	config.SecLayerCtx.Read2HandleChan = make(chan *config.SecRequest, config.AppConfig.Read2HandleChanSize)
-	config.SecLayerCtx.Handle2WriteChan = make(chan *config.SecResponse, config.AppConfig.Handle2WriteChanSize)
-	config.SecLayerCtx.HistoryMap = make(map[int]*srv_user.UserBuyHistory, 10000)
-	config.SecLayerCtx.ProductCountMgr = srv_product.NewProductCountMgr()
-}
-
 func RunService() {
 	//启动处理线程
 	srv_redis.RunProcess()
-
 
 	//ctx := context.Background()
 	errChan := make(chan error)

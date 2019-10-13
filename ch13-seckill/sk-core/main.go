@@ -1,83 +1,98 @@
 package main
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/setup"
+	"context"
+	"flag"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
+	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/setup"
+	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"golang.org/x/time/rate"
+	"net/http"
 	"os"
-	"path/filepath"
+	"os/signal"
+	"syscall"
+	"time"
 )
-
-var cfgFile string
-var Verbose bool
 
 func main() {
 
-	var RootCmd = &cobra.Command{
-		Use:   "SKLayer Server",
-		Short: "SKLayer Server",
-		Long:  "SKLayer Server",
-		Run: func(cmd *cobra.Command, args []string) {
-			serviceMap := viper.GetStringMap("service")
-			writeProxy2layerGoroutineNum, _ := serviceMap["write_proxy2layer_goroutine_num"].(int64)
-			readLayer2proxyGoroutineNum, _ := serviceMap["read_layer2proxy_goroutine_num"].(int64)
-			handleUserGoroutineNum, _ := serviceMap["handle_user_goroutine_num"].(int64)
-			handle2WriteChanSize, _ := serviceMap["handle2write_chan_size"].(int64)
-			maxRequestWaitTimeout, _ := serviceMap["max_request_wait_timeout"].(int64)
-			sendToWriteChanTimeout, _ := serviceMap["send_to_write_chan_timeout"].(int64)
-			sendToHandleChanTimeout, _ := serviceMap["send_to_handle_chan_timeout"].(int64)
-			secKillTokenPassWd, _ := serviceMap["seckill_token_passwd"].(string)
-			setup.InitService(writeProxy2layerGoroutineNum, readLayer2proxyGoroutineNum, handleUserGoroutineNum,
-				handle2WriteChanSize, maxRequestWaitTimeout, sendToWriteChanTimeout, sendToHandleChanTimeout, secKillTokenPassWd)
+	var (
+		servicePort = flag.String("service.port", bootstrap.HttpConfig.Port, "service port")
+	)
 
-			redisMap := viper.GetStringMap("redis")
-			hostRedis, _ := redisMap["host"].(string)
-			pwdRedis, _ := redisMap["password"].(string)
-			dbRedis, _ := redisMap["db"].(int)
-			proxy2layerQueueName, _ := redisMap["proxy2layer_queue_name"].(string)
-			layer2proxyQueueName, _ := redisMap["layer2proxy_queue_name"].(string)
-			setup.InitRedis(hostRedis, pwdRedis, dbRedis, proxy2layerQueueName, layer2proxyQueueName)
+	flag.Parse()
 
-			etcdMap := viper.GetStringMap("etcd")
-			hostEtcd, _ := etcdMap["host"].(string)
-			productKey, _ := etcdMap["product_key"].(string)
-			setup.InitEtcd(hostEtcd, productKey)
+	ctx := context.Background()
+	errChan := make(chan error)
 
-			setup.RunService()
-		},
+	fieldKeys := []string{"method"}
+	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+		Namespace: "aoho",
+		Subsystem: "sk_core",
+		Name:      "request_count",
+		Help:      "Number of requests received.",
+	}, fieldKeys)
+
+	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "aoho",
+		Subsystem: "sk_core",
+		Name:      "request_latency",
+		Help:      "Total duration of requests in microseconds.",
+	}, fieldKeys)
+	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 100)
+
+	var svc service.Service
+	svc = service.UserService{}
+
+	// add logging middleware
+	svc = plugins.LoggingMiddleware(localconfig.Logger)(svc)
+	svc = plugins.Metrics(requestCount, requestLatency)(svc)
+
+	userPoint := endpoint.MakeUserEndpoint(svc)
+	userPoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(userPoint)
+	userPoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "user-endpoint")(userPoint)
+
+	//创建健康检查的Endpoint
+	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
+	healthEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "health-endpoint")(healthEndpoint)
+
+	endpts := endpoint.UserEndpoints{
+		UserEndpoint:        userPoint,
+		HealthCheckEndpoint: healthEndpoint,
 	}
 
-	cobra.OnInitialize(initConfig)
-	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file")
-	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+	//创建http.Handler
+	r := transport.MakeHttpHandler(ctx, endpts, localconfig.ZipkinTracer, localconfig.Logger)
 
-	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
+	//http server
+	go func() {
+		fmt.Println("Http Server start at port:" + *servicePort)
+		setup.InitRedis()
+		setup.InitEtcd()
+		//setup.RunService()
+		//启动前执行注册
+		register.Register()
+		handler := r
+		errChan <- http.ListenAndServe(":"+*servicePort, handler)
+	}()
 
-}
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errChan <- fmt.Errorf("%s", <-c)
+	}()
 
-func initConfig() {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
-	} else {
-		viper.SetConfigName("conf")
-		viper.AddConfigPath("./sk_layer/")
-		viper.AddConfigPath(dir)
-		viper.AutomaticEnv()
-	}
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	} else {
-		fmt.Println(err)
-	}
+	error := <-errChan
+	//服务退出取消注册
+	register.Deregister()
+	fmt.Println(error)
 }

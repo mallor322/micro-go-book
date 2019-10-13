@@ -1,11 +1,12 @@
 package service
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gohouse/gorose/v2"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	"github.com/unknwon/com"
 	"log"
 	"time"
@@ -18,7 +19,7 @@ func NewActivityService() *ActivityService {
 	return &ActivityService{}
 }
 
-func (p *ActivityService) GetActivityList() ([]map[string]interface{}, error) {
+func (p *ActivityService) GetActivityList() ([]gorose.Data, error) {
 	activityEntity := model.NewActivityModel()
 	activityList, err := activityEntity.GetActivityList()
 	if err != nil {
@@ -71,7 +72,9 @@ func (p *ActivityService) CreateActivity(activity *model.Activity) error {
 
 //将商品活动数据同步到Etcd
 func (p *ActivityService) syncToEtcd(activity *model.Activity) error {
-	etcdKey := config.SecAdminConfCtx.EtcdConf.EtcdSecProductKey
+	log.Print("syncToEtcd")
+
+	etcdKey := conf.Etcd.EtcdSecProductKey
 	secProductInfoList, err := p.loadProductFromEtcd(etcdKey)
 	if err != nil {
 		return err
@@ -94,7 +97,7 @@ func (p *ActivityService) syncToEtcd(activity *model.Activity) error {
 		return err
 	}
 
-	conn := config.SecAdminConfCtx.EtcdConf.EtcdConn
+	conn := conf.Etcd.EtcdConn
 	_, err = conn.Put(context.Background(), etcdKey, string(data))
 	if err != nil {
 		log.Printf("put to etcd failed, err : %v, data = [%v]", err, string(data))
@@ -110,7 +113,7 @@ func (p *ActivityService) loadProductFromEtcd(key string) ([]*model.SecProductIn
 	log.Println("start get from etcd success")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	rsp, err := config.SecAdminConfCtx.EtcdConf.EtcdConn.Get(ctx, key)
+	rsp, err := conf.Etcd.EtcdConn.Get(ctx, key)
 	if err != nil {
 		log.Printf("get [%s] from etcd failed, err : %v", key, err)
 		return nil, err

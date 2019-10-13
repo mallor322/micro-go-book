@@ -1,73 +1,100 @@
 package main
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
+	"context"
+	"flag"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
+	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"golang.org/x/time/rate"
+	"net/http"
 	"os"
-	"path/filepath"
+	"os/signal"
+	"syscall"
+	"time"
 )
-
-var cfgFile string
-var Verbose bool
 
 func main() {
 
-	var RootCmd = &cobra.Command{
-		Use:   "SKAdmin Server",
-		Short: "SKAdmin Server",
-		Long:  "SKAdmin Server",
-		Run: func(cmd *cobra.Command, args []string) {
-			mysqlMap := viper.GetStringMap("mysql")
-			hostMysql, _ := mysqlMap["host"].(string)
-			portMysql, _ := mysqlMap["port"].(string)
-			userMysql, _ := mysqlMap["user"].(string)
-			pwdMysql, _ := mysqlMap["pass_wd"].(string)
-			dbMysql, _ := mysqlMap["db"].(string)
-			setup.InitMysql(hostMysql, portMysql, userMysql, pwdMysql, dbMysql)
+	var (
+		servicePort = flag.String("service.port", bootstrap.HttpConfig.Port, "service port")
+	)
 
-			etcdMap := viper.GetStringMap("etcd")
-			hostEtcd, _ := etcdMap["host"].(string)
-			productKey, _ := etcdMap["product_key"].(string)
-			setup.InitEtcd(hostEtcd, productKey)
+	flag.Parse()
 
-			httpMap := viper.GetStringMap("http")
-			hostHttp, _ := httpMap["host"].(string)
-			setup.InitServer(hostHttp)
-		},
+	ctx := context.Background()
+	errChan := make(chan error)
+
+	fieldKeys := []string{"method"}
+	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+		Namespace: "aoho",
+		Subsystem: "user_service",
+		Name:      "request_count",
+		Help:      "Number of requests received.",
+	}, fieldKeys)
+
+	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "aoho",
+		Subsystem: "user_service",
+		Name:      "request_latency",
+		Help:      "Total duration of requests in microseconds.",
+	}, fieldKeys)
+	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 100)
+
+	var svc service.Service
+	svc = service.UserService{}
+
+	// add logging middleware
+	svc = plugins.LoggingMiddleware(localconfig.Logger)(svc)
+	svc = plugins.Metrics(requestCount, requestLatency)(svc)
+
+	userPoint := endpoint.MakeUserEndpoint(svc)
+	userPoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(userPoint)
+	userPoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "user-endpoint")(userPoint)
+
+	//创建健康检查的Endpoint
+	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
+	healthEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "health-endpoint")(healthEndpoint)
+
+	endpts := endpoint.UserEndpoints{
+		UserEndpoint:        userPoint,
+		HealthCheckEndpoint: healthEndpoint,
 	}
 
-	cobra.OnInitialize(initConfig)
-	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file")
-	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
+	//创建http.Handler
+	r := transport.MakeHttpHandler(ctx, endpts, localconfig.ZipkinTracer, localconfig.Logger)
 
-	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
+	//http server
+	go func() {
+		fmt.Println("Http Server start at port:" + *servicePort)
+		mysql.InitMysql(conf.MysqlConfig.Host, conf.MysqlConfig.Port, conf.MysqlConfig.User, conf.MysqlConfig.Pwd, "sec_kill") // conf.MysqlConfig.Db
+		setup.InitEtcd()
+		setup.InitServer(bootstrap.HttpConfig.Host + ":" + bootstrap.HttpConfig.Port)
+		//启动前执行注册
+		register.Register()
+		handler := r
+		errChan <- http.ListenAndServe(":"+*servicePort, handler)
+	}()
 
-}
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errChan <- fmt.Errorf("%s", <-c)
+	}()
 
-func initConfig() {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
-	} else {
-		viper.SetConfigName("conf")
-		viper.AddConfigPath("./sk_admin/")
-		viper.AddConfigPath(dir)
-		viper.AutomaticEnv()
-	}
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	} else {
-		fmt.Println(err)
-	}
+	error := <-errChan
+	//服务退出取消注册
+	register.Deregister()
+	fmt.Println(error)
 }

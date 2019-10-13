@@ -1,24 +1,22 @@
 package setup
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
-	"go.etcd.io/etcd/clientv3"
+	"github.com/coreos/etcd/clientv3"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"log"
 	"time"
 )
 
 //初始化Etcd
-func InitEtcd(host, productKey string) {
+func InitEtcd() {
+
 	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   []string{host},
+		Endpoints:   []string{"39.98.179.73:2379"}, // conf.Etcd.Host
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
 		log.Printf("Connect etcd failed. Error : %v", err)
 	}
-
-	config.SecAdminConfCtx.EtcdConf = &config.EtcdConf{
-		EtcdConn:          cli,
-		EtcdSecProductKey: productKey,
-	}
+	conf.Etcd.EtcdSecProductKey = "product"
+	conf.Etcd.EtcdConn = cli
 }

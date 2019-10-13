@@ -1,86 +1,69 @@
 package config
 
 import (
-	"github.com/coreos/etcd/clientv3"
-	"github.com/go-redis/redis"
+	"github.com/go-kit/kit/log"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
+	_ "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
+	_ "github.com/openzipkin/zipkin-go/reporter/recorder"
+	"github.com/spf13/viper"
+	"os"
 	"sync"
 )
 
 const (
-	ProductStatusNormal       = 0 //商品状态正常
-	ProductStatusSaleOut      = 1 //商品售罄
-	ProductStatusForceSaleOut = 2 //商品强制售罄
+	kConfigType = "CONFIG_TYPE"
 )
 
-var SecKillConfCtx = &SecKillConf{
-	SecProductInfoMap: make(map[int]*SecProductInfoConf, 1024),
-	UserConnMap:       make(map[string]chan *SecResult, 1024),
-	SecReqChan:        make(chan *SecRequest, 1024),
+var ZipkinTracer *zipkin.Tracer
+var Logger log.Logger
+
+func init() {
+	Logger = log.NewLogfmtLogger(os.Stderr)
+	Logger = log.With(Logger, "ts", log.DefaultTimestampUTC)
+	Logger = log.With(Logger, "caller", log.DefaultCaller)
+	viper.AutomaticEnv()
+	initDefault()
+
+	if err := conf.LoadRemoteConfig(); err != nil {
+		Logger.Log("Fail to load remote config", err)
+	}
+
+	if err := conf.Sub("mysql", &conf.MysqlConfig); err != nil {
+		Logger.Log("Fail to parse mysql", err)
+	}
+	if err := conf.Sub("trace", &conf.TraceConfig); err != nil {
+		Logger.Log("Fail to parse trace", err)
+	}
+	zipkinUrl := "http://" + conf.TraceConfig.Host + ":" + conf.TraceConfig.Port + conf.TraceConfig.Url
+	Logger.Log("zipkin url", zipkinUrl)
+	initTracer(zipkinUrl)
 }
 
-
-
-//Etcd配置
-type EtcdConf struct {
-	EtcdConn          *clientv3.Client //链接
-	EtcdSecProductKey string           //商品键
+func initDefault() {
+	viper.SetDefault(kConfigType, "yaml")
 }
 
-//访问限制
-type AccessLimitConf struct {
-	IPSecAccessLimit   int //IP每秒钟访问限制
-	UserSecAccessLimit int //用户每秒钟访问限制
-	IPMinAccessLimit   int //IP每分钟访问限制
-	UserMinAccessLimit int //用户每分钟访问限制
-}
-
-
-type RedisConf struct {
-	RedisConn            *redis.Client //链接
-	Proxy2layerQueueName string        //队列名称
-	Layer2proxyQueueName string        //队列名称
-	IdBlackListHash      string        //用户黑名单hash表
-	IpBlackListHash      string        //IP黑名单Hash表
-	IdBlackListQueue     string        //用户黑名单队列
-	IpBlackListQueue     string        //IP黑名单队列
-}
-
-
-type SecKillConf struct {
-	RedisConf *RedisConf
-	EtcdConf  *EtcdConf
-
-	SecProductInfoMap map[int]*SecProductInfoConf
-	RWSecProductLock  sync.RWMutex
-
-	CookieSecretKey string
-
-	ReferWhiteList []string //白名单
-
-	IPBlackMap map[string]bool
-	IDBlackMap map[int]bool
-
-	AccessLimitConf AccessLimitConf
-
-	RWBlackLock                  sync.RWMutex
-	WriteProxy2LayerGoroutineNum int
-	ReadProxy2LayerGoroutineNum  int
-
-	SecReqChan     chan *SecRequest
-	SecReqChanSize int
-
-	UserConnMap     map[string]chan *SecResult
-	UserConnMapLock sync.Mutex
-}
-
-//商品信息配置
-type SecProductInfoConf struct {
-	ProductId int   `json:"product_id"` //商品ID
-	StartTime int64 `json:"start_time"` //开始时间
-	EndTime   int64 `json:"end_time"`   //结束时间
-	Status    int   `json:"status"`     //状态
-	Total     int   `json:"total"`      //商品总数量
-	Left      int   `json:"left"`       //商品剩余数量
+func initTracer(zipkinURL string) {
+	var (
+		err           error
+		useNoopTracer = zipkinURL == ""
+		reporter      = zipkinhttp.NewReporter(zipkinURL)
+	)
+	//defer reporter.Close()
+	zEP, _ := zipkin.NewEndpoint(bootstrap.HttpConfig.ServiceName, bootstrap.HttpConfig.Port)
+	ZipkinTracer, err = zipkin.NewTracer(
+		reporter, zipkin.WithLocalEndpoint(zEP), zipkin.WithNoopTracer(useNoopTracer),
+	)
+	if err != nil {
+		Logger.Log("err", err)
+		os.Exit(1)
+	}
+	if !useNoopTracer {
+		Logger.Log("tracer", "Zipkin", "type", "Native", "URL", zipkinURL)
+	}
 }
 
 type SecResult struct {
@@ -105,3 +88,23 @@ type SecRequest struct {
 	CloseNotify   <-chan bool     `json:"-"`
 	ResultChan    chan *SecResult `json:"-"`
 }
+
+var SkAppContext = &SkAppCtx{
+	UserConnMap: make(map[string]chan *SecResult, 1024),
+	SecReqChan:  make(chan *SecRequest, 1024),
+}
+
+type SkAppCtx struct {
+	SecReqChan       chan *SecRequest
+	SecReqChanSize   int
+	RWSecProductLock sync.RWMutex
+
+	UserConnMap     map[string]chan *SecResult
+	UserConnMapLock sync.Mutex
+}
+
+const (
+	ProductStatusNormal       = 0 //商品状态正常
+	ProductStatusSaleOut      = 1 //商品售罄
+	ProductStatusForceSaleOut = 2 //商品强制售罄
+)

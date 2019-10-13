@@ -1,8 +1,9 @@
 package conf
 
 import (
+	"github.com/coreos/etcd/clientv3"
 	"github.com/go-redis/redis"
-	"go.etcd.io/etcd/clientv3"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_limit"
 	"sync"
 )
 
@@ -17,6 +18,7 @@ var (
 type EtcdConf struct {
 	EtcdConn          *clientv3.Client //链接
 	EtcdSecProductKey string           //商品键
+	Host              string
 }
 
 type TraceConf struct {
@@ -42,9 +44,15 @@ type RedisConf struct {
 	IpBlackListHash      string        //IP黑名单Hash表
 	IdBlackListQueue     string        //用户黑名单队列
 	IpBlackListQueue     string        //IP黑名单队列
+	Host                 string
+	Password             string
+	Db                   int
 }
 
 type SecKillConf struct {
+	RedisConf *RedisConf
+	EtcdConf  *EtcdConf
+
 	CookieSecretKey string
 
 	ReferWhiteList []string //白名单
@@ -54,6 +62,26 @@ type SecKillConf struct {
 	RWBlackLock                  sync.RWMutex
 	WriteProxy2LayerGoroutineNum int
 	ReadProxy2LayerGoroutineNum  int
+
+	IPBlackMap map[string]bool
+	IDBlackMap map[int]bool
+
+	SecProductInfoMap map[int]*SecProductInfoConf
+}
+
+//商品信息配置
+type SecProductInfoConf struct {
+	ProductId         int     `json:"product_id"`           //商品ID
+	StartTime         int64   `json:"start_time"`           //开始时间
+	EndTime           int64   `json:"end_time"`             //结束时间
+	Status            int     `json:"status"`               //状态
+	Total             int     `json:"total"`                //商品总数量
+	Left              int     `json:"left"`                 //商品剩余数量
+	OnePersonBuyLimit int     `json:"one_person_buy_limit"` //单个用户购买数量限制
+	BuyRate           float64 `json:"buy_rate"`             //购买频率限制
+	SoldMaxLimit      int     `json:"sold_max_limit"`
+	// todo: error
+	SecLimit *srv_limit.SecLimit `json:"sec_limit"` //限速控制
 }
 
 //访问限制

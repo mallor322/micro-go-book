@@ -1,7 +1,8 @@
 package model
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
+	"github.com/gohouse/gorose/v2"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"log"
 )
 
@@ -23,8 +24,8 @@ func (p *ProductModel) getTableName() string {
 	return "product"
 }
 
-func (p *ProductModel) GetProductList() ([]map[string]interface{}, error) {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
+func (p *ProductModel) GetProductList() ([]gorose.Data, error) {
+	conn := mysql.DB()
 	list, err := conn.Table(p.getTableName()).Get()
 	if err != nil {
 		log.Printf("Error : %v", err)
@@ -34,7 +35,7 @@ func (p *ProductModel) GetProductList() ([]map[string]interface{}, error) {
 }
 
 func (p *ProductModel) CreateProduct(product *Product) error {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
+	conn := mysql.DB()
 	_, err := conn.Table(p.getTableName()).Data(map[string]interface{}{
 		"product_name": product.ProductName,
 		"total":        product.Total,

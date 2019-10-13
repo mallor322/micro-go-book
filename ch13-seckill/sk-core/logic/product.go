@@ -1,14 +1,14 @@
 package logic
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_limit"
 	"context"
 	"encoding/json"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_limit"
 	"log"
 	"time"
 )
-//"go.etcd.io/etcd/mvcc/mvccpb"
 
 //从Etcd中加载商品数据
 func LoadProductFromEtcd() {
@@ -16,14 +16,14 @@ func LoadProductFromEtcd() {
 	defer cancel()
 
 	//从etcd获取商品数据
-	rsp, err := config.SecLayerCtx.EtcdConf.EtcdConn.Get(ctx, config.SecLayerCtx.EtcdConf.EtcdSecProductKey)
+	rsp, err := conf.Etcd.EtcdConn.Get(ctx, conf.Etcd.EtcdSecProductKey)
 	if err != nil {
-		log.Printf("get [%s] from etcd failed. Error : %v", config.SecLayerCtx.EtcdConf.EtcdSecProductKey, err)
+		log.Printf("get [%s] from etcd failed. Error : %v", conf.Etcd.EtcdSecProductKey, err)
 		return
 	}
 
 	//结构转换
-	var secProductInfo []*config.SecProductInfoConf
+	var secProductInfo []*conf.SecProductInfoConf
 	for _, v := range rsp.Kvs {
 		err = json.Unmarshal(v.Value, &secProductInfo)
 		if err != nil {
@@ -42,8 +42,8 @@ func LoadProductFromEtcd() {
 }
 
 //更新商品信息
-func updateSecProductInfo(secProductInfo []*config.SecProductInfoConf) {
-	tmp := make(map[int]*config.SecProductInfoConf, 1024)
+func updateSecProductInfo(secProductInfo []*conf.SecProductInfoConf) {
+	tmp := make(map[int]*conf.SecProductInfoConf, 1024)
 
 	for _, v := range secProductInfo {
 		productInfo := v
@@ -52,7 +52,7 @@ func updateSecProductInfo(secProductInfo []*config.SecProductInfoConf) {
 	}
 
 	config.SecLayerCtx.RWSecProductLock.Lock()
-	config.SecLayerCtx.SecLayerConf.SecProductInfoMap = tmp
+	conf.SecKill.SecProductInfoMap = tmp
 	config.SecLayerCtx.RWSecProductLock.Unlock()
 }
 
@@ -62,12 +62,12 @@ func initSecProductWatcher() {
 }
 
 func watchSecProductKey() {
-	key := config.SecLayerCtx.EtcdConf.EtcdSecProductKey
+	key := conf.Etcd.EtcdSecProductKey
 
 	//var err error
 	for {
-		rch := config.SecLayerCtx.EtcdConf.EtcdConn.Watch(context.Background(), key)
-		var secProductInfo []*config.SecProductInfoConf
+		rch := conf.Etcd.EtcdConn.Watch(context.Background(), key)
+		var secProductInfo []*conf.SecProductInfoConf
 		var getConfSucc = true
 
 		for wrsp := range rch {

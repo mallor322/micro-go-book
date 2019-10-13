@@ -8,6 +8,7 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"strings"
