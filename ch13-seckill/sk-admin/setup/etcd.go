@@ -17,6 +17,6 @@ func InitEtcd() {
 	if err != nil {
 		log.Printf("Connect etcd failed. Error : %v", err)
 	}
-
+	conf.Etcd.EtcdSecProductKey = "product"
 	conf.Etcd.EtcdConn = cli
 }

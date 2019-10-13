@@ -72,6 +72,8 @@ func (p *ActivityService) CreateActivity(activity *model.Activity) error {
 
 //将商品活动数据同步到Etcd
 func (p *ActivityService) syncToEtcd(activity *model.Activity) error {
+	log.Print("syncToEtcd")
+
 	etcdKey := conf.Etcd.EtcdSecProductKey
 	secProductInfoList, err := p.loadProductFromEtcd(etcdKey)
 	if err != nil {

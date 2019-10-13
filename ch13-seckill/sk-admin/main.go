@@ -78,7 +78,7 @@ func main() {
 	//http server
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
-		mysql.InitMysql(conf.MysqlConfig.Host, conf.MysqlConfig.Port, conf.MysqlConfig.User, conf.MysqlConfig.Pwd, conf.MysqlConfig.Db)
+		mysql.InitMysql(conf.MysqlConfig.Host, conf.MysqlConfig.Port, conf.MysqlConfig.User, conf.MysqlConfig.Pwd, "sec_kill") // conf.MysqlConfig.Db
 		setup.InitEtcd()
 		setup.InitServer(bootstrap.HttpConfig.Host + ":" + bootstrap.HttpConfig.Port)
 		//启动前执行注册
