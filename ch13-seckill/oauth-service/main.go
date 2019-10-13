@@ -13,9 +13,6 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
 	"github.com/openzipkin/zipkin-go/propagation/b3"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/time/rate"
@@ -64,7 +61,7 @@ func main() {
 	svc = plugins.LoggingMiddleware(localconfig.Logger)(svc)
 	svc = plugins.Metrics(requestCount, requestLatency)(svc)
 
-	userPoint := endpoint.MakeUserEndpoint(svc)
+	userPoint := endpoint.MakeHealthCheckEndpoint(svc)
 	userPoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(userPoint)
 	userPoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "user-endpoint")(userPoint)
 

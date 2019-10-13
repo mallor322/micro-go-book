@@ -14,19 +14,7 @@ type OAuth2Endpoints struct {
 	HealthCheckEndpoint endpoint.Endpoint
 }
 
-func (ue UserEndpoints) Check(ctx context.Context, username string, password string) (bool, error) {
-	//ctx := context.Background()
-	resp, err := ue.UserEndpoint(ctx, UserRequest{
-		Username: username,
-		Password: password,
-	})
-	response := resp.(UserResponse)
-	return response.Result, err
-}
 
-func (ue UserEndpoints) HealthCheck() bool {
-	return false
-}
 
 var (
 	ErrInvalidRequestType = errors.New("invalid username, password")

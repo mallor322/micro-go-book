@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	kitendpoint "github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/zipkin"
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
 	gozipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -20,22 +22,27 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints endpts.UserEndpoints, zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 	zipkinServer := zipkin.HTTPServerTrace(zipkinTracer, zipkin.Name("http-transport"))
 
 	options := []kithttp.ServerOption{
-		//kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorHandler(transport.NewLogErrorHandler(logger)),
-		//kithttp.ServerErrorEncoder(kithttp.DefaultErrorEncoder),
 		kithttp.ServerErrorEncoder(encodeError),
 		zipkinServer,
 	}
 
-	r.Methods("POST").Path("/check/valid").Handler(kithttp.NewServer(
-		endpoints.UserEndpoint,
-		decodeUserRequest,
-		encodeUserResponse,
+	r.Methods("POST").Path("/oauth/token").Handler(kithttp.NewServer(
+		endpoints.TokenEndpoint,
+		decodeTokenRequest,
+		encodeJsonResponse,
+		options...,
+	))
+
+	r.Methods("POST").Path("/oauth/check_token").Handler(kithttp.NewServer(
+		endpoints.CheckTokenEndpoint,
+		decodeCheckTokenRequest,
+		encodeJsonResponse,
 		options...,
 	))
 
@@ -45,15 +52,23 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.UserEndpoints, zipkin
 	r.Methods("GET").Path("/health").Handler(kithttp.NewServer(
 		endpoints.HealthCheckEndpoint,
 		decodeHealthCheckRequest,
-		encodeUserResponse,
+		encodeJsonResponse,
 		options...,
 	))
 
 	return r
 }
 
-// decodeUserRequest decode request params to struct
-func decodeUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var userRequest endpts.UserRequest
+	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
+		return nil, err
+	}
+	return userRequest, nil
+
+}
+
+func decodeCheckTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	var userRequest endpts.UserRequest
 	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
 		return nil, err
@@ -74,13 +89,30 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	})
 }
 
-// encodeArithmeticResponse encode response to return
-func encodeUserResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+func clientAuthorizationMiddleware(clientDetailsService *service.ClientDetailsService) kitendpoint.Middleware  {
+
+
+	return func(next kitendpoint.Endpoint) kitendpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (interface{}, error) {
+
+
+
+
+			return next(ctx, request)
+		}
+	}
+
+
+
+}
+
+func encodeJsonResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	return json.NewEncoder(w).Encode(response)
 }
 
+
 // decodeHealthCheckRequest decode request
 func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	return endpts.HealthRequest{}, nil
+	return endpoint.HealthRequest{}, nil
 }
