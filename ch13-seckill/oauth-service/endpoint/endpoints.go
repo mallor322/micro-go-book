@@ -66,7 +66,9 @@ func MakeTokenEndpoint(svc service.TokenGranter) endpoint.Endpoint {
 	}
 }
 
-func MakeUserEndpoint(svc service.Service) endpoint.Endpoint {
+
+
+func MakeCheckTokenEndpoint(svc service.TokenService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(UserRequest)
 

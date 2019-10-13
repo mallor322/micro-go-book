@@ -10,11 +10,12 @@ import (
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/plugins"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
 	"github.com/openzipkin/zipkin-go/propagation/b3"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -38,32 +39,19 @@ func main() {
 	ctx := context.Background()
 	errChan := make(chan error)
 
-	fieldKeys := []string{"method"}
-	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-		Namespace: "aoho",
-		Subsystem: "user_service",
-		Name:      "request_count",
-		Help:      "Number of requests received.",
-	}, fieldKeys)
-
-	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "aoho",
-		Subsystem: "user_service",
-		Name:      "request_latency",
-		Help:      "Total duration of requests in microseconds.",
-	}, fieldKeys)
 	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 100)
 
-	var svc service.Service
-	svc = service.UserService{}
+	var tokenService service.TokenService
+	var tokenGranter service.TokenGranter
+	var clientDetailsService *service.ClientDetailsService
 
 	// add logging middleware
-	svc = plugins.LoggingMiddleware(localconfig.Logger)(svc)
-	svc = plugins.Metrics(requestCount, requestLatency)(svc)
 
-	userPoint := endpoint.MakeHealthCheckEndpoint(svc)
-	userPoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(userPoint)
-	userPoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "user-endpoint")(userPoint)
+
+	tokenEndpoint := endpoint.MakeTokenEndpoint(tokenGranter)
+	tokenEndpoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(tokenEndpoint)
+	tokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "token-endpoint")(tokenEndpoint)
+	tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(tokenEndpoint)
 
 	//创建健康检查的Endpoint
 	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
