@@ -1,11 +1,12 @@
 package srv_redis
 
 import (
+	"crypto/md5"
+	"fmt"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_err"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_user"
-	"crypto/md5"
-	"fmt"
 	"log"
 	"time"
 )
@@ -17,7 +18,7 @@ func HandleUser() {
 		res, err := HandleSkill(req)
 		if err != nil {
 			log.Printf("process request %v failed, err : %v", err)
-			res = &config.SecResponse{
+			res = &config.SecResult{
 				Code: srv_err.ErrServiceBusy,
 			}
 		}
@@ -33,15 +34,15 @@ func HandleUser() {
 	return
 }
 
-func HandleSkill(req *config.SecRequest) (res *config.SecResponse, err error) {
+func HandleSkill(req *config.SecRequest) (res *config.SecResult, err error) {
 	config.SecLayerCtx.RWSecProductLock.RLock()
 	defer config.SecLayerCtx.RWSecProductLock.RUnlock()
 
-	res = &config.SecResponse{}
+	res = &config.SecResult{}
 	res.ProductId = req.ProductId
 	res.UserId = req.UserId
 
-	product, ok := config.SecLayerCtx.SecLayerConf.SecProductInfoMap[req.ProductId]
+	product, ok := conf.SecKill.SecProductInfoMap[req.ProductId]
 	if !ok {
 		log.Printf("not found product : %v", req.ProductId)
 		res.Code = srv_err.ErrNotFoundProduct
