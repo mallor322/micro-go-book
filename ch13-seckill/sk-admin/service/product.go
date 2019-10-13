@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/gohouse/gorose/v2"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	"log"
 )
@@ -22,7 +23,7 @@ func (p *ProductServer) CreateProduct(product *model.Product) error {
 	return nil
 }
 
-func (p *ProductServer) GetProductList() ([]map[string]interface{}, error) {
+func (p *ProductServer) GetProductList() ([]gorose.Data, error) {
 	productEntity := model.NewProductModel()
 	productList, err := productEntity.GetProductList()
 	if err != nil {

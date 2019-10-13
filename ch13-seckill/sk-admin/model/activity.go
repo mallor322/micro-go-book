@@ -1,7 +1,8 @@
 package model
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/config"
+	"github.com/gohouse/gorose/v2"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"log"
 )
 
@@ -51,8 +52,8 @@ func (p *ActivityModel) getTableName() string {
 	return "activity"
 }
 
-func (p *ActivityModel) GetActivityList() ([]map[string]interface{}, error) {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
+func (p *ActivityModel) GetActivityList() ([]gorose.Data, error) {
+	conn := mysql.DB()
 	list, err := conn.Table(p.getTableName()).Order("activity_id desc").Get()
 	if err != nil {
 		log.Printf("Error : %v", err)
@@ -62,7 +63,7 @@ func (p *ActivityModel) GetActivityList() ([]map[string]interface{}, error) {
 }
 
 func (p *ActivityModel) CreateActivity(activity *Activity) error {
-	conn := config.SecAdminConfCtx.DbConf.DbConn.Use()
+	conn := mysql.DB()
 	_, err := conn.Table(p.getTableName()).Data(
 		map[string]interface{}{
 			"activity_name": activity.ActivityName,

@@ -10,19 +10,14 @@ import (
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
-	"github.com/openzipkin/zipkin-go/propagation/b3"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/time/rate"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -34,7 +29,6 @@ func main() {
 
 	var (
 		servicePort = flag.String("service.port", bootstrap.HttpConfig.Port, "service port")
-		grpcAddr    = flag.String("grpc", ":9008", "gRPC listen address.")
 	)
 
 	flag.Parse()
@@ -85,8 +79,8 @@ func main() {
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
 		mysql.InitMysql(conf.MysqlConfig.Host, conf.MysqlConfig.Port, conf.MysqlConfig.User, conf.MysqlConfig.Pwd, conf.MysqlConfig.Db)
-		setup.InitEtcd("localhost", conf.Etcd.EtcdSecProductKey)
-		setup.InitServer("localhost")
+		setup.InitEtcd()
+		setup.InitServer(bootstrap.HttpConfig.Host + ":" + bootstrap.HttpConfig.Port)
 		//启动前执行注册
 		register.Register()
 		handler := r
