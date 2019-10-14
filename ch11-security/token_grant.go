@@ -36,7 +36,6 @@ type UsernamePasswordTokenGranter struct {
 	supportGrantType string
 	userDetailsService UserDetailsService
 	tokenService *TokenService
-
 }
 
 func (tokenGranter *UsernamePasswordTokenGranter) grant(grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {

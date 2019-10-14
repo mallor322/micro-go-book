@@ -3,6 +3,7 @@ package discover
 import (
 	"github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
+	"github.com/hashicorp/consul/api/watch"
 	"log"
 	"strconv"
 )
@@ -22,6 +23,7 @@ func New(consulHost string, consulPort string) *DiscoveryClientInstance {
 	return &DiscoveryClientInstance{
 		Host:   consulHost,
 		Port:   port,
+		config:consulConfig,
 		client: client,
 	}
 }
@@ -73,18 +75,58 @@ func (consulClient *DiscoveryClientInstance) DeRegister(instanceId string, logge
 	return true
 }
 
-func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
+func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []*api.AgentService {
 
-	// 根据服务名请求服务实例列表，可以添加额外的筛选参数
+	//  该服务已监控并缓存
+	instanceList, ok := consulClient.instancesMap.Load(serviceName); if ok{
+		return instanceList.([]*api.AgentService)
+	}
+	// 申请锁
+	consulClient.mutex.Lock()
+	// 再次检查是否监控
+	instanceList, ok = consulClient.instancesMap.Load(serviceName); if ok{
+		return instanceList.([]*api.AgentService)
+	} else {
+		// 注册监控
+		go func() {
+			params := make(map[string]interface{})
+			params["type"] = "service"
+			params["service"] = serviceName
+			plan, _ := watch.Parse(params)
+			plan.Handler = func(u uint64, i interface{}) {
+				if i == nil{
+					return
+				}
+				v, ok := i.([]*api.ServiceEntry)
+				if !ok || len(v) == 0 {
+					return // 数据异常，忽略
+				}
+				var healthServices []*api.AgentService
+				for _, service := range v{
+					if service.Checks.AggregatedStatus() == api.HealthPassing{
+						healthServices = append(healthServices, service.Service)
+					}
+				}
+				consulClient.instancesMap.Store(serviceName, healthServices)
+			}
+			defer plan.Stop()
+			plan.Run(consulClient.config.Address)
+		}()
+	}
+	defer consulClient.mutex.Unlock()
+
+	// 根据服务名请求服务实例列表
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
-	if err != nil {
+	if err != nil{
+		consulClient.instancesMap.Store(serviceName, []*api.AgentService{})
 		logger.Println("Discover Service Error!")
 		return nil
 	}
-
-	instances := make([]interface{}, len(entries))
+	instances := make([]*api.AgentService, len(entries))
 	for i := 0; i < len(instances); i++ {
 		instances[i] = entries[i].Service
 	}
+	consulClient.instancesMap.Store(serviceName, instances)
 	return instances
+
 }
