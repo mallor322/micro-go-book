@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7c54925c-0994-42ea-bc4e-c427ef726174" name="Default Changelist" comment="">
+    <list default="true" id="7c54925c-0994-42ea-bc4e-c427ef726174" name="Default Changelist" comment="sk-core">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ch13-seckill/common/config/ConfigProperty.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/common/config/ConfigProperty.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-app/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-app/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/config/config.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/logic/product.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-core/logic/product.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-core/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/redis.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/redis.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/user_skill.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/user_skill.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/setup/etcd.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-core/setup/etcd.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/setup/redis.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-core/setup/redis.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-core/setup/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-core/setup/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-admin/controller/activity/activity.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-admin/controller/activity/activity.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-admin/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-admin/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-admin/service/activity.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-admin/service/activity.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,85 +27,121 @@
     <option name="HIDDEN_KINDS">
       <set />
     </option>
-    <expand />
+    <expand>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="MySQL - user@106.15.233.99" type="feb32156:DbDataSourceImpl" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="MySQL - user@106.15.233.99" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="MySQL - user@106.15.233.99" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="sec_kill: schema" type="76f4a085:MysqlImplModel$Schema" />
+      </path>
+    </expand>
     <select />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/config/config.go">
+        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/model/product.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="72" column="36" selection-start-line="72" selection-start-column="36" selection-end-line="72" selection-end-column="36" />
+            <state relative-caret-position="417">
+              <caret line="36" column="23" selection-start-line="36" selection-start-column="23" selection-end-line="36" selection-end-column="23" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_user/user_history.go">
+        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/service/activity.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-161" />
+            <state relative-caret-position="258">
+              <caret line="64" selection-start-line="64" selection-end-line="64" />
+              <folding>
+                <element signature="e#17#279#0" expanded="true" />
+              </folding>
+            </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/redis.go">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/zk.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1024">
-              <caret line="98" column="26" lean-forward="true" selection-start-line="98" selection-start-column="26" selection-end-line="98" selection-end-column="26" />
+            <state relative-caret-position="187">
+              <caret line="16" column="5" lean-forward="true" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/user_skill.go">
+        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/model/activity.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-382">
-              <caret line="61" column="5" lean-forward="true" selection-start-line="61" selection-start-column="5" selection-end-line="61" selection-end-column="5" />
+            <state relative-caret-position="65">
+              <caret line="64" column="24" selection-start-line="64" selection-start-column="24" selection-end-line="64" selection-end-column="24" />
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/controller/activity/activity.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="213">
+              <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
+              <folding>
+                <element signature="e#18#231#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/config/config.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-583" />
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ch13-seckill/common/config/ConfigProperty.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="292">
-              <caret line="80" column="80" selection-start-line="80" selection-start-column="80" selection-end-line="80" selection-end-column="80" />
-              <folding>
-                <element signature="e#14#96#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-994">
+              <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/service.go">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_err/error.go">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_limit/sec_limit.go">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_product/product_count.go">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/logic/product.go">
+        <entry file="file://$PROJECT_DIR$/ch13-seckill/common/config/config.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="301">
-              <caret line="69" column="34" lean-forward="true" selection-start-line="69" selection-start-column="34" selection-end-line="69" selection-end-column="34" />
-              <folding>
-                <element signature="e#15#219#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="400">
+              <caret line="57" column="7" selection-start-line="57" selection-start-column="4" selection-end-line="57" selection-end-column="7" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="das://8808838e-a75c-4be9-b8d2-ca1dddb001eb/schema/sec_kill/table/activity">
+          <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+            <state projectRestartId="eaeccd06-9276-4683-b19d-1a95d052331b">
+              <filtering>
+                <filter text="" />
+              </filtering>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="das://8808838e-a75c-4be9-b8d2-ca1dddb001eb/schema/sec_kill/table/product">
+          <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+            <state projectRestartId="eaeccd06-9276-4683-b19d-1a95d052331b">
+              <filtering>
+                <filter text="" />
+              </filtering>
             </state>
           </provider>
         </entry>
@@ -134,6 +166,7 @@
       <find>endpts</find>
       <find>GetBookInfo</find>
       <find>secProductInfo</find>
+      <find>etcdKey</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="/usr/local/go" />
@@ -143,12 +176,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/ch9-resiliency/gateway.go" />
-        <option value="$PROJECT_DIR$/ch9-resiliency/hystrix_handler.go" />
-        <option value="$PROJECT_DIR$/ch11-security.go" />
-        <option value="$PROJECT_DIR$/ch11-security/go.mod" />
-        <option value="$PROJECT_DIR$/ch9-resiliency/calculate_service.go" />
-        <option value="$PROJECT_DIR$/basic/kit_consul_client.go" />
         <option value="$PROJECT_DIR$/ch9-resiliency/use_calculate_service.go" />
         <option value="$PROJECT_DIR$/basic/basic_service.go" />
         <option value="$PROJECT_DIR$/ch11-security/main.go" />
@@ -177,13 +204,10 @@
         <option value="$PROJECT_DIR$/ch13-seckill/sk-app/bootstrap.yaml" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-app/setup/redis.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-app/setup/etcd.go" />
-        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/bootstrap.yaml" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/model/activity.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/model/product.go" />
-        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/service/activity.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/service/product.go" />
-        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/main.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-app/main.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-core/setup/redis.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-core/setup/service.go" />
@@ -192,8 +216,17 @@
         <option value="$PROJECT_DIR$/ch13-seckill/sk-core/config/config.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/redis.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/user_skill.go" />
-        <option value="$PROJECT_DIR$/ch13-seckill/common/config/ConfigProperty.go" />
         <option value="$PROJECT_DIR$/ch13-seckill/sk-core/logic/product.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/etcd_test.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd_test.go" />
+        <option value="$PROJECT_DIR$/go.mod" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/setup/zk_test.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/common/config/ConfigProperty.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/main.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/controller/activity/activity.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/service/activity.go" />
+        <option value="$PROJECT_DIR$/ch13-seckill/sk-admin/setup/zk.go" />
       </list>
     </option>
   </component>
@@ -227,6 +260,19 @@
               <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
               <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
               <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
+              <item name="common" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
+              <item name="common" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
+              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
               <item name="sk-admin" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -248,16 +294,7 @@
               <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
               <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
               <item name="sk-admin" type="462c0819:PsiDirectoryNode" />
-              <item name="controller" type="462c0819:PsiDirectoryNode" />
-              <item name="activity" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-admin" type="462c0819:PsiDirectoryNode" />
-              <item name="controller" type="462c0819:PsiDirectoryNode" />
-              <item name="product" type="462c0819:PsiDirectoryNode" />
+              <item name="model" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
@@ -272,107 +309,6 @@
               <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
               <item name="sk-admin" type="462c0819:PsiDirectoryNode" />
               <item name="setup" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-app" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-app" type="462c0819:PsiDirectoryNode" />
-              <item name="config" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-app" type="462c0819:PsiDirectoryNode" />
-              <item name="setup" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="config" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="logic" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-              <item name="srv_err" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-              <item name="srv_limit" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-              <item name="srv_product" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-              <item name="srv_redis" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-              <item name="srv_user" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="setup" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Micro-Go-Pracrise" type="462c0819:PsiDirectoryNode" />
-              <item name="ch13-seckill" type="462c0819:PsiDirectoryNode" />
-              <item name="sk-core" type="462c0819:PsiDirectoryNode" />
-              <item name="transport" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
@@ -395,6 +331,13 @@
               <item name="Go SDK 1.12.7" type="20ee2d1f:SyntheticLibraryElementNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="Micro-Go-Pracrise" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="Go SDK 1.12.7" type="20ee2d1f:SyntheticLibraryElementNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="context" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -406,6 +349,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="DatabaseDriversLRU" value="mysql" />
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="GO_FMT" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -413,6 +357,7 @@
     <property name="configurable.Global.GOPATH.is.expanded" value="true" />
     <property name="configurable.Module.GOPATH.is.expanded" value="true" />
     <property name="configurable.Project.GOPATH.is.expanded" value="true" />
+    <property name="database.console.LAST_STATE" value="false" />
     <property name="go.gopath.indexing.explicitly.defined" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
@@ -448,15 +393,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Go Build.go build main.go (1)">
-    <configuration name="go build basic_service.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="Micro-Go-Pracrise" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$/ch9-resiliency/basic_service.go" />
-      <directory value="$PROJECT_DIR$/" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Go Build.go build main.go (2)">
     <configuration name="go build client.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="Micro-Go-Pracrise" />
       <working_directory value="$PROJECT_DIR$" />
@@ -475,6 +412,15 @@
       <directory value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
+    <configuration name="go build main.go (2)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Micro-Go-Pracrise" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/ch13-seckill/sk-admin/main.go" />
+      <package value="github.com/keets2012/Micro-Go-Pracrise" />
+      <directory value="$PROJECT_DIR$/" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="Micro-Go-Pracrise" />
       <working_directory value="$PROJECT_DIR$" />
@@ -484,29 +430,31 @@
       <directory value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
-    <configuration name="go build server.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+    <configuration name="TestInitEtcd in github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="Micro-Go-Pracrise" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$/ch9-rpc/basic/server.go" />
-      <package value="github.com/keets2012/Micro-Go-Pracrise" />
+      <working_directory value="$PROJECT_DIR$/ch13-seckill/sk-admin/setup" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup" />
       <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestInitEtcd$" />
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Go Build.go build basic_service.go" />
       <item itemvalue="Go Build.go build client.go" />
-      <item itemvalue="Go Build.go build main.go (1)" />
       <item itemvalue="Go Build.go build main.go" />
-      <item itemvalue="Go Build.go build server.go" />
+      <item itemvalue="Go Build.go build main.go (1)" />
+      <item itemvalue="Go Build.go build main.go (2)" />
+      <item itemvalue="Go Test.TestInitEtcd in github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build main.go (2)" />
+        <item itemvalue="Go Test.TestInitEtcd in github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup" />
         <item itemvalue="Go Build.go build main.go (1)" />
         <item itemvalue="Go Build.go build main.go" />
         <item itemvalue="Go Build.go build client.go" />
-        <item itemvalue="Go Build.go build server.go" />
-        <item itemvalue="Go Build.go build basic_service.go" />
       </list>
     </recent_temporary>
   </component>
@@ -523,6 +471,14 @@
       <workItem from="1569635422294" duration="492000" />
     </task>
     <servers />
+  </component>
+  <component name="TestHistory">
+    <history-entry file="TestInitEtcd_in_github_com_keets2012_Micro-Go-Pracrise_ch13-seckill_sk-admin_setup - 2019.10.13 at 22h 14m 22s.xml">
+      <configuration name="TestInitEtcd in github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup" configurationId="GoTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="TestInitEtcd_in_github_com_keets2012_Micro-Go-Pracrise_ch13-seckill_sk-admin_setup - 2019.10.13 at 22h 21m 53s.xml">
+      <configuration name="TestInitEtcd in github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup" configurationId="GoTestRunConfiguration" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
     <option name="totallyTimeSpent" value="2000" />
@@ -543,6 +499,7 @@
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21486267" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Database Console" weight="0.32876712" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4941427" weight="0.32465753" />
@@ -559,7 +516,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" weight="0.32956383" />
+      <window_info anchor="right" id="Database" order="3" visible="true" weight="0.32956383" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -571,7 +528,8 @@
     <MESSAGE value="ch10" />
     <MESSAGE value="ch9" />
     <MESSAGE value="sk-admin" />
-    <option name="LAST_COMMIT_MESSAGE" value="sk-admin" />
+    <MESSAGE value="sk-core" />
+    <option name="LAST_COMMIT_MESSAGE" value="sk-core" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -604,202 +562,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/setup/router.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/service/srv_redis/redis_proc.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="59" column="41" selection-start-line="59" selection-start-column="41" selection-end-line="59" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/config/config.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="33" selection-start-line="33" selection-end-line="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/common/config/config.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="64" selection-start-line="64" selection-end-line="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/spf13/viper@v1.4.0/viper.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="1114" selection-start-line="1114" selection-end-line="1114" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/conf.toml" />
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/user-service/bootstrap.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="19" selection-start-line="4" selection-start-column="15" selection-end-line="4" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/service/srv_sec/service.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1826">
-          <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/go.etcd.io/etcd@v3.3.15+incompatible/clientv3/client.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="28" column="22" selection-start-line="28" selection-start-column="16" selection-end-line="28" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/go.etcd.io/etcd@v3.3.15+incompatible/mvcc/mvccpb/kv.pb.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="10" column="14" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
-          <folding>
-            <element signature="e#15#139#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/coreos/etcd@v3.3.15+incompatible/mvcc/mvccpb/kv.pb.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="110" column="4" selection-start-line="110" selection-start-column="4" selection-end-line="110" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/go.etcd.io/etcd@v3.3.15+incompatible/clientv3/watch.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="16" column="7" selection-start-line="16" selection-start-column="7" selection-end-line="16" selection-end-column="7" />
-          <folding>
-            <element signature="e#612#954#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/common/mysql/mysql.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="11" column="5" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/user-service/model/user.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="28" column="48" selection-start-line="28" selection-start-column="35" selection-end-line="28" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/model/activity.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="54" column="56" selection-start-line="54" selection-start-column="43" selection-end-line="54" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/model/product.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="267">
-          <caret line="26" column="54" selection-start-line="26" selection-start-column="41" selection-end-line="26" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/gohouse/gorose/v2@v2.1.2/binder.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="10" column="5" selection-start-line="10" selection-start-column="5" selection-end-line="10" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/service/activity.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="21" column="58" selection-start-line="21" selection-start-column="45" selection-end-line="21" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/mysql.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/service/product.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="26" column="44" lean-forward="true" selection-start-line="26" selection-start-column="44" selection-end-line="26" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/router.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/controller/product/product.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/controller/activity/activity.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="341">
-          <caret line="48" column="41" selection-start-line="48" selection-start-column="41" selection-end-line="48" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/config/config.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-314">
-          <caret line="26" column="17" lean-forward="true" selection-start-line="26" selection-start-column="17" selection-end-line="26" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/bootstrap.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="12" lean-forward="true" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/service.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
-          <folding>
-            <element signature="e#15#60#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="82" column="59" selection-start-line="82" selection-start-column="59" selection-end-line="82" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/bootstrap.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="17" lean-forward="true" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/conf.toml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/bootstrap.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -828,23 +590,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" selection-start-line="5" selection-end-line="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="767">
-          <caret line="78" column="17" lean-forward="true" selection-start-line="78" selection-start-column="17" selection-end-line="78" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/user-service/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="137">
-          <caret line="53" column="32" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="32" />
-          <folding>
-            <element signature="e#14#1162#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -907,16 +652,6 @@
     <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_limit/sec_limit.go">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/ch13-seckill/common/config/ConfigProperty.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="80" column="80" selection-start-line="80" selection-start-column="80" selection-end-line="80" selection-end-column="80" />
-          <folding>
-            <element signature="e#14#96#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_redis/user_skill.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-382">
@@ -927,13 +662,267 @@
     <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/service/srv_product/product_count.go">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/endpoints/endpoints.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-core/logic/product.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="69" column="34" lean-forward="true" selection-start-line="69" selection-start-column="34" selection-end-line="69" selection-end-column="34" />
+        <state relative-caret-position="318">
+          <caret line="70" column="30" lean-forward="true" selection-start-line="70" selection-start-column="30" selection-end-line="70" selection-end-column="30" />
           <folding>
             <element signature="e#15#219#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-app/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="569">
+          <caret line="68" column="39" lean-forward="true" selection-start-line="68" selection-start-column="39" selection-end-line="68" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/gin-gonic/gin@v1.4.0/context.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="393" column="33" selection-start-line="393" selection-start-column="33" selection-end-line="393" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/bootstrap.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="12" selection-start-line="3" selection-start-column="8" selection-end-line="3" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/test_data.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor />
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/user-service/user-script.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="14" selection-start-line="8" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/8808838e-a75c-4be9-b8d2-ca1dddb001eb/console.sql">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/seckill.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-16">
+          <caret line="15" column="18" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/user-service/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="53" column="32" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="32" />
+          <folding>
+            <element signature="e#14#1162#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/controller/product/product.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="23" column="10" lean-forward="true" selection-start-line="23" selection-start-column="10" selection-end-line="23" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/user-service/client_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="15" column="18" selection-start-line="15" selection-end-line="16" />
+          <folding>
+            <element signature="e#14#336#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/etcd_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="9" selection-start-line="14" selection-start-column="8" selection-end-line="14" selection-end-column="9" />
+          <folding>
+            <element signature="e#14#124#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/coreos/etcd@v3.3.15+incompatible/etcdserver/etcdserverpb/rpc.pb.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="497" column="4" selection-start-line="497" selection-start-column="4" selection-end-line="497" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/go/pkg/mod/go.etcd.io/etcd@v3.3.15+incompatible/clientv3/kv.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="47" column="4" selection-start-line="47" selection-start-column="4" selection-end-line="47" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/testing/testing.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="864" selection-start-line="864" selection-end-line="864" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go.mod">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="67" selection-start-line="67" selection-end-line="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/samuel/go-zookeeper@v0.0.0-20190923202752-2cc03de413da/zk/conn.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="952">
+          <caret line="68" column="9" selection-start-line="68" selection-start-column="5" selection-end-line="68" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/etcd.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="9" selection-start-line="9" selection-end-line="21" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/service.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+          <folding>
+            <element signature="e#15#60#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/router.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="12" column="47" selection-start-line="12" selection-start-column="47" selection-end-line="12" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="82" column="18" selection-start-line="82" selection-start-column="18" selection-end-line="82" selection-end-column="18" />
+          <folding>
+            <element signature="e#14#1056#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/service/product.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="17" column="33" selection-start-line="17" selection-start-column="33" selection-end-line="17" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/zk_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="29" column="28" selection-start-line="29" selection-end-line="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://8808838e-a75c-4be9-b8d2-ca1dddb001eb/schema/sec_kill/table/product">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state projectRestartId="eaeccd06-9276-4683-b19d-1a95d052331b">
+          <filtering>
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://8808838e-a75c-4be9-b8d2-ca1dddb001eb/schema/sec_kill/table/activity">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state projectRestartId="eaeccd06-9276-4683-b19d-1a95d052331b">
+          <filtering>
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/model/product.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="417">
+          <caret line="36" column="23" selection-start-line="36" selection-start-column="23" selection-end-line="36" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/model/activity.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="65">
+          <caret line="64" column="24" selection-start-line="64" selection-start-column="24" selection-end-line="64" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/config/config.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-583" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/common/config/ConfigProperty.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-994">
+          <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/common/config/config.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="57" column="7" selection-start-line="57" selection-start-column="4" selection-end-line="57" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/controller/activity/activity.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
+          <folding>
+            <element signature="e#18#231#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/service/activity.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="258">
+          <caret line="64" selection-start-line="64" selection-end-line="64" />
+          <folding>
+            <element signature="e#17#279#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ch13-seckill/sk-admin/setup/zk.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="16" column="5" lean-forward="true" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
         </state>
       </provider>
     </entry>

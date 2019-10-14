@@ -4,6 +4,7 @@ import (
 	"github.com/coreos/etcd/clientv3"
 	"github.com/go-redis/redis"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_limit"
+	"github.com/samuel/go-zookeeper/zk"
 	"sync"
 )
 
@@ -13,7 +14,13 @@ var (
 	SecKill     SecKillConf
 	MysqlConfig MysqlConf
 	TraceConfig TraceConf
+	Zk          ZookeeperConf
 )
+
+type ZookeeperConf struct {
+	ZkConn        *zk.Conn
+	SecProductKey string //商品键
+}
 
 type EtcdConf struct {
 	EtcdConn          *clientv3.Client //链接

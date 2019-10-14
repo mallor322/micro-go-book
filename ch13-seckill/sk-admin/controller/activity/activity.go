@@ -1,10 +1,10 @@
 package activity
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
-	"github.com/unknwon/com"
 	"github.com/gin-gonic/gin"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
+	"github.com/unknwon/com"
 	"log"
 )
 
@@ -36,6 +36,7 @@ func CreateActivity(ctx *gin.Context) {
 		})
 		return
 	}
+	log.Printf("success")
 
 	ctx.JSON(200, map[string]interface{}{
 		"code": 200,
