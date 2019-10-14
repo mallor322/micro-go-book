@@ -89,22 +89,6 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	})
 }
 
-func clientAuthorizationMiddleware(clientDetailsService *service.ClientDetailsService) kitendpoint.Middleware  {
-
-
-	return func(next kitendpoint.Endpoint) kitendpoint.Endpoint {
-		return func(ctx context.Context, request interface{}) (interface{}, error) {
-
-
-
-
-			return next(ctx, request)
-		}
-	}
-
-
-
-}
 
 func encodeJsonResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
