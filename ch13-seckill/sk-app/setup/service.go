@@ -10,7 +10,7 @@ import (
 func InitServer() {
 	router := gin.Default()
 	setupRouter(router)
-	err := router.Run(bootstrap.HttpConfig.Host + bootstrap.HttpConfig.Port)
+	err := router.Run(bootstrap.HttpConfig.Host + ":" + bootstrap.HttpConfig.Port)
 	if err != nil {
 		log.Printf("Init http server. Error : %v", err)
 	}

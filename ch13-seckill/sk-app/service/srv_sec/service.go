@@ -129,7 +129,7 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 	status := "success" //状态
 
 	nowTime := time.Now().Unix()
-
+	log.Printf("now time is ", nowTime)
 	//秒杀活动没有开始
 	if nowTime-v.StartTime < 0 {
 		start = false

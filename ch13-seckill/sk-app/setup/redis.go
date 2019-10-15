@@ -21,9 +21,11 @@ func InitRedis() {
 	if err != nil {
 		log.Printf("Connect redis failed. Error : %v", err)
 	}
-
+	log.Printf("init redis success")
 	conf.Redis.RedisConn = client
 
+	cmd := client.Get("test")
+	log.Print("get test ", cmd.Val())
 	loadBlackList(client)
 	initRedisProcess()
 }

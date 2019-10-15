@@ -12,6 +12,7 @@ import (
 func UserCheck(req *config.SecRequest) (err error) {
 	found := false
 	for _, refer := range conf.SecKill.ReferWhiteList {
+		log.Printf("UserCheck whiteList", refer)
 		if refer == req.ClientRefence {
 			found = true
 			break
