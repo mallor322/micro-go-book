@@ -74,12 +74,11 @@ func (p *ActivityService) CreateActivity(activity *model.Activity) error {
 }
 
 func (p *ActivityService) syncToZk(activity *model.Activity) error {
-	log.Print("syncToEtcd")
 
 	zkPath := conf.Zk.SecProductKey
 	secProductInfoList, err := p.loadProductFromZk(zkPath)
 	if err != nil {
-		return err
+		secProductInfoList = []*model.SecProductInfoConf{}
 	}
 
 	var secProductInfo = &model.SecProductInfoConf{}
@@ -116,7 +115,6 @@ func (p *ActivityService) syncToZk(activity *model.Activity) error {
 }
 
 func (p *ActivityService) loadProductFromZk(key string) ([]*model.SecProductInfoConf, error) {
-	log.Println("start get from etcd success")
 	_, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	v, s, err := conf.Zk.ZkConn.Get(key)
