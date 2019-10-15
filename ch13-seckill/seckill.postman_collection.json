@@ -1,0 +1,207 @@
+{
+	"id": "cb972205-229a-4b1f-b023-3d354af9113c",
+	"name": "seckill",
+	"description": "",
+	"auth": null,
+	"events": null,
+	"variables": [],
+	"order": [
+		"e32d9470-a2af-48e2-b188-184136cc4468",
+		"66dff270-f171-4b63-86d8-d88214609913",
+		"e653f9fd-5a07-4173-90ee-e81dd07aa88c",
+		"bc4efa93-ac33-4010-a970-956df0fb54cc"
+	],
+	"folders_order": [],
+	"folders": [],
+	"requests": [
+		{
+			"id": "66dff270-f171-4b63-86d8-d88214609913",
+			"name": "http://127.0.0.1:9030/activity/list",
+			"url": "http://127.0.0.1:9030/activity/list",
+			"description": "",
+			"data": null,
+			"dataMode": null,
+			"headerData": null,
+			"method": "GET",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": null,
+			"folder": null,
+			"pathVariables": {}
+		},
+		{
+			"id": "bc4efa93-ac33-4010-a970-956df0fb54cc",
+			"name": "http://127.0.0.1:9031/sec/kill\n",
+			"url": "http://127.0.0.1:9031/sec/kill\n",
+			"description": "",
+			"data": [
+				{
+					"key": "product_id",
+					"value": "1",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "user_id",
+					"value": "1",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "src",
+					"value": "192.168.199.1",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "auth_code",
+					"value": "userauthcode",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "time",
+					"value": "1571148383",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "client_refence",
+					"value": "test",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "urlencoded",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"name": "Content-Type",
+					"value": "application/x-www-form-urlencoded",
+					"description": "",
+					"type": "text"
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": null,
+			"folder": null,
+			"headers": "Content-Type: application/x-www-form-urlencoded\n",
+			"pathVariables": {}
+		},
+		{
+			"id": "e32d9470-a2af-48e2-b188-184136cc4468",
+			"name": "http://127.0.0.1:9030/activity/create",
+			"url": "http://127.0.0.1:9030/activity/create",
+			"description": "",
+			"data": [
+				{
+					"key": "activity_name",
+					"value": "123123",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "product_id",
+					"value": "1",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "start_time",
+					"value": "1569686400",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "end_time",
+					"value": "1571247423",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "total",
+					"value": "20",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "status",
+					"value": "1",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "speed",
+					"value": "1",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "buy_limit",
+					"value": "1",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "buy_rate",
+					"value": "0.2",
+					"description": "",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "urlencoded",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"name": "Content-Type",
+					"value": "application/x-www-form-urlencoded",
+					"description": "",
+					"type": "text"
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"headers": "Content-Type: application/x-www-form-urlencoded\n",
+			"pathVariables": {}
+		},
+		{
+			"id": "e653f9fd-5a07-4173-90ee-e81dd07aa88c",
+			"name": "http://127.0.0.1:9031/sec/list",
+			"url": "http://127.0.0.1:9031/sec/list",
+			"description": "",
+			"data": null,
+			"dataMode": null,
+			"headerData": null,
+			"method": "GET",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": null,
+			"folder": null,
+			"pathVariables": {}
+		}
+	]
+}
