@@ -1,10 +1,10 @@
 package activity
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
-	"github.com/unknwon/com"
 	"github.com/gin-gonic/gin"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
+	"github.com/unknwon/com"
 	"log"
 )
 
@@ -13,6 +13,7 @@ func CreateActivity(ctx *gin.Context) {
 
 	//活动名称
 	activity.ActivityName = ctx.PostForm("activity_name")
+
 	//商品Id
 	activity.ProductId, _ = com.StrTo(ctx.PostForm("product_id")).Int()
 	//活动开始时间
@@ -28,6 +29,7 @@ func CreateActivity(ctx *gin.Context) {
 	activity.BuyRate, _ = com.StrTo(ctx.PostForm("buy_rate")).Float64()
 
 	activityServer := service.NewActivityService()
+	log.Printf("success")
 	if err := activityServer.CreateActivity(activity); err != nil {
 		log.Printf("ActivityServer.CreateActivity, Error : %v", err)
 		ctx.JSON(400, map[string]interface{}{
@@ -36,6 +38,7 @@ func CreateActivity(ctx *gin.Context) {
 		})
 		return
 	}
+	log.Printf("success")
 
 	ctx.JSON(200, map[string]interface{}{
 		"code": 200,
