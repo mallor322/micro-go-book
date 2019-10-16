@@ -4,17 +4,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/transport"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
 	"github.com/openzipkin/zipkin-go/propagation/b3"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
@@ -44,6 +44,7 @@ func main() {
 	var tokenService service.TokenService
 	var tokenGranter service.TokenGranter
 	var clientDetailsService *service.ClientDetailsService
+	var srv service.Service
 
 	// add logging middleware
 
@@ -53,12 +54,19 @@ func main() {
 	tokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "token-endpoint")(tokenEndpoint)
 	tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(tokenEndpoint)
 
+	checkTokenEndpoint := endpoint.MakeCheckTokenEndpoint(tokenService)
+	tokenEndpoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(checkTokenEndpoint)
+	tokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "check-endpoint")(checkTokenEndpoint)
+	tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(checkTokenEndpoint)
+
+
 	//创建健康检查的Endpoint
-	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
+	healthEndpoint := endpoint.MakeHealthCheckEndpoint(srv)
 	healthEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "health-endpoint")(healthEndpoint)
 
-	endpts := endpoint.UserEndpoints{
-		UserEndpoint:        userPoint,
+	endpts := endpoint.OAuth2Endpoints{
+		TokenEndpoint:tokenEndpoint,
+		CheckTokenEndpoint:checkTokenEndpoint,
 		HealthCheckEndpoint: healthEndpoint,
 	}
 
