@@ -24,9 +24,7 @@ func InitRedis() {
 	log.Printf("init redis success")
 	conf.Redis.RedisConn = client
 
-	cmd := client.Get("test")
-	log.Print("get test ", cmd.Val())
-	loadBlackList(client)
+	//loadBlackList(client)
 	initRedisProcess()
 }
 
@@ -118,11 +116,12 @@ func syncIpBlackList(conn *redis.Client) {
 
 //初始化redis进程
 func initRedisProcess() {
-	for i := 0; i < conf.SecKill.WriteProxy2LayerGoroutineNum; i++ {
+	log.Printf("initRedisProcess")
+	for i := 0; i < 1; i++ {
 		go srv_redis.WriteHandle()
 	}
 
-	for i := 0; i < conf.SecKill.ReadProxy2LayerGoroutineNum; i++ {
+	for i := 0; i < 1; i++ {
 		go srv_redis.ReadHandle()
 	}
 }

@@ -10,17 +10,17 @@ import (
 )
 
 func RunProcess() {
-	for i := 0; i < config.SecLayerCtx.SecLayerConf.ReadGoroutineNum; i++ {
+	for i := 0; i < 1; i++ {
 		config.SecLayerCtx.WaitGroup.Add(1)
 		go HandleReader()
 	}
 
-	for i := 0; i < config.SecLayerCtx.SecLayerConf.WriteGoroutineNum; i++ {
+	for i := 0; i < 1; i++ {
 		config.SecLayerCtx.WaitGroup.Add(1)
 		go HandleWrite()
 	}
 
-	for i := 0; i < config.SecLayerCtx.SecLayerConf.HandleUserGoroutineNum; i++ {
+	for i := 0; i < 1; i++ {
 		config.SecLayerCtx.WaitGroup.Add(1)
 		go HandleUser()
 	}
@@ -54,14 +54,15 @@ func HandleReader() {
 
 			//判断是否超时
 			nowTime := time.Now().Unix()
-			fmt.Println(nowTime, " ", req.AccessTime, " ", int64(config.SecLayerCtx.SecLayerConf.MaxRequestWaitTimeout))
-			if nowTime-req.AccessTime >= int64(config.SecLayerCtx.SecLayerConf.MaxRequestWaitTimeout) {
+			//int64(config.SecLayerCtx.SecLayerConf.MaxRequestWaitTimeout)
+			fmt.Println(nowTime, " ", req.AccessTime, " ", 100)
+			if nowTime-req.AccessTime >= int64(config.SecLayerConfCtx.MaxRequestWaitTimeout) {
 				log.Printf("req[%v] is expire", req)
 				continue
 			}
 
 			//设置超时时间
-			timer := time.NewTicker(time.Millisecond * time.Duration(config.SecLayerCtx.SecLayerConf.SendToHandleChanTimeout))
+			timer := time.NewTicker(time.Millisecond * time.Duration(config.SecLayerConfCtx.SendToHandleChanTimeout))
 			select {
 			case config.SecLayerCtx.Read2HandleChan <- &req:
 			case <-timer.C:
