@@ -2,7 +2,7 @@
 http:
   host: localhost
   port: 9090
-  serviceName: user
+  serviceName: gateway
 
 
 discover:

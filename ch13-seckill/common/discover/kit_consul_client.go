@@ -20,7 +20,7 @@ func New(consulHost string, consulPort string) *DiscoveryClientInstance {
 
 	client := consul.NewClient(apiClient)
 
-	return &DiscovertyClientInstance{
+	return &DiscoveryClientInstance{
 		Host:   consulHost,
 		Port:   port,
 		config: consulConfig,
