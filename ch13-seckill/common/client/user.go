@@ -9,7 +9,13 @@ import (
 	"google.golang.org/grpc"
 )
 
+/**
+ * https://hacpai.com/article/1525249088473
+ * endpoint层 midleware 来构建hystric
+ */
+
 func UserCheck(conn *grpc.ClientConn, clientTracer kitgrpc.ClientOption) service.Service {
+
 	var ep = grpctransport.NewClient(conn,
 		"pb.UserService",
 		"Check",
