@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/go-kit/kit/transport/grpc"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
+	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
-	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 )
 
 type grpcServer struct {
@@ -20,10 +20,10 @@ func (s *grpcServer) Check(ctx context.Context, r *pb.UserRequest) (*pb.UserResp
 	return resp.(*pb.UserResponse), nil
 }
 
-func NewGRPCServer(ctx context.Context, endpoints endpts.UserEndpoints, serverTracer grpc.ServerOption) pb.UserServiceServer {
+func NewGRPCServer(ctx context.Context, endpoints endpts.OAuth2Endpoints, serverTracer grpc.ServerOption) pb.UserServiceServer {
 	return &grpcServer{
 		check: grpc.NewServer(
-			endpoints.UserEndpoint,
+			endpoints.CheckTokenEndpoint,
 			client.DecodeGRPCUserRequest,
 			client.EncodeGRPCUserResponse,
 			serverTracer,
