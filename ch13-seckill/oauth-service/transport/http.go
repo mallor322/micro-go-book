@@ -58,20 +58,26 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zi
 }
 
 func decodeTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var userRequest endpts.UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
-		return nil, err
+	grantType := r.URL.Query().Get("grant_type")
+	if grantType == ""{
+		return nil, errors.New("grant_type not exists"))
 	}
-	return userRequest, nil
+	return &endpoint.TokenRequest{
+		GrantType:grantType,
+		Reader:r,
+	}, nil
 
 }
 
 func decodeCheckTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var userRequest endpts.UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
-		return nil, err
+	tokenValue := r.URL.Query().Get("token")
+	if tokenValue == ""{
+		return nil, errors.New("token not exists")
 	}
-	return userRequest, nil
+
+	return &endpoint.CheckTokenRequest{
+		Token:tokenValue,
+	}, nil
 
 }
 
