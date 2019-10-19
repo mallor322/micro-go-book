@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
+	"net/http"
 )
 
 // CalculateEndpoint define endpoint
@@ -18,51 +20,60 @@ type OAuth2Endpoints struct {
 
 var (
 	ErrInvalidRequestType = errors.New("invalid username, password")
+	ForbiddenRequestType = errors.New("invalid ")
 )
 
 
-// UserRequest define request struct
-type UserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type CheckTokenRequest struct {
+	Token string `json:"token"`
+	Reader *http.Request
 }
 
-// UserResponse define response struct
-type UserResponse struct {
-	Result bool  `json:"result"`
-	Error  error `json:"error"`
+type CheckTokenResponse struct {
+
+	OAuthDetails *model.OAuth2Details
+
 }
+
 
 type TokenRequest struct {
-
-	GrantType string
-
-
+	GrantType string `json:"grant_type"`
+	Reader *http.Request
 }
 
-type TokenResponse struct {
 
+type TokenResponse struct {
+	AccessToken *model.OAuth2Token `json:"access_token"`
 }
 
 //  make endpoint
-func MakeTokenEndpoint(svc service.TokenGranter) endpoint.Endpoint {
+func MakeTokenEndpoint(svc service.TokenGranter, clientService service.ClientDetailsService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(UserRequest)
+		req := request.(TokenRequest)
 
-		var (
-			username, password string
-			res                bool
-			calError           error
-		)
+		var clientDetails *model.ClientDetails
+		clientId, clientSecret, ok := req.Reader.BasicAuth(); if ok{
 
-		username = req.Username
-		password = req.Password
+			clientDetails, err := clientService.GetClientDetailByClientId(ctx, clientId)
 
-		res, calError = svc.Check(ctx, username, password)
-		if calError != nil {
-			return UserResponse{Result: false, Error: calError}, nil
+			if err != nil{
+				return nil, errors.New("403")
+			}
+
+			if !clientDetails.IsMatch(clientId, clientSecret){
+				return nil, errors.New("403")
+			}
+
+		}else {
+			return nil, errors.New("please provide the clientId and clientSecret in authorization")
 		}
-		return UserResponse{Result: res, Error: calError}, nil
+
+		token, err := svc.Grant(ctx, req.GrantType, clientDetails, req.Reader); if err == nil {
+			return TokenResponse{
+				AccessToken:token,
+			}, nil
+		}
+		return nil, err
 	}
 }
 
@@ -70,22 +81,15 @@ func MakeTokenEndpoint(svc service.TokenGranter) endpoint.Endpoint {
 
 func MakeCheckTokenEndpoint(svc service.TokenService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(UserRequest)
+		req := request.(CheckTokenRequest)
 
-		var (
-			username, password string
-			res                bool
-			calError           error
-		)
-
-		username = req.Username
-		password = req.Password
-
-		res, calError = svc.Check(ctx, username, password)
-		if calError != nil {
-			return UserResponse{Result: false, Error: calError}, nil
+		if tokenDetails, err := svc.GetOAuth2DetailsByAccessToken(req.Token); err == nil{
+			return CheckTokenResponse{
+				OAuthDetails:tokenDetails,
+			}, nil
 		}
-		return UserResponse{Result: res, Error: calError}, nil
+
+		return nil, err
 	}
 }
 

@@ -43,13 +43,13 @@ func main() {
 
 	var tokenService service.TokenService
 	var tokenGranter service.TokenGranter
-	var clientDetailsService *service.ClientDetailsService
+	var clientDetailsService service.ClientDetailsService
 	var srv service.Service
 
 	// add logging middleware
 
 
-	tokenEndpoint := endpoint.MakeTokenEndpoint(tokenGranter)
+	tokenEndpoint := endpoint.MakeTokenEndpoint(tokenGranter, clientDetailsService)
 	tokenEndpoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(tokenEndpoint)
 	tokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "token-endpoint")(tokenEndpoint)
 	tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(tokenEndpoint)
