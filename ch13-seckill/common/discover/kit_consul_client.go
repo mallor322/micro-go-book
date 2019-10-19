@@ -23,7 +23,7 @@ func New(consulHost string, consulPort string) *DiscoveryClientInstance {
 	return &DiscoveryClientInstance{
 		Host:   consulHost,
 		Port:   port,
-		config:consulConfig,
+		config: consulConfig,
 		client: client,
 	}
 }
@@ -78,13 +78,15 @@ func (consulClient *DiscoveryClientInstance) DeRegister(instanceId string, logge
 func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []*api.AgentService {
 
 	//  该服务已监控并缓存
-	instanceList, ok := consulClient.instancesMap.Load(serviceName); if ok{
+	instanceList, ok := consulClient.instancesMap.Load(serviceName)
+	if ok {
 		return instanceList.([]*api.AgentService)
 	}
 	// 申请锁
 	consulClient.mutex.Lock()
 	// 再次检查是否监控
-	instanceList, ok = consulClient.instancesMap.Load(serviceName); if ok{
+	instanceList, ok = consulClient.instancesMap.Load(serviceName)
+	if ok {
 		return instanceList.([]*api.AgentService)
 	} else {
 		// 注册监控
@@ -94,7 +96,7 @@ func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string
 			params["service"] = serviceName
 			plan, _ := watch.Parse(params)
 			plan.Handler = func(u uint64, i interface{}) {
-				if i == nil{
+				if i == nil {
 					return
 				}
 				v, ok := i.([]*api.ServiceEntry)
@@ -102,8 +104,8 @@ func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string
 					return // 数据异常，忽略
 				}
 				var healthServices []*api.AgentService
-				for _, service := range v{
-					if service.Checks.AggregatedStatus() == api.HealthPassing{
+				for _, service := range v {
+					if service.Checks.AggregatedStatus() == api.HealthPassing {
 						healthServices = append(healthServices, service.Service)
 					}
 				}
@@ -117,7 +119,7 @@ func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string
 
 	// 根据服务名请求服务实例列表
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
-	if err != nil{
+	if err != nil {
 		consulClient.instancesMap.Store(serviceName, []*api.AgentService{})
 		logger.Println("Discover Service Error!")
 		return nil

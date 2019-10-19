@@ -4,14 +4,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-go/cli_with_2_services/svc2"
+	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-go/arithmetic_services/svc2"
 	"net/http"
 	"os"
 
 	"github.com/opentracing/opentracing-go"
 
 	zipkin "github.com/openzipkin-contrib/zipkin-go-opentracing"
-	//"github.com/openzipkin-contrib/zipkin-go-opentracing/examples/cli_with_2_services/svc2"
+	//"github.com/openzipkin-contrib/zipkin-go-opentracing/examples/arithmetic_services/svc2"
 )
 
 const (

@@ -77,8 +77,8 @@ func main() {
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
 		setup.InitRedis()
-		setup.InitEtcd()
-		//setup.RunService()
+		setup.InitZk()
+		setup.RunService()
 		//启动前执行注册
 		register.Register()
 		handler := r

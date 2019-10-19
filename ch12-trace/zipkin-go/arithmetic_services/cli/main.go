@@ -5,13 +5,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-go/cli_with_2_services/svc1"
+	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-go/arithmetic_services/svc1"
 	"os"
 
 	"github.com/opentracing/opentracing-go"
 
 	zipkin "github.com/openzipkin-contrib/zipkin-go-opentracing"
-	//"github.com/openzipkin-contrib/zipkin-go-opentracing/examples/cli_with_2_services/svc1"
+	//"github.com/openzipkin-contrib/zipkin-go-opentracing/examples/arithmetic_services/svc1"
 )
 
 const (

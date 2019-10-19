@@ -2,7 +2,7 @@
 http:
   host: localhost
   port: 9031
-  serviceName: user # 要缓存sk-app
+  serviceName: sk-admin # 要缓存sk-app
 
 
 discover:

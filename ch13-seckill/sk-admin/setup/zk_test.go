@@ -2,7 +2,9 @@ package setup
 
 import (
 	"fmt"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/samuel/go-zookeeper/zk"
+	"log"
 	"testing"
 	"time"
 )
@@ -12,15 +14,27 @@ func ZkStateStringFormat(s *zk.Stat) string {
 		s.Czxid, s.Mzxid, s.Ctime, s.Mtime, s.Version, s.Cversion, s.Aversion, s.EphemeralOwner, s.DataLength, s.NumChildren, s.Pzxid)
 }
 
+func waitSecProductEvent(event zk.Event) {
+	log.Print(">>>>>>>>>>>>>>>>>>>")
+	log.Println("path:", event.Path)
+	log.Println("type:", event.Type.String())
+	log.Println("state:", event.State.String())
+	log.Println("<<<<<<<<<<<<<<<<<<<")
+	if event.Path == conf.Zk.SecProductKey {
+
+	}
+}
+
 func TestInitZK(t *testing.T) {
 	var hosts = []string{"39.98.179.73:2181"}
-	conn, _, err := zk.Connect(hosts, time.Second*5)
+	option := zk.WithEventCallback(waitSecProductEvent)
+	conn, _, err := zk.Connect(hosts, time.Second*5, option)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	var path = "/zk_test_go"
+	var path = "/zk_test_g1o"
 	var data = []byte("hello")
 	var flags int32 = 0
 	// permission

@@ -23,7 +23,7 @@ func HandleUser() {
 			}
 		}
 		fmt.Println("处理中~~ ", res)
-		timer := time.NewTicker(time.Millisecond * time.Duration(config.SecLayerCtx.SecLayerConf.SendToWriteChanTimeout))
+		timer := time.NewTicker(time.Millisecond * time.Duration(config.SecLayerConfCtx.SendToWriteChanTimeout))
 		select {
 		case config.SecLayerCtx.Handle2WriteChan <- res:
 		case <-timer.C:
@@ -55,11 +55,11 @@ func HandleSkill(req *config.SecRequest) (res *config.SecResult, err error) {
 	}
 
 	nowTime := time.Now().Unix()
-	alreadySoldOut := product.SecLimit.Check(nowTime)
-	if alreadySoldOut >= product.SoldMaxLimit {
-		res.Code = srv_err.ErrRetry
-		return
-	}
+	//alreadySoldOut := product.SecLimit.Check(nowTime)
+	//if alreadySoldOut >= product.SoldMaxLimit {
+	//	res.Code = srv_err.ErrRetry
+	//	return
+	//}
 
 	config.SecLayerCtx.HistoryMapLock.Lock()
 	userHistory, ok := config.SecLayerCtx.HistoryMap[req.UserId]
@@ -97,7 +97,7 @@ func HandleSkill(req *config.SecRequest) (res *config.SecResult, err error) {
 
 	//用户Id、商品id、当前时间、密钥
 	res.Code = srv_err.ErrSecKillSucc
-	tokenData := fmt.Sprintf("userId=%d&productId=%d&timestamp=%d&security=%s", req.UserId, req.ProductId, nowTime, config.SecLayerCtx.SecLayerConf.TokenPassWd)
+	tokenData := fmt.Sprintf("userId=%d&productId=%d&timestamp=%d&security=%s", req.UserId, req.ProductId, nowTime, config.SecLayerConfCtx.TokenPassWd)
 	res.Token = fmt.Sprintf("%x", md5.Sum([]byte(tokenData))) //MD5加密
 	res.TokenTime = nowTime
 

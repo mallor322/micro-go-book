@@ -37,14 +37,14 @@ func main() {
 	fieldKeys := []string{"method"}
 	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
 		Namespace: "aoho",
-		Subsystem: "sk-app",
+		Subsystem: "sk_app",
 		Name:      "request_count",
 		Help:      "Number of requests received.",
 	}, fieldKeys)
 
 	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
 		Namespace: "aoho",
-		Subsystem: "sk-app",
+		Subsystem: "sk_app",
 		Name:      "request_latency",
 		Help:      "Total duration of requests in microseconds.",
 	}, fieldKeys)
@@ -77,7 +77,7 @@ func main() {
 	go func() {
 		fmt.Println("Http Server start at port:" + *servicePort)
 		setup.InitRedis()
-		setup.InitEtcd()
+		setup.InitZk()
 		setup.InitServer()
 		//启动前执行注册
 		register.Register()

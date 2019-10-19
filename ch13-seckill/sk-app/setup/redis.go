@@ -21,10 +21,10 @@ func InitRedis() {
 	if err != nil {
 		log.Printf("Connect redis failed. Error : %v", err)
 	}
-
+	log.Printf("init redis success")
 	conf.Redis.RedisConn = client
 
-	loadBlackList(client)
+	//loadBlackList(client)
 	initRedisProcess()
 }
 
@@ -116,11 +116,12 @@ func syncIpBlackList(conn *redis.Client) {
 
 //初始化redis进程
 func initRedisProcess() {
-	for i := 0; i < conf.SecKill.WriteProxy2LayerGoroutineNum; i++ {
+	log.Printf("initRedisProcess")
+	for i := 0; i < 1; i++ {
 		go srv_redis.WriteHandle()
 	}
 
-	for i := 0; i < conf.SecKill.ReadProxy2LayerGoroutineNum; i++ {
+	for i := 0; i < 1; i++ {
 		go srv_redis.ReadHandle()
 	}
 }

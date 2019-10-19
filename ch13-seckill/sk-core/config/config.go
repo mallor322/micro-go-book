@@ -68,8 +68,13 @@ func initTracer(zipkinURL string) {
 	}
 }
 
-var AppConfig = &SecLayerConf{}
-var SecLayerCtx = &SecLayerContext{}
+var SecLayerCtx = &SecLayerContext{
+	Read2HandleChan:  make(chan *SecRequest, 1024),
+	Handle2WriteChan: make(chan *SecResult, 1024),
+	HistoryMap:       make(map[int]*srv_user.UserBuyHistory, 1024),
+	ProductCountMgr:  srv_product.NewProductCountMgr(),
+}
+var CoreCtx = &SkAppCtx{}
 
 type SecResult struct {
 	ProductId int    `json:"product_id"` //商品ID
@@ -94,7 +99,12 @@ type SecRequest struct {
 	ResultChan    chan *SecResult `json:"-"`
 }
 
-var SecLayerConfCtx = &SecLayerConf{}
+var SecLayerConfCtx = &SecLayerConf{
+	MaxRequestWaitTimeout:   100,
+	SendToHandleChanTimeout: 10,
+	SendToWriteChanTimeout:  100,
+	TokenPassWd:             "1111",
+}
 
 type SkAppCtx struct {
 	SecReqChan       chan *SecRequest

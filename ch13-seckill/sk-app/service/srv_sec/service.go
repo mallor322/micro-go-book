@@ -5,7 +5,6 @@ import (
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_err"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_limit"
 	"log"
 	"time"
 )
@@ -32,21 +31,20 @@ func SecKill(req *config.SecRequest) (map[string]interface{}, int, error) {
 	//对Map加锁处理
 	config.SkAppContext.RWSecProductLock.RLock()
 	defer config.SkAppContext.RWSecProductLock.RUnlock()
-
 	var code int
-	err := srv_limit.UserCheck(req)
-	if err != nil {
-		code = srv_err.ErrUserCheckAuthFailed
-		log.Printf("userId[%d] invalid, check failed, req[%v]", req.UserId, req)
-		return nil, code, err
-	}
-
-	err = srv_limit.AntiSpam(req)
-	if err != nil {
-		code = srv_err.ErrUserServiceBusy
-		log.Printf("userId[%d] invalid, check failed, req[%v]", req.UserId, req)
-		return nil, code, err
-	}
+	//err := srv_limit.UserCheck(req)
+	//if err != nil {
+	//	code = srv_err.ErrUserCheckAuthFailed
+	//	log.Printf("userId[%d] invalid, check failed, req[%v]", req.UserId, req)
+	//	return nil, code, err
+	//}
+	//
+	//err = srv_limit.AntiSpam(req)
+	//if err != nil {
+	//	code = srv_err.ErrUserServiceBusy
+	//	log.Printf("userId[%d] invalid, check failed, req[%v]", req.UserId, req)
+	//	return nil, code, err
+	//}
 
 	data, code, err := SecInfoById(req.ProductId)
 	if err != nil {
@@ -83,6 +81,7 @@ func SecKill(req *config.SecRequest) (map[string]interface{}, int, error) {
 		if code != 1002 {
 			return data, code, srv_err.GetErrMsg(code)
 		}
+		log.Printf("secKill success")
 		data["product_id"] = result.ProductId
 		data["token"] = result.Token
 		data["user_id"] = result.UserId
@@ -129,7 +128,7 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 	status := "success" //状态
 
 	nowTime := time.Now().Unix()
-
+	log.Printf("now time is ", nowTime)
 	//秒杀活动没有开始
 	if nowTime-v.StartTime < 0 {
 		start = false

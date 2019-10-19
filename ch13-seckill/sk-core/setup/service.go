@@ -1,11 +1,7 @@
 package setup
 
 import (
-	"fmt"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_redis"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func RunService() {
@@ -13,7 +9,7 @@ func RunService() {
 	srv_redis.RunProcess()
 
 	//ctx := context.Background()
-	errChan := make(chan error)
+	//errChan := make(chan error)
 
 	//var svc Service
 	//svc = ArithmeticService{}
@@ -34,11 +30,11 @@ func RunService() {
 	//	errChan <- http.ListenAndServe(":9000", handler)
 	//}()
 
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		errChan <- fmt.Errorf("%s", <-c)
-	}()
-
-	fmt.Println(<-errChan)
+	//go func() {
+	//	c := make(chan os.Signal, 1)
+	//	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	//	errChan <- fmt.Errorf("%s", <-c)
+	//}()
+	//
+	//fmt.Println(<-errChan)
 }
