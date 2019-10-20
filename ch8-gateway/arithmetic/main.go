@@ -5,14 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-kit/kit/log"
-	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
-	"golang.org/x/time/rate"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 func main() {
@@ -20,7 +16,7 @@ func main() {
 	var (
 		consulHost  = flag.String("consul.host", "106.15.233.99", "consul ip address")
 		consulPort  = flag.String("consul.port", "8500", "consul port")
-		serviceHost = flag.String("service.host", "", "service ip address")
+		serviceHost = flag.String("service.host", "localhost", "service ip address")
 		servicePort = flag.String("service.port", "", "service port")
 	)
 
@@ -36,39 +32,15 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	fieldKeys := []string{"method"}
-	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-		Namespace: "aoho",
-		Subsystem: "arithmetic_service",
-		Name:      "request_count",
-		Help:      "Number of requests received.",
-	}, fieldKeys)
-
-	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "aoho",
-		Subsystem: "arithemetic_service",
-		Name:      "request_latency",
-		Help:      "Total duration of requests in microseconds.",
-	}, fieldKeys)
-
 	var svc Service
 	svc = ArithmeticService{}
 
 	// add logging middleware
 	svc = LoggingMiddleware(logger)(svc)
-	svc = Metrics(requestCount, requestLatency)(svc)
 
 	endpoint := MakeArithmeticEndpoint(svc)
 
-	// add ratelimit,refill every second,set capacity 3
-	//ratebucket := ratelimit.NewBucket(time.Second*1, 3)
-	//endpoint = NewTokenBucketLimitterWithJuju(ratebucket)(endpoint)
-
-	//add ratelimit,refill every second,set capacity 3
-	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 100)
-	endpoint = NewTokenBucketLimitterWithBuildIn(ratebucket)(endpoint)
-
-	//创建健康检查的Endpoint，未增加限流
+	//创建健康检查的Endpoint
 	healthEndpoint := MakeHealthCheckEndpoint(svc)
 
 	//把算术运算Endpoint和健康检查Endpoint封装至ArithmeticEndpoints

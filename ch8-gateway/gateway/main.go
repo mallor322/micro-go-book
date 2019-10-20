@@ -66,7 +66,7 @@ func NewReverseProxy(client *api.Client, logger log.Logger) *httputil.ReversePro
 	//创建Director
 	director := func(req *http.Request) {
 
-		//查询原始请求路径，如：/arithmetic/calculate/10/5
+		//查询原始请求路径
 		reqPath := req.URL.Path
 		if reqPath == "" {
 			return

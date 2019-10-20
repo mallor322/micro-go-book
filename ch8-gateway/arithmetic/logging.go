@@ -21,13 +21,13 @@ func LoggingMiddleware(logger log.Logger) ServiceMiddleware {
 
 func (mw loggingMiddleware) Add(a, b int) (ret int) {
 
-	defer func(beign time.Time) {
+	defer func(begin time.Time) {
 		mw.logger.Log(
 			"function", "Add",
 			"a", a,
 			"b", b,
 			"result", ret,
-			"took", time.Since(beign),
+			"took", time.Since(begin),
 		)
 	}(time.Now())
 
@@ -37,13 +37,13 @@ func (mw loggingMiddleware) Add(a, b int) (ret int) {
 
 func (mw loggingMiddleware) Subtract(a, b int) (ret int) {
 
-	defer func(beign time.Time) {
+	defer func(begin time.Time) {
 		mw.logger.Log(
 			"function", "Subtract",
 			"a", a,
 			"b", b,
 			"result", ret,
-			"took", time.Since(beign),
+			"took", time.Since(begin),
 		)
 	}(time.Now())
 
@@ -53,13 +53,13 @@ func (mw loggingMiddleware) Subtract(a, b int) (ret int) {
 
 func (mw loggingMiddleware) Multiply(a, b int) (ret int) {
 
-	defer func(beign time.Time) {
+	defer func(begin time.Time) {
 		mw.logger.Log(
 			"function", "Multiply",
 			"a", a,
 			"b", b,
 			"result", ret,
-			"took", time.Since(beign),
+			"took", time.Since(begin),
 		)
 	}(time.Now())
 
@@ -69,13 +69,13 @@ func (mw loggingMiddleware) Multiply(a, b int) (ret int) {
 
 func (mw loggingMiddleware) Divide(a, b int) (ret int, err error) {
 
-	defer func(beign time.Time) {
+	defer func(begin time.Time) {
 		mw.logger.Log(
 			"function", "Divide",
 			"a", a,
 			"b", b,
 			"result", ret,
-			"took", time.Since(beign),
+			"took", time.Since(begin),
 		)
 	}(time.Now())
 
