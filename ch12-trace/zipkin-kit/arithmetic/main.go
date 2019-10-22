@@ -61,7 +61,7 @@ func main() {
 		var (
 			err           error
 			hostPort      = *serviceHost + ":" + *servicePort
-			serviceName   = "arithmetic-service"
+			serviceName   = "string-service-service"
 			useNoopTracer = (*zipkinURL == "")
 			reporter      = zipkinhttp.NewReporter(*zipkinURL)
 		)

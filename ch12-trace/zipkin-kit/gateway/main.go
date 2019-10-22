@@ -104,7 +104,7 @@ func NewReverseProxy(client *api.Client, zikkinTracer *zipkin.Tracer, logger log
 	//创建Director
 	director := func(req *http.Request) {
 
-		//查询原始请求路径，如：/arithmetic/calculate/10/5
+		//查询原始请求路径，如：/string-service/calculate/10/5
 		reqPath := req.URL.Path
 		if reqPath == "" {
 			return

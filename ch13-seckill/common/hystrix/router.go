@@ -8,7 +8,6 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"strings"
@@ -33,7 +32,7 @@ func Routes(zipkinTracer *zipkin.Tracer, fbMsg string, logger log.Logger) http.H
 }
 
 func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//查询原始请求路径，如：/arithmetic/calculate/10/5
+	//查询原始请求路径，如：/string-service/calculate/10/5
 	reqPath := r.URL.Path
 	if reqPath == "" {
 		return

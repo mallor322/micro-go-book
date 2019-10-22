@@ -78,7 +78,7 @@ func NewReverseProxy(client *api.Client, logger log.Logger) *httputil.ReversePro
 		//调用consul api查询serviceName的服务实例列表
 		result, _, err := client.Catalog().Service(serviceName, "", nil)
 		if err != nil {
-			logger.Log("ReverseProxy failed", "query service instace error", err.Error())
+			logger.Log("ReverseProxy failed", "query service instance error", err.Error())
 			return
 		}
 

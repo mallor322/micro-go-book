@@ -69,7 +69,7 @@ func (consulClient *ConsulClient) Register(serviceName, instanceId, healthCheckU
 
 	// 2. 向 Consul 发送服务注册的请求
 	req, err := http.NewRequest("PUT",
-		"http://"+consulClient.Host+":"+strconv.Itoa(consulClient.Port)+"/v1/agent/service/arithmetic",
+		"http://"+consulClient.Host+":"+strconv.Itoa(consulClient.Port)+"/v1/agent/service/string-service",
 		bytes.NewReader(byteData))
 
 	if err == nil {

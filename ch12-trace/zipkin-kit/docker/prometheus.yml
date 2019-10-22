@@ -1,7 +1,7 @@
 global:
     scrape_interval: 15s
     external_labels:
-      monitor: 'arithmetic-monitor'
+      monitor: 'string-service-monitor'
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -11,9 +11,9 @@ scrape_configs:
         labels:
           group: 'local'
 
-  - job_name: 'arithmetic'
+  - job_name: 'string-service'
     scrape_interval: 5s
     static_configs:
       - targets: ['localhost:9000']
         labels:
-          group: 'arithmetic'
+          group: 'string-service'

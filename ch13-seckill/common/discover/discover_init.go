@@ -61,11 +61,11 @@ func Register() {
 
 	if !ConsulService.Register(instanceId, bootstrap.HttpConfig.Host, "/health",
 		bootstrap.HttpConfig.Port, bootstrap.HttpConfig.ServiceName, nil, nil, Logger) {
-		Logger.Printf("arithmetic for service %s failed.", bootstrap.HttpConfig.ServiceName)
+		Logger.Printf("string-service for service %s failed.", bootstrap.HttpConfig.ServiceName)
 		// 注册失败，服务启动失败
 		panic(0)
 	}
-	Logger.Printf("arithmetic for service %s success.", bootstrap.HttpConfig.ServiceName)
+	Logger.Printf("string-service for service %s success.", bootstrap.HttpConfig.ServiceName)
 
 }
 
