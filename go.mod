@@ -29,8 +29,8 @@ require (
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/juju/ratelimit v1.0.1
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/kujtimiihoxha/kit v0.1.1 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.3.5
@@ -45,13 +45,11 @@ require (
 	github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da
 	github.com/satori/go.uuid v1.2.0
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
-	github.com/sony/gobreaker v0.4.1 // indirect
-	github.com/spf13/afero v1.2.2 // indirect
+	github.com/spf13/cobra v0.0.5
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.4.0
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
-	github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a // indirect
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/unknwon/com v1.0.1
 	go.etcd.io/bbolt v1.3.3 // indirect

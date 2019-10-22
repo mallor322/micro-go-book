@@ -14,7 +14,6 @@ import (
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/transport"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/time/rate"
@@ -52,8 +51,7 @@ func main() {
 	}, fieldKeys)
 	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 100)
 
-	var svc service.Service
-	svc = service.UserService{}
+	svc := service.SkAdminService{}
 
 	// add logging middleware
 	svc = plugins.LoggingMiddleware(localconfig.Logger)(svc)
