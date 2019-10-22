@@ -17,7 +17,7 @@ func main() {
 		consulHost  = flag.String("consul.host", "106.15.233.99", "consul ip address")
 		consulPort  = flag.String("consul.port", "8500", "consul port")
 		serviceHost = flag.String("service.host", "localhost", "service ip address")
-		servicePort = flag.String("service.port", "", "service port")
+		servicePort = flag.String("service.port", "8080", "service port")
 	)
 
 	flag.Parse()
