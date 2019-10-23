@@ -6,8 +6,15 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
+	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-kit/pb"
+	edpts "github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-kit/string-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-kit/string-service/service"
 	"github.com/openzipkin/zipkin-go"
+	"github.com/openzipkin/zipkin-go/propagation/b3"
 	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -22,6 +29,7 @@ func main() {
 		serviceHost = flag.String("service.host", "", "service ip address")
 		servicePort = flag.String("service.port", "", "service port")
 		zipkinURL   = flag.String("zipkin.url", "http://106.15.233.99:9411/api/v2/spans", "Zipkin server url")
+		grpcAddr    = flag.String("grpc", ":9008", "gRPC listen address.")
 	)
 
 	flag.Parse()
@@ -59,21 +67,21 @@ func main() {
 		}
 	}
 
-	var svc Service
-	svc = StringService{}
+	var svc service.Service
+	svc = service.StringService{}
 
 	// add logging middleware to service
 	svc = LoggingMiddleware(logger)(svc)
 
-	endpoint := MakeStringEndpoint(svc)
+	endpoint := edpts.MakeStringEndpoint(ctx, svc)
 	endpoint = kitzipkin.TraceEndpoint(zipkinTracer, "calculate-endpoint")(endpoint)
 
 	//创建健康检查的Endpoint
-	healthEndpoint := MakeHealthCheckEndpoint(svc)
+	healthEndpoint := edpts.MakeHealthCheckEndpoint(svc)
 	healthEndpoint = kitzipkin.TraceEndpoint(zipkinTracer, "health-endpoint")(healthEndpoint)
 
 	//把算术运算Endpoint和健康检查Endpoint封装至StringEndpoints
-	endpts := StringEndpoints{
+	endpts := edpts.StringEndpoints{
 		StringEndpoint:      endpoint,
 		HealthCheckEndpoint: healthEndpoint,
 	}
@@ -91,7 +99,27 @@ func main() {
 		handler := r
 		errChan <- http.ListenAndServe(":"+*servicePort, handler)
 	}()
+	//grpc server
+	go func() {
+		fmt.Println("grpc Server start at port" + *grpcAddr)
+		listener, err := net.Listen("tcp", *grpcAddr)
+		if err != nil {
+			errChan <- err
+			return
+		}
+		serverTracer := kitzipkin.GRPCServerTrace(zipkinTracer, kitzipkin.Name("grpc-transport"))
+		tr := zipkinTracer
+		md := metadata.MD{}
+		parentSpan := tr.StartSpan("test")
 
+		b3.InjectGRPC(&md)(parentSpan.Context())
+
+		ctx := metadata.NewIncomingContext(context.Background(), md)
+		handler := NewGRPCServer(ctx, endpts, serverTracer)
+		gRPCServer := grpc.NewServer()
+		pb.RegisterStringServiceServer(gRPCServer, handler)
+		errChan <- gRPCServer.Serve(listener)
+	}()
 	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

@@ -16,7 +16,7 @@ import (
 
 const (
 	// Our service name.
-	serviceName = "cli"
+	serviceName = "client"
 
 	// Host + port of our service.
 	hostPort = "0.0.0.0:0"

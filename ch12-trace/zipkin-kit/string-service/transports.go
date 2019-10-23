@@ -8,6 +8,7 @@ import (
 	"github.com/go-kit/kit/tracing/zipkin"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-kit/string-service/endpoint"
 	gozipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -18,7 +19,7 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints StringEndpoints, zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints endpoint.StringEndpoints, zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 
 	zipkinServer := zipkin.HTTPServerTrace(zipkinTracer, zipkin.Name("http-transport"))
@@ -67,7 +68,7 @@ func decodeStringRequest(_ context.Context, r *http.Request) (interface{}, error
 		return nil, ErrorBadRequest
 	}
 
-	return StringRequest{
+	return endpoint.StringRequest{
 		RequestType: requestType,
 		A:           pa,
 		B:           pb,
@@ -82,5 +83,5 @@ func encodeStringResponse(ctx context.Context, w http.ResponseWriter, response i
 
 // decodeHealthCheckRequest decode request
 func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	return HealthRequest{}, nil
+	return endpoint.HealthRequest{}, nil
 }
