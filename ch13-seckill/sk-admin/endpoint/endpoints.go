@@ -4,27 +4,21 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"github.com/gohouse/gorose/v2"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
 )
 
 // CalculateEndpoint define endpoint
 type SkAdminEndpoints struct {
-	ActivityEndpoint    endpoint.Endpoint
-	ProductEndpoint     endpoint.Endpoint
-	HealthCheckEndpoint endpoint.Endpoint
+	GetActivityEndpoint    endpoint.Endpoint
+	CreateActivityEndpoint endpoint.Endpoint
+	CreateProductEndpoint  endpoint.Endpoint
+	GetProductEndpoint     endpoint.Endpoint
+	HealthCheckEndpoint    endpoint.Endpoint
 }
 
-func (ue UserEndpoints) Check(ctx context.Context, username string, password string) (bool, error) {
-	//ctx := context.Background()
-	resp, err := ue.UserEndpoint(ctx, UserRequest{
-		Username: username,
-		Password: password,
-	})
-	response := resp.(UserResponse)
-	return response.Result, err
-}
-
-func (ue UserEndpoints) HealthCheck() bool {
+func (ue SkAdminEndpoints) HealthCheck() bool {
 	return false
 }
 
@@ -40,29 +34,54 @@ type UserRequest struct {
 
 // UserResponse define response struct
 type UserResponse struct {
-	Result bool  `json:"result"`
-	Error  error `json:"error"`
+}
+
+type GetResponse struct {
+	Result []gorose.Data `json:"result"`
+	Error  error         `json:"error"`
+}
+
+type CreateResponse struct {
+	Error error `json:"error"`
 }
 
 //  make endpoint
-func MakeUserEndpoint(svc service.Service) endpoint.Endpoint {
+func MakeGetActivityEndpoint(svc service.ActivityService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(UserRequest)
-
-		var (
-			username, password string
-			res                bool
-			calError           error
-		)
-
-		username = req.Username
-		password = req.Password
-
-		res, calError = svc.Check(ctx, username, password)
+		activityList, calError := svc.GetActivityList()
 		if calError != nil {
-			return UserResponse{Result: false, Error: calError}, nil
+			return GetResponse{Result: nil, Error: calError}, nil
 		}
-		return UserResponse{Result: res, Error: calError}, nil
+		return GetResponse{Result: activityList, Error: calError}, nil
+	}
+}
+
+func MakeCreateActivityEndpoint(svc service.ActivityService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(model.Activity)
+
+		calError := svc.CreateActivity(&req)
+		return CreateResponse{Error: calError}, nil
+	}
+}
+
+//  make endpoint
+func MakeGetProductEndpoint(svc service.ProductService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		getProductList, calError := svc.GetProductList()
+		if calError != nil {
+			return GetResponse{Result: nil, Error: calError}, nil
+		}
+		return GetResponse{Result: getProductList, Error: calError}, nil
+	}
+}
+
+func MakeCreateProductEndpoint(svc service.ProductService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(model.Product)
+
+		calError := svc.CreateProduct(&req)
+		return CreateResponse{Error: calError}, nil
 	}
 }
 

@@ -15,3 +15,5 @@ type SkAdminService struct {
 func (s SkAdminService) HealthCheck() bool {
 	return true
 }
+
+type ServiceMiddleware func(Service) Service
