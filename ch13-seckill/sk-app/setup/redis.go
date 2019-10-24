@@ -24,7 +24,7 @@ func InitRedis() {
 	log.Printf("init redis success")
 	conf.Redis.RedisConn = client
 
-	//loadBlackList(client)
+	loadBlackList(client)
 	initRedisProcess()
 }
 
