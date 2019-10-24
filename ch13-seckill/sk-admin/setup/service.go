@@ -6,10 +6,7 @@ import (
 	"fmt"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
@@ -19,15 +16,16 @@ import (
 	"golang.org/x/time/rate"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
 //初始化Http服务
-func InitServer(host string) {
+func InitServer(host string, servicePort string) {
 
-	var (
-		servicePort = flag.String("service.port", bootstrap.HttpConfig.Port, "service port")
-	)
+	log.Printf("port is ", servicePort)
 
 	flag.Parse()
 
@@ -56,12 +54,18 @@ func InitServer(host string) {
 		skAdminService  service.Service
 	)
 	skAdminService = service.SkAdminService{}
-	activityService = service.ActivityService{}
-	productService = service.ProductService{}
+	activityService = service.ActivityServiceImpl{}
+	productService = service.ProductServiceImpl{}
 
 	// add logging middleware
-	skAdminService = plugins.LoggingMiddleware(config.Logger)(skAdminService)
-	skAdminService = plugins.Metrics(requestCount, requestLatency)(skAdminService)
+	skAdminService = plugins.SkAdminLoggingMiddleware(config.Logger)(skAdminService)
+	skAdminService = plugins.SkAdminMetrics(requestCount, requestLatency)(skAdminService)
+
+	activityService = plugins.ActivityLoggingMiddleware(config.Logger)(activityService)
+	activityService = plugins.ActivityMetrics(requestCount, requestLatency)(activityService)
+
+	productService = plugins.ProductLoggingMiddleware(config.Logger)(productService)
+	productService = plugins.ProductMetrics(requestCount, requestLatency)(productService)
 
 	createActivityEnd := endpoint.MakeCreateActivityEndpoint(activityService)
 	createActivityEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(createActivityEnd)
@@ -96,11 +100,21 @@ func InitServer(host string) {
 
 	//http server
 	go func() {
-		fmt.Println("Http Server start at port:" + *servicePort)
-		mysql.InitMysql(conf.MysqlConfig.Host, conf.MysqlConfig.Port, conf.MysqlConfig.User, conf.MysqlConfig.Pwd, conf.MysqlConfig.Db)
+		fmt.Println("Http Server start at port:" + servicePort)
 		//启动前执行注册
 		register.Register()
 		handler := r
-		errChan <- http.ListenAndServe(":"+*servicePort, handler)
+		errChan <- http.ListenAndServe(":"+servicePort, handler)
 	}()
+
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errChan <- fmt.Errorf("%s", <-c)
+	}()
+
+	error := <-errChan
+	//服务退出取消注册
+	register.Deregister()
+	fmt.Println(error)
 }

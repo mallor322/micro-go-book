@@ -6,14 +6,17 @@ import (
 	"log"
 )
 
-type ProductService struct {
+type ProductService interface {
+	CreateProduct(product *model.Product) error
+	GetProductList() ([]gorose.Data, error)
 }
 
-func NewProductServer() *ProductService {
-	return &ProductService{}
+type ProductServiceMiddleware func(ProductService) ProductService
+
+type ProductServiceImpl struct {
 }
 
-func (p *ProductService) CreateProduct(product *model.Product) error {
+func (p ProductServiceImpl) CreateProduct(product *model.Product) error {
 	productEntity := model.NewProductModel()
 	err := productEntity.CreateProduct(product)
 	if err != nil {
@@ -23,7 +26,7 @@ func (p *ProductService) CreateProduct(product *model.Product) error {
 	return nil
 }
 
-func (p *ProductService) GetProductList() ([]gorose.Data, error) {
+func (p ProductServiceImpl) GetProductList() ([]gorose.Data, error) {
 	productEntity := model.NewProductModel()
 	productList, err := productEntity.GetProductList()
 	if err != nil {

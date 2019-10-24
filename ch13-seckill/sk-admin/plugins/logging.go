@@ -1,43 +1,104 @@
 package plugins
 
 import (
-	"context"
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"github.com/gohouse/gorose/v2"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
 	"time"
 )
 
 // loggingMiddleware Make a new type
 // that contains Service interface and logger instance
-type loggingMiddleware struct {
+type skAdminLoggingMiddleware struct {
 	service.Service
 	logger log.Logger
 }
 
+type activityLoggingMiddleware struct {
+	service.ActivityService
+	logger log.Logger
+}
+
+type productLoggingMiddleware struct {
+	service.ProductService
+	logger log.Logger
+}
+
 // LoggingMiddleware make logging middleware
-func LoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
+func SkAdminLoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
 	return func(next service.Service) service.Service {
-		return loggingMiddleware{next, logger}
+		return skAdminLoggingMiddleware{next, logger}
 	}
 }
 
-func (mw loggingMiddleware) Check(ctx context.Context, a, b string) (ret bool, err error) {
+func ActivityLoggingMiddleware(logger log.Logger) service.ActivityServiceMiddleware {
+	return func(next service.ActivityService) service.ActivityService {
+		return activityLoggingMiddleware{next, logger}
+	}
+}
+
+func ProductLoggingMiddleware(logger log.Logger) service.ProductServiceMiddleware {
+	return func(next service.ProductService) service.ProductService {
+		return productLoggingMiddleware{next, logger}
+	}
+}
+
+func (mw productLoggingMiddleware) CreateProduct(product *model.Product) (err error) {
 
 	defer func(begin time.Time) {
 		_ = mw.logger.Log(
 			"function", "Check",
-			"username", a,
-			"pwd", b,
-			"result", ret,
+			"product", product,
 			"took", time.Since(begin),
 		)
 	}(time.Now())
 
-	ret, err = mw.Service.Check(ctx, a, b)
+	err = mw.ProductService.CreateProduct(product)
+	return err
+}
+
+func (mw productLoggingMiddleware) GetProductList() ([]gorose.Data, error) {
+
+	defer func(begin time.Time) {
+		_ = mw.logger.Log(
+			"function", "Check",
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	data, err := mw.ProductService.GetProductList()
+	return data, err
+}
+
+func (mw activityLoggingMiddleware) GetActivityList() ([]gorose.Data, error) {
+
+	defer func(begin time.Time) {
+		_ = mw.logger.Log(
+			"function", "Check",
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	ret, err := mw.ActivityService.GetActivityList()
 	return ret, err
 }
 
-func (mw loggingMiddleware) HealthCheck() (result bool) {
+func (mw activityLoggingMiddleware) CreateActivity(activity *model.Activity) error {
+
+	defer func(begin time.Time) {
+		_ = mw.logger.Log(
+			"function", "Check",
+			"activity", activity,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	err := mw.ActivityService.CreateActivity(activity)
+	return err
+}
+
+func (mw skAdminLoggingMiddleware) HealthCheck() (result bool) {
 	defer func(begin time.Time) {
 		_ = mw.logger.Log(
 			"function", "HealthChcek",

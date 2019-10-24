@@ -13,14 +13,17 @@ import (
 	"time"
 )
 
-type ActivityService struct {
+type ActivityService interface {
+	GetActivityList() ([]gorose.Data, error)
+	CreateActivity(activity *model.Activity) error
 }
 
-func NewActivityService() *ActivityService {
-	return &ActivityService{}
+type ActivityServiceMiddleware func(ActivityService) ActivityService
+
+type ActivityServiceImpl struct {
 }
 
-func (p *ActivityService) GetActivityList() ([]gorose.Data, error) {
+func (p ActivityServiceImpl) GetActivityList() ([]gorose.Data, error) {
 	activityEntity := model.NewActivityModel()
 	activityList, err := activityEntity.GetActivityList()
 	if err != nil {
@@ -53,7 +56,7 @@ func (p *ActivityService) GetActivityList() ([]gorose.Data, error) {
 	return activityList, nil
 }
 
-func (p *ActivityService) CreateActivity(activity *model.Activity) error {
+func (p ActivityServiceImpl) CreateActivity(activity *model.Activity) error {
 	log.Printf("CreateActivity")
 	//写入到数据库
 	activityEntity := model.NewActivityModel()
@@ -73,7 +76,7 @@ func (p *ActivityService) CreateActivity(activity *model.Activity) error {
 	return nil
 }
 
-func (p *ActivityService) syncToZk(activity *model.Activity) error {
+func (p ActivityServiceImpl) syncToZk(activity *model.Activity) error {
 
 	zkPath := conf.Zk.SecProductKey
 	secProductInfoList, err := p.loadProductFromZk(zkPath)
@@ -114,7 +117,7 @@ func (p *ActivityService) syncToZk(activity *model.Activity) error {
 	return nil
 }
 
-func (p *ActivityService) loadProductFromZk(key string) ([]*model.SecProductInfoConf, error) {
+func (p ActivityServiceImpl) loadProductFromZk(key string) ([]*model.SecProductInfoConf, error) {
 	_, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	v, s, err := conf.Zk.ZkConn.Get(key)

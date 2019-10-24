@@ -10,6 +10,7 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	gozipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -32,23 +33,23 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.SkAdminEndpoints, zip
 		zipkinServer,
 	}
 
-	r.Methods("POST").Path("/product/create").Handler(kithttp.NewServer(
-		endpoints.CreateProductEndpoint,
-		decodeRequest,
-		encodeResponse,
-		options...,
-	))
-
-	r.Methods("GET").Path("/product/create").Handler(kithttp.NewServer(
+	r.Methods("GET").Path("/product/list").Handler(kithttp.NewServer(
 		endpoints.GetProductEndpoint,
 		decodeRequest,
 		encodeResponse,
 		options...,
 	))
 
+	r.Methods("POST").Path("/product/create").Handler(kithttp.NewServer(
+		endpoints.GetProductEndpoint,
+		decodeCreateProductCheckRequest,
+		encodeResponse,
+		options...,
+	))
+
 	r.Methods("POST").Path("/activity/create").Handler(kithttp.NewServer(
 		endpoints.CreateActivityEndpoint,
-		decodeRequest,
+		decodeCreateActivityCheckRequest,
 		encodeResponse,
 		options...,
 	))
@@ -104,4 +105,20 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 // decodeHealthCheckRequest decode request
 func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	return endpts.HealthRequest{}, nil
+}
+
+func decodeCreateProductCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var product model.Product
+	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
+		return nil, err
+	}
+	return product, nil
+}
+
+func decodeCreateActivityCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var activity model.Activity
+	if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
+		return nil, err
+	}
+	return activity, nil
 }
