@@ -19,8 +19,8 @@ func TestMain(m *testing.M) {
 	var (
 		grpcAddr    = flag.String("addr", ":9008", "gRPC address")
 		serviceHost = flag.String("service.host", "localhost", "service ip address")
-		servicePort = flag.String("service.port", "9009", "service port")
-		zipkinURL   = flag.String("zipkin.url", "http://106.15.233.99:9411/api/v2/spans", "Zipkin server url")
+		servicePort = flag.String("service.port", "8009", "service port")
+		zipkinURL   = flag.String("zipkin.url", "http://114.67.98.210:9411/api/v2/spans", "Zipkin server url")
 	)
 	flag.Parse()
 	var logger log.Logger
@@ -34,7 +34,7 @@ func TestMain(m *testing.M) {
 		var (
 			err           error
 			hostPort      = *serviceHost + ":" + *servicePort
-			serviceName   = "arithmetic-service"
+			serviceName   = "test-service"
 			useNoopTracer = (*zipkinURL == "")
 			reporter      = zipkinhttp.NewReporter(*zipkinURL)
 		)
@@ -55,7 +55,7 @@ func TestMain(m *testing.M) {
 	parentSpan := tr.StartSpan("test")
 	ctx := zipkin.NewContext(context.Background(), parentSpan)
 
-	clientTracer := kitzipkin.GRPCClientTrace(tr, kitzipkin.Name("grpc-transport"))
+	clientTracer := kitzipkin.GRPCClientTrace(tr, kitzipkin.Name("client-grpc-transport"))
 	conn, err := grpc.Dial(*grpcAddr, grpc.WithInsecure(), grpc.WithTimeout(1*time.Second))
 	if err != nil {
 		fmt.Println("gRPC dial err:", err)
@@ -63,11 +63,11 @@ func TestMain(m *testing.M) {
 	defer conn.Close()
 
 	svr := client.StringDiff(conn, clientTracer)
-	result, err := svr.Diff(ctx, "Add", "pps")
+	result, err := svr.Diff(ctx, "Add", "ppsdd")
 	if err != nil {
-		fmt.Println("Check error", err.Error())
+		fmt.Println("Diff error", err.Error())
 
 	}
 
-	fmt.Println("result=", result)
+	fmt.Println("result =", result)
 }

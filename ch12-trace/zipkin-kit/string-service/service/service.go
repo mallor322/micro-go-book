@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strings"
 )
 
 // Service constants
@@ -48,11 +49,15 @@ func (s StringService) Diff(ctx context.Context, a, b string) (string, error) {
 	res := ""
 	if len(a) >= len(b) {
 		for _, char := range b {
-			res = res + string(char)
+			if strings.Contains(a, string(char)) {
+				res = res + string(char)
+			}
 		}
 	} else {
 		for _, char := range a {
-			res = res + string(char)
+			if strings.Contains(b, string(char)) {
+				res = res + string(char)
+			}
 		}
 	}
 	return res, nil

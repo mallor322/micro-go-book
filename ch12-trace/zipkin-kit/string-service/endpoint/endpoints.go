@@ -14,14 +14,22 @@ type StringEndpoints struct {
 	HealthCheckEndpoint endpoint.Endpoint
 }
 
-func (StringEndpoints) Concat(a, b string) (string, error) {
-	panic("implement me")
+func (se StringEndpoints) Concat(a, b string) (string, error) {
+	ctx := context.Background()
+	resp, err := se.StringEndpoint(ctx, StringRequest{
+		RequestType: "Concat",
+		A:           a,
+		B:           b,
+	})
+	response := resp.(StringResponse)
+	return response.Result, err
 }
 
 func (se StringEndpoints) Diff(ctx context.Context, a, b string) (string, error) {
 	resp, err := se.StringEndpoint(ctx, StringRequest{
-		A: a,
-		B: b,
+		RequestType: "Diff",
+		A:           a,
+		B:           b,
 	})
 	response := resp.(StringResponse)
 	return response.Result, err

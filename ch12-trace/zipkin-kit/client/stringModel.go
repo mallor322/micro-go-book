@@ -10,16 +10,18 @@ import (
 func EncodeGRPCStringRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(endpoint.StringRequest)
 	return &pb.StringRequest{
-		A: string(req.A),
-		B: string(req.B),
+		RequestType: string(req.RequestType),
+		A:           string(req.A),
+		B:           string(req.B),
 	}, nil
 }
 
 func DecodeGRPCStringRequest(ctx context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.StringRequest)
 	return endpoint.StringRequest{
-		A: string(req.A),
-		B: string(req.B),
+		RequestType: string(req.RequestType),
+		A:           string(req.A),
+		B:           string(req.B),
 	}, nil
 }
 

@@ -7,8 +7,9 @@ service StringService{
 }
 
 message StringRequest {
-    string a = 1;
-    string b = 2;
+    string request_type = 1;
+    string a = 2;
+    string b = 3;
 }
 
 message StringResponse {

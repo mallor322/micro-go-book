@@ -24,11 +24,11 @@ import (
 func main() {
 
 	var (
-		consulHost  = flag.String("consul.host", "", "consul ip address")
-		consulPort  = flag.String("consul.port", "", "consul port")
-		serviceHost = flag.String("service.host", "", "service ip address")
-		servicePort = flag.String("service.port", "", "service port")
-		zipkinURL   = flag.String("zipkin.url", "http://106.15.233.99:9411/api/v2/spans", "Zipkin server url")
+		consulHost  = flag.String("consul.host", "114.67.98.210", "consul ip address")
+		consulPort  = flag.String("consul.port", "8500", "consul port")
+		serviceHost = flag.String("service.host", "localhost", "service ip address")
+		servicePort = flag.String("service.port", "9009", "service port")
+		zipkinURL   = flag.String("zipkin.url", "http://114.67.98.210:9411/api/v2/spans", "Zipkin server url")
 		grpcAddr    = flag.String("grpc", ":9008", "gRPC listen address.")
 	)
 
@@ -49,7 +49,7 @@ func main() {
 		var (
 			err           error
 			hostPort      = *serviceHost + ":" + *servicePort
-			serviceName   = "string-service-service"
+			serviceName   = "string-service"
 			useNoopTracer = (*zipkinURL == "")
 			reporter      = zipkinhttp.NewReporter(*zipkinURL)
 		)
@@ -74,7 +74,7 @@ func main() {
 	svc = LoggingMiddleware(logger)(svc)
 
 	endpoint := edpts.MakeStringEndpoint(ctx, svc)
-	endpoint = kitzipkin.TraceEndpoint(zipkinTracer, "calculate-endpoint")(endpoint)
+	endpoint = kitzipkin.TraceEndpoint(zipkinTracer, "string-endpoint")(endpoint)
 
 	//创建健康检查的Endpoint
 	healthEndpoint := edpts.MakeHealthCheckEndpoint(svc)
@@ -110,7 +110,7 @@ func main() {
 		serverTracer := kitzipkin.GRPCServerTrace(zipkinTracer, kitzipkin.Name("grpc-transport"))
 		tr := zipkinTracer
 		md := metadata.MD{}
-		parentSpan := tr.StartSpan("test")
+		parentSpan := tr.StartSpan("string-service")
 
 		b3.InjectGRPC(&md)(parentSpan.Context())
 
