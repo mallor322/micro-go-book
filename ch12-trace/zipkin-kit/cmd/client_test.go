@@ -53,6 +53,8 @@ func TestMain(m *testing.M) {
 	}
 	tr := zipkinTracer
 	parentSpan := tr.StartSpan("test")
+	defer parentSpan.Flush()
+
 	ctx := zipkin.NewContext(context.Background(), parentSpan)
 
 	clientTracer := kitzipkin.GRPCClientTrace(tr, kitzipkin.Name("client-grpc-transport"))

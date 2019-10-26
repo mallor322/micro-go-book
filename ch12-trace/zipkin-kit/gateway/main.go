@@ -21,9 +21,9 @@ func main() {
 
 	// 创建环境变量
 	var (
-		consulHost = flag.String("consul.host", "106.15.233.99", "consul server ip address")
+		consulHost = flag.String("consul.host", "114.67.98.210", "consul server ip address")
 		consulPort = flag.String("consul.port", "8500", "consul server port")
-		zipkinURL  = flag.String("zipkin.url", "http://106.15.233.99:9411/api/v2/spans", "Zipkin server url")
+		zipkinURL  = flag.String("zipkin.url", "http://114.67.98.210:9411/api/v2/spans", "Zipkin server url")
 	)
 	flag.Parse()
 
@@ -40,7 +40,7 @@ func main() {
 		var (
 			err           error
 			hostPort      = "localhost:9090"
-			serviceName   = "ch8-gateway-service"
+			serviceName   = "gateway-service"
 			useNoopTracer = (*zipkinURL == "")
 			reporter      = zipkinhttp.NewReporter(*zipkinURL)
 		)
@@ -76,7 +76,7 @@ func main() {
 
 	handler := zipkinhttpsvr.NewServerMiddleware(
 		zipkinTracer,
-		zipkinhttpsvr.SpanName("ch8-gateway"),
+		zipkinhttpsvr.SpanName("gateway"),
 		zipkinhttpsvr.TagResponseSize(true),
 		zipkinhttpsvr.ServerTags(tags),
 	)(proxy)
@@ -104,7 +104,7 @@ func NewReverseProxy(client *api.Client, zikkinTracer *zipkin.Tracer, logger log
 	//创建Director
 	director := func(req *http.Request) {
 
-		//查询原始请求路径，如：/string-service/calculate/10/5
+		//查询原始请求路径，如：/string-service/op/10/5
 		reqPath := req.URL.Path
 		if reqPath == "" {
 			return

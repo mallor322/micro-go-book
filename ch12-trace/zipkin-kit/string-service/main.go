@@ -10,10 +10,8 @@ import (
 	edpts "github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-kit/string-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-kit/string-service/service"
 	"github.com/openzipkin/zipkin-go"
-	"github.com/openzipkin/zipkin-go/propagation/b3"
 	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"net"
 	"net/http"
 	"os"
@@ -107,14 +105,8 @@ func main() {
 			errChan <- err
 			return
 		}
-		serverTracer := kitzipkin.GRPCServerTrace(zipkinTracer, kitzipkin.Name("grpc-transport"))
-		tr := zipkinTracer
-		md := metadata.MD{}
-		parentSpan := tr.StartSpan("string-service")
+		serverTracer := kitzipkin.GRPCServerTrace(zipkinTracer, kitzipkin.Name("string-grpc-transport"))
 
-		b3.InjectGRPC(&md)(parentSpan.Context())
-
-		ctx := metadata.NewIncomingContext(context.Background(), md)
 		handler := NewGRPCServer(ctx, endpts, serverTracer)
 		gRPCServer := grpc.NewServer()
 		pb.RegisterStringServiceServer(gRPCServer, handler)

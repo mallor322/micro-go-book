@@ -58,7 +58,7 @@ type StringResponse struct {
 
 // MakeStringEndpoint make endpoint
 func MakeStringEndpoint(ctx context.Context, svc service.Service) endpoint.Endpoint {
-	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+	return func(ctx1 context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(StringRequest)
 
 		var (
