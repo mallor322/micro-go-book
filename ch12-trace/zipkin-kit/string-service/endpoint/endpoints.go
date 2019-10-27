@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// CalculateEndpoint define endpoint
+// StringEndpoint define endpoint
 type StringEndpoints struct {
 	StringEndpoint      endpoint.Endpoint
 	HealthCheckEndpoint endpoint.Endpoint

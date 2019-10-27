@@ -15,7 +15,7 @@ const (
 var (
 	ErrMaxSize = errors.New("maximum size of 1024 bytes exceeded")
 
-	ErrStrValue = errors.New("maximum size of 1024 bytes exceeded")
+	ErrStrValue = errors.New("error str value to Integer")
 )
 
 // Service Define a service interface
