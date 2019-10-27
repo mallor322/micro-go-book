@@ -1,15 +1,37 @@
-package srv_sec
+package service
 
 import (
 	"fmt"
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/model"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_err"
 	"log"
 	"time"
 )
 
-func SecInfo(productId int) (date map[string]interface{}) {
+// Service Define a service interface
+type Service interface {
+	// HealthCheck check service health status
+	HealthCheck() bool
+	SecInfo(productId int) (date map[string]interface{})
+	SecKill(req *model.SecRequest) (map[string]interface{}, int, error)
+	SecInfoList() ([]map[string]interface{}, int, error)
+}
+
+//UserService implement Service interface
+type SkAppService struct {
+}
+
+// HealthCheck implement Service method
+// 用于检查服务的健康状态，这里仅仅返回true
+func (s SkAppService) HealthCheck() bool {
+	return true
+}
+
+type ServiceMiddleware func(Service) Service
+
+func (s SkAppService) SecInfo(productId int) (date map[string]interface{}) {
 	config.SkAppContext.RWSecProductLock.RLock()
 	defer config.SkAppContext.RWSecProductLock.RUnlock()
 
@@ -27,7 +49,7 @@ func SecInfo(productId int) (date map[string]interface{}) {
 	return data
 }
 
-func SecKill(req *config.SecRequest) (map[string]interface{}, int, error) {
+func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, int, error) {
 	//对Map加锁处理
 	config.SkAppContext.RWSecProductLock.RLock()
 	defer config.SkAppContext.RWSecProductLock.RUnlock()
@@ -89,14 +111,14 @@ func SecKill(req *config.SecRequest) (map[string]interface{}, int, error) {
 	}
 }
 
-func NewSecRequest() *config.SecRequest {
-	secRequest := &config.SecRequest{
-		ResultChan: make(chan *config.SecResult, 1),
+func NewSecRequest() *model.SecRequest {
+	secRequest := &model.SecRequest{
+		ResultChan: make(chan *model.SecResult, 1),
 	}
 	return secRequest
 }
 
-func SecInfoList() ([]map[string]interface{}, int, error) {
+func (s SkAppService) SecInfoList() ([]map[string]interface{}, int, error) {
 	config.SkAppContext.RWSecProductLock.RLock()
 	defer config.SkAppContext.RWSecProductLock.RUnlock()
 

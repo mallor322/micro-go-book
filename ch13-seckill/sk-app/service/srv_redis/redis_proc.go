@@ -5,6 +5,7 @@ import (
 	"fmt"
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/model"
 	"log"
 	"time"
 )
@@ -44,7 +45,7 @@ func ReadHandle() {
 			continue
 		}
 
-		var result *config.SecResult
+		var result *model.SecResult
 		err = json.Unmarshal([]byte(data[1]), &result)
 		if err != nil {
 			log.Printf("json.Unmarshal failed. Error : %v", err)
