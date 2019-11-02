@@ -117,11 +117,11 @@ func syncIpBlackList(conn *redis.Client) {
 //初始化redis进程
 func initRedisProcess() {
 	log.Printf("initRedisProcess")
-	for i := 0; i < 1; i++ {
+	for i := 0; i < conf.SecKill.AppWriteToHandleGoroutineNum; i++ {
 		go srv_redis.WriteHandle()
 	}
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < conf.SecKill.AppReadFromHandleGoroutineNum; i++ {
 		go srv_redis.ReadHandle()
 	}
 }

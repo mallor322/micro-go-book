@@ -74,6 +74,13 @@ type SecKillConf struct {
 	IDBlackMap map[int]bool
 
 	SecProductInfoMap map[int]*SecProductInfoConf
+
+	AppWriteToHandleGoroutineNum  int
+	AppReadFromHandleGoroutineNum int
+
+	CoreReadRedisGoroutineNum  int
+	CoreWriteRedisGoroutineNum int
+	CoreHandleGoroutineNum     int
 }
 
 //商品信息配置

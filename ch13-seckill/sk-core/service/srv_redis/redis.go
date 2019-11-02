@@ -10,17 +10,17 @@ import (
 )
 
 func RunProcess() {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < conf.SecKill.CoreReadRedisGoroutineNum; i++ {
 		config.SecLayerCtx.WaitGroup.Add(1)
 		go HandleReader()
 	}
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < conf.SecKill.CoreWriteRedisGoroutineNum; i++ {
 		config.SecLayerCtx.WaitGroup.Add(1)
 		go HandleWrite()
 	}
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < conf.SecKill.CoreHandleGoroutineNum; i++ {
 		config.SecLayerCtx.WaitGroup.Add(1)
 		go HandleUser()
 	}
