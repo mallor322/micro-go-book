@@ -74,6 +74,23 @@ type SecKillConf struct {
 	IDBlackMap map[int]bool
 
 	SecProductInfoMap map[int]*SecProductInfoConf
+
+	AppWriteToHandleGoroutineNum  int
+	AppReadFromHandleGoroutineNum int
+
+	CoreReadRedisGoroutineNum  int
+	CoreWriteRedisGoroutineNum int
+	CoreHandleGoroutineNum     int
+
+	AppWaitResultTimeout int
+
+	CoreWaitResultTimeout int
+
+	MaxRequestWaitTimeout int
+
+	SendToWriteChanTimeout  int //
+	SendToHandleChanTimeout int //
+	TokenPassWd             string
 }
 
 //商品信息配置
