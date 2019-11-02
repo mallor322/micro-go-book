@@ -80,7 +80,7 @@ func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, in
 	//将请求送入通道并推入到redis队列当中
 	config.SkAppContext.SecReqChan <- req
 
-	ticker := time.NewTicker(time.Second * 10)
+	ticker := time.NewTicker(time.Millisecond * time.Duration(conf.SecKill.AppWaitResultTimeout))
 
 	defer func() {
 		ticker.Stop()

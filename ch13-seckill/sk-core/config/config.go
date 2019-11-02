@@ -99,13 +99,6 @@ type SecRequest struct {
 	ResultChan    chan *SecResult `json:"-"`
 }
 
-var SecLayerConfCtx = &SecLayerConf{
-	MaxRequestWaitTimeout:   100,
-	SendToHandleChanTimeout: 10,
-	SendToWriteChanTimeout:  100,
-	TokenPassWd:             "1111",
-}
-
 type SkAppCtx struct {
 	SecReqChan       chan *SecRequest
 	SecReqChanSize   int
@@ -121,28 +114,8 @@ const (
 	ProductStatusForceSaleOut = 2 //商品强制售罄
 )
 
-type SecLayerConf struct {
-	WriteGoroutineNum int //写操作goroutine数量控制
-	ReadGoroutineNum  int //读操作goroutine数量控制
-
-	HandleUserGoroutineNum int //处理用户goroutine数量控制
-
-	Read2HandleChanSize  int //
-	Handle2WriteChanSize int //
-
-	MaxRequestWaitTimeout int //最大请求等待时间
-
-	SendToWriteChanTimeout  int //
-	SendToHandleChanTimeout int //
-
-	TokenPassWd string //Token
-
-}
-
 type SecLayerContext struct {
 	RWSecProductLock sync.RWMutex
-
-	SecLayerConf *SecLayerConf
 
 	WaitGroup sync.WaitGroup
 

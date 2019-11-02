@@ -81,6 +81,16 @@ type SecKillConf struct {
 	CoreReadRedisGoroutineNum  int
 	CoreWriteRedisGoroutineNum int
 	CoreHandleGoroutineNum     int
+
+	AppWaitResultTimeout int
+
+	CoreWaitResultTimeout int
+
+	MaxRequestWaitTimeout int
+
+	SendToWriteChanTimeout  int //
+	SendToHandleChanTimeout int //
+	TokenPassWd             string
 }
 
 //商品信息配置

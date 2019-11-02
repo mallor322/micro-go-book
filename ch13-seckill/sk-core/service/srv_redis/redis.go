@@ -56,13 +56,13 @@ func HandleReader() {
 			nowTime := time.Now().Unix()
 			//int64(config.SecLayerCtx.SecLayerConf.MaxRequestWaitTimeout)
 			fmt.Println(nowTime, " ", req.AccessTime, " ", 100)
-			if nowTime-req.AccessTime >= int64(config.SecLayerConfCtx.MaxRequestWaitTimeout) {
+			if nowTime-req.AccessTime >= int64(conf.SecKill.MaxRequestWaitTimeout) {
 				log.Printf("req[%v] is expire", req)
 				continue
 			}
 
 			//设置超时时间
-			timer := time.NewTicker(time.Millisecond * time.Duration(config.SecLayerConfCtx.SendToHandleChanTimeout))
+			timer := time.NewTicker(time.Millisecond * time.Duration(conf.SecKill.CoreWaitResultTimeout))
 			select {
 			case config.SecLayerCtx.Read2HandleChan <- &req:
 			case <-timer.C:
