@@ -57,7 +57,7 @@ func TestMain(m *testing.M) {
 
 	ctx := zipkin.NewContext(context.Background(), parentSpan)
 
-	clientTracer := kitzipkin.GRPCClientTrace(tr, kitzipkin.Name("client-grpc-transport"))
+	clientTracer := kitzipkin.GRPCClientTrace(tr)
 	conn, err := grpc.Dial(*grpcAddr, grpc.WithInsecure(), grpc.WithTimeout(1*time.Second))
 	if err != nil {
 		fmt.Println("gRPC dial err:", err)
