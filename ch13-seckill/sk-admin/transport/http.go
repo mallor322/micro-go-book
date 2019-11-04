@@ -8,12 +8,14 @@ import (
 	"github.com/go-kit/kit/tracing/zipkin"
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	gozipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
+	"os"
 )
 
 var (
@@ -71,7 +73,9 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.SkAdminEndpoints, zip
 		options...,
 	))
 
-	return r
+	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
+
+	return loggedRouter
 }
 
 // decodeUserRequest decode request params to struct

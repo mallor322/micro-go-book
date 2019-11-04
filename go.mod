@@ -11,7 +11,6 @@ require (
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/gin-gonic/gin v1.4.0
 	github.com/go-kit/kit v0.9.0
 	github.com/go-redis/redis v6.15.5+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
@@ -21,6 +20,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/google/go-cmp v0.3.1 // indirect
+	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.6.2
 	github.com/gorilla/websocket v1.4.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0 // indirect
@@ -31,6 +31,8 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 // indirect
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.3.5
@@ -52,7 +54,6 @@ require (
 	github.com/spf13/viper v1.4.0
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
 	github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a // indirect
-	github.com/ugorji/go v1.1.7 // indirect
 	github.com/unknwon/com v1.0.1
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.etcd.io/etcd v3.3.15+incompatible
