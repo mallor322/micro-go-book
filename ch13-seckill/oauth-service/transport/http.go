@@ -35,8 +35,8 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zi
 
 
 	r.Methods("POST").Path("/oauth/token").Handler(kithttp.NewServer(
-		endpoints.HealthCheckEndpoint,
-		decodeHealthCheckRequest,
+		endpoints.TokenEndpoint,
+		decodeTokenRequest,
 		encodeJsonResponse,
 		options...,
 	))

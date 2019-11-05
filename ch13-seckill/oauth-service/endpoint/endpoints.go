@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
 	"net/http"
@@ -49,23 +50,25 @@ type TokenResponse struct {
 //  make endpoint
 func MakeTokenEndpoint(svc service.TokenGranter, clientService service.ClientDetailsService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(TokenRequest)
+		req := request.(*TokenRequest)
 
 		var clientDetails *model.ClientDetails
-		clientId, clientSecret, ok := req.Reader.BasicAuth(); if ok{
-
-			clientDetails, err := clientService.GetClientDetailByClientId(ctx, clientId)
-
+		clientId, clientSecret, ok := req.Reader.BasicAuth()
+		if ok{
+			clientDetails, err = clientService.GetClientDetailByClientId(ctx, clientId)
 			if err != nil{
+				config.Logger.Log("clientId " + clientId  + " is not existed", ErrInvalidRequestType)
 				return nil, ErrInvalidClientRequestType
 			}
 
 			if !clientDetails.IsMatch(clientId, clientSecret){
+				config.Logger.Log("clientId and clientSecret not match", ErrInvalidRequestType)
 				return nil, ErrInvalidClientRequestType
 			}
 
 		}else {
-			return nil, ErrInvalidRequestType
+			config.Logger.Log("Error parse clientId and clientSecret in header", ErrInvalidRequestType)
+			return nil, ErrInvalidClientRequestType
 		}
 
 		token, err := svc.Grant(ctx, req.GrantType, clientDetails, req.Reader); if err == nil {
@@ -81,7 +84,7 @@ func MakeTokenEndpoint(svc service.TokenGranter, clientService service.ClientDet
 
 func MakeCheckTokenEndpoint(svc service.TokenService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(CheckTokenRequest)
+		req := request.(*CheckTokenRequest)
 
 		if tokenDetails, err := svc.GetOAuth2DetailsByAccessToken(req.Token); err == nil{
 			return CheckTokenResponse{
@@ -100,7 +103,6 @@ type HealthRequest struct{}
 // HealthResponse 健康检查响应结构
 type HealthResponse struct {
 	Status bool `json:"status"`
-	Message string `json:"message"`
 }
 
 // MakeHealthCheckEndpoint 创建健康检查Endpoint
@@ -109,7 +111,6 @@ func MakeHealthCheckEndpoint(svc service.Service) endpoint.Endpoint {
 		status := svc.HealthCheck()
 		return HealthResponse{
 			Status:status,
-			Message:"OK",
 		}, nil
 	}
 }

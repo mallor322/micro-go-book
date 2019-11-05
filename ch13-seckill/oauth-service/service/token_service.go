@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	. "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
 	uuid "github.com/satori/go.uuid"
@@ -75,6 +76,8 @@ func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context, gra
 	if !userDetails.IsMatch(username, password){
 		return nil, errors.New( "username or password is not correct")
 	}
+
+	fmt.Println(client.ClientId)
 
 	// 根据用户信息和客户端信息生成访问令牌
 	return tokenGranter.tokenService.CreateAccessToken(&OAuth2Details{
