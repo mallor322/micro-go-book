@@ -5,7 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-kit/kit/log"
-	"net/http"
+	"github.com/keets2012/Micro-Go-Pracrise/ch9-rpc/pb"
+	"google.golang.org/grpc"
 	"os"
 	"os/signal"
 	"syscall"
@@ -49,19 +50,16 @@ func main() {
 		HealthCheckEndpoint: healthEndpoint,
 	}
 
-	//创建http.Handler
-	r := MakeHttpHandler(ctx, endpts, logger)
+	handler := NewStringServer(ctx, endpts, nil)
 
 	//创建注册对象
 	//TODO replace with common consul
 	registar := Register(*consulHost, *consulPort, *serviceHost, *servicePort, logger)
 
 	go func() {
-		fmt.Println("Http Server start at port:" + *servicePort)
-		//启动前执行注册
-		registar.Register()
-		handler := r
-		errChan <- http.ListenAndServe(":"+*servicePort, handler)
+		fmt.Println("grpc Server start at port:" + *servicePort)
+		gRPCServer := grpc.NewServer()
+		pb.RegisterStringServiceServer(gRPCServer, handler)
 	}()
 
 	go func() {
