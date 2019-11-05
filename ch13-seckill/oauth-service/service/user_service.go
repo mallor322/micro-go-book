@@ -14,9 +14,24 @@ type UserDetailsService interface {
 }
 
 //UserService implement Service interface
-type UserService struct {
+type RemoteUserService struct {
 
 }
+
+func (service *RemoteUserService) GetUserDetailByUsername(ctx context.Context, username string)(*model.UserDetails, error){
+	return &model.UserDetails{
+		UserId:1,
+		Username:username,
+		Password:"password",
+	}, nil
+}
+
+
+func NewRemoteUserDetailService() *RemoteUserService {
+	return &RemoteUserService{
+	}
+}
+
 
 // ServiceMiddleware define service middleware
 type ServiceMiddleware func(Service) Service

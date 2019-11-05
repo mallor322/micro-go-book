@@ -43,10 +43,24 @@ func main() {
 
 	var tokenService service.TokenService
 	var tokenGranter service.TokenGranter
+	var tokenEnhancer service.TokenEnhancer
+	var tokenStore service.TokenStore
+	var userDetailsService service.UserDetailsService
 	var clientDetailsService service.ClientDetailsService
 	var srv service.Service
 
 	// add logging middleware
+
+	tokenEnhancer = service.NewJwtTokenEnhancer("secret")
+	tokenStore = service.NewJwtTokenStore(tokenEnhancer.(*service.JwtTokenEnhancer))
+	tokenService = *service.NewTokenService(tokenStore, tokenEnhancer)
+	userDetailsService = service.NewRemoteUserDetailService()
+	clientDetailsService = service.NewMysqlClientDetailsService()
+	srv = service.NewCommentService()
+
+	tokenGranter = service.NewComposeTokenGranter(map[string]service.TokenGranter{
+		"password": service.NewUsernamePasswordTokenGranter("password", userDetailsService,  &tokenService),
+	})
 
 
 	tokenEndpoint := endpoint.MakeTokenEndpoint(tokenGranter, clientDetailsService)

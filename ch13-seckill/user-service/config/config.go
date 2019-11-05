@@ -30,6 +30,7 @@ func init() {
 		Logger.Log("Fail to load remote config", err)
 	}
 
+
 	if err := conf.Sub("mysql", &conf.MysqlConfig); err != nil {
 		Logger.Log("Fail to parse mysql", err)
 	}

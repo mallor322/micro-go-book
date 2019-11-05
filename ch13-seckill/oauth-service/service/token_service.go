@@ -45,6 +45,14 @@ type UsernamePasswordTokenGranter struct {
 	tokenService *TokenService
 }
 
+func NewUsernamePasswordTokenGranter(grantType string, userDetailsService UserDetailsService, tokenService *TokenService) *UsernamePasswordTokenGranter {
+	return &UsernamePasswordTokenGranter{
+		supportGrantType:grantType,
+		userDetailsService:userDetailsService,
+		tokenService:tokenService,
+	}
+}
+
 
 func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context, grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
 	if grantType != tokenGranter.supportGrantType{
@@ -82,6 +90,13 @@ type TokenService struct {
 	tokenStore TokenStore
 	tokenEnhancer TokenEnhancer
 
+}
+
+func NewTokenService(tokenStore TokenStore, tokenEnhancer TokenEnhancer) *TokenService {
+	return &TokenService{
+		tokenStore:tokenStore,
+		tokenEnhancer:tokenEnhancer,
+	}
 }
 
 
@@ -231,6 +246,13 @@ type TokenStore interface {
 
 }
 
+func NewJwtTokenStore(jwtTokenEnhancer *JwtTokenEnhancer) TokenStore {
+	return &JwtTokenStore{
+		jwtTokenEnhancer:jwtTokenEnhancer,
+	}
+
+}
+
 
 type JwtTokenStore struct {
 	jwtTokenEnhancer *JwtTokenEnhancer
@@ -296,6 +318,13 @@ type OAuth2TokenCustomClaims struct {
 
 type JwtTokenEnhancer struct {
 	secretKey []byte
+}
+
+func NewJwtTokenEnhancer(secretKey string) TokenEnhancer {
+	return &JwtTokenEnhancer{
+		secretKey:[]byte(secretKey),
+	}
+
 }
 
 func (enhancer *JwtTokenEnhancer) Enhance(oauth2Token *OAuth2Token, oauth2Details *OAuth2Details) (*OAuth2Token, error) {

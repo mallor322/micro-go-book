@@ -20,7 +20,7 @@ type OAuth2Endpoints struct {
 
 var (
 	ErrInvalidRequestType = errors.New("invalid username, password")
-	ForbiddenRequestType = errors.New("invalid ")
+	ErrInvalidClientRequestType = errors.New("invalid client message")
 )
 
 
@@ -57,15 +57,15 @@ func MakeTokenEndpoint(svc service.TokenGranter, clientService service.ClientDet
 			clientDetails, err := clientService.GetClientDetailByClientId(ctx, clientId)
 
 			if err != nil{
-				return nil, errors.New("403")
+				return nil, ErrInvalidClientRequestType
 			}
 
 			if !clientDetails.IsMatch(clientId, clientSecret){
-				return nil, errors.New("403")
+				return nil, ErrInvalidClientRequestType
 			}
 
 		}else {
-			return nil, errors.New("please provide the clientId and clientSecret in authorization")
+			return nil, ErrInvalidRequestType
 		}
 
 		token, err := svc.Grant(ctx, req.GrantType, clientDetails, req.Reader); if err == nil {
@@ -100,12 +100,16 @@ type HealthRequest struct{}
 // HealthResponse 健康检查响应结构
 type HealthResponse struct {
 	Status bool `json:"status"`
+	Message string `json:"message"`
 }
 
 // MakeHealthCheckEndpoint 创建健康检查Endpoint
 func MakeHealthCheckEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		status := svc.HealthCheck()
-		return HealthResponse{status}, nil
+		return HealthResponse{
+			Status:status,
+			Message:"OK",
+		}, nil
 	}
 }

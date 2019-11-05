@@ -17,6 +17,8 @@ import (
 
 var (
 	ErrorBadRequest = errors.New("invalid request parameter")
+	ErrorGrantTypeRequest = errors.New("invalid request grant type")
+	ErrorTokenRequest = errors.New("invalid request token")
 )
 
 // MakeHttpHandler make http handler use mux
@@ -29,10 +31,12 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zi
 		kithttp.ServerErrorEncoder(encodeError),
 		zipkinServer,
 	}
+	r.Path("/metrics").Handler(promhttp.Handler())
+
 
 	r.Methods("POST").Path("/oauth/token").Handler(kithttp.NewServer(
-		endpoints.TokenEndpoint,
-		decodeTokenRequest,
+		endpoints.HealthCheckEndpoint,
+		decodeHealthCheckRequest,
 		encodeJsonResponse,
 		options...,
 	))
@@ -44,7 +48,6 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zi
 		options...,
 	))
 
-	r.Path("/metrics").Handler(promhttp.Handler())
 
 	// create health check handler
 	r.Methods("GET").Path("/health").Handler(kithttp.NewServer(
@@ -60,7 +63,7 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zi
 func decodeTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	grantType := r.URL.Query().Get("grant_type")
 	if grantType == ""{
-		return nil, errors.New("grant_type not exists"))
+		return nil, ErrorGrantTypeRequest
 	}
 	return &endpoint.TokenRequest{
 		GrantType:grantType,
@@ -72,7 +75,7 @@ func decodeTokenRequest(ctx context.Context, r *http.Request) (interface{}, erro
 func decodeCheckTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	tokenValue := r.URL.Query().Get("token")
 	if tokenValue == ""{
-		return nil, errors.New("token not exists")
+		return nil, ErrorTokenRequest
 	}
 
 	return &endpoint.CheckTokenRequest{
