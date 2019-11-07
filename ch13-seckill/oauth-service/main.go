@@ -53,13 +53,13 @@ func main() {
 
 	tokenEnhancer = service.NewJwtTokenEnhancer("secret")
 	tokenStore = service.NewJwtTokenStore(tokenEnhancer.(*service.JwtTokenEnhancer))
-	tokenService = *service.NewTokenService(tokenStore, tokenEnhancer)
+	tokenService = service.NewTokenService(tokenStore, tokenEnhancer)
 	userDetailsService = service.NewRemoteUserDetailService()
 	clientDetailsService = service.NewMysqlClientDetailsService()
 	srv = service.NewCommentService()
 
 	tokenGranter = service.NewComposeTokenGranter(map[string]service.TokenGranter{
-		"password": service.NewUsernamePasswordTokenGranter("password", userDetailsService,  &tokenService),
+		"password": service.NewUsernamePasswordTokenGranter("password", userDetailsService,  tokenService),
 	})
 
 
@@ -114,7 +114,7 @@ func main() {
 		ctx := metadata.NewIncomingContext(context.Background(), md)
 		handler := transport.NewGRPCServer(ctx, endpts, serverTracer)
 		gRPCServer := grpc.NewServer()
-		pb.RegisterUserServiceServer(gRPCServer, handler)
+		pb.RegisterOAuthServiceServer(gRPCServer, handler)
 		errChan <- gRPCServer.Serve(listener)
 	}()
 	go func() {

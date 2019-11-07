@@ -23,6 +23,7 @@ func (service *RemoteUserService) GetUserDetailByUsername(ctx context.Context, u
 		UserId:1,
 		Username:username,
 		Password:"password",
+		Authorities: []string{"Admin", "Super"},
 	}, nil
 }
 

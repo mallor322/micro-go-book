@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	. "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
 	uuid "github.com/satori/go.uuid"
@@ -11,6 +10,7 @@ import (
 	"strconv"
 	"time"
 )
+
 
 type TokenGranter interface {
 	Grant(ctx context.Context, grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error)
@@ -43,10 +43,10 @@ func (tokenGranter *ComposeTokenGranter) Grant(ctx context.Context, grantType st
 type UsernamePasswordTokenGranter struct {
 	supportGrantType string
 	userDetailsService UserDetailsService
-	tokenService *TokenService
+	tokenService TokenService
 }
 
-func NewUsernamePasswordTokenGranter(grantType string, userDetailsService UserDetailsService, tokenService *TokenService) *UsernamePasswordTokenGranter {
+func NewUsernamePasswordTokenGranter(grantType string, userDetailsService UserDetailsService, tokenService TokenService) *UsernamePasswordTokenGranter {
 	return &UsernamePasswordTokenGranter{
 		supportGrantType:grantType,
 		userDetailsService:userDetailsService,
@@ -77,8 +77,6 @@ func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context, gra
 		return nil, errors.New( "username or password is not correct")
 	}
 
-	fmt.Println(client.ClientId)
-
 	// 根据用户信息和客户端信息生成访问令牌
 	return tokenGranter.tokenService.CreateAccessToken(&OAuth2Details{
 		Client:client,
@@ -88,22 +86,37 @@ func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context, gra
 
 }
 
-type TokenService struct {
+type CheckTokenService interface {
+	GetOAuth2DetailsByAccessToken(tokenValue string) (*OAuth2Details, error)
+
+}
+
+type TokenService interface {
+
+	CreateAccessToken(oauth2Details *OAuth2Details) (*OAuth2Token, error)
+	RefreshAccessToken(refreshTokenValue string) (*OAuth2Token, error)
+	GetAccessToken(details *OAuth2Details) (*OAuth2Token, error)
+	ReadAccessToken(tokenValue string) (*OAuth2Token, error)
+	CheckTokenService
+
+}
+
+type DefaultTokenService struct {
 
 	tokenStore TokenStore
 	tokenEnhancer TokenEnhancer
 
 }
 
-func NewTokenService(tokenStore TokenStore, tokenEnhancer TokenEnhancer) *TokenService {
-	return &TokenService{
+func NewTokenService(tokenStore TokenStore, tokenEnhancer TokenEnhancer) TokenService {
+	return &DefaultTokenService{
 		tokenStore:tokenStore,
 		tokenEnhancer:tokenEnhancer,
 	}
 }
 
 
-func (tokenService *TokenService) CreateAccessToken(oauth2Details *OAuth2Details) (*OAuth2Token, error) {
+func (tokenService *DefaultTokenService) CreateAccessToken(oauth2Details *OAuth2Details) (*OAuth2Token, error) {
 
 	existToken, err := tokenService.tokenStore.GetAccessToken(oauth2Details)
 	var refreshToken *OAuth2Token
@@ -140,7 +153,7 @@ func (tokenService *TokenService) CreateAccessToken(oauth2Details *OAuth2Details
 
 }
 
-func (tokenService *TokenService) createAccessToken(refreshToken *OAuth2Token, oauth2Details *OAuth2Details) (*OAuth2Token, error) {
+func (tokenService *DefaultTokenService) createAccessToken(refreshToken *OAuth2Token, oauth2Details *OAuth2Details) (*OAuth2Token, error) {
 
 	validitySeconds := oauth2Details.Client.AccessTokenValiditySeconds
 	s, _ := time.ParseDuration(strconv.Itoa(validitySeconds) + "s")
@@ -157,7 +170,7 @@ func (tokenService *TokenService) createAccessToken(refreshToken *OAuth2Token, o
 	return accessToken, nil
 }
 
-func (tokenService *TokenService) createRefreshToken(oauth2Details *OAuth2Details) (*OAuth2Token, error) {
+func (tokenService *DefaultTokenService) createRefreshToken(oauth2Details *OAuth2Details) (*OAuth2Token, error) {
 	validitySeconds := oauth2Details.Client.RefreshTokenValiditySeconds
 	s, _ := time.ParseDuration(strconv.Itoa(validitySeconds) + "s")
 	expiredTime := time.Now().Add(s)
@@ -172,7 +185,7 @@ func (tokenService *TokenService) createRefreshToken(oauth2Details *OAuth2Detail
 	return refreshToken, nil
 }
 
-func (tokenService *TokenService) RefreshAccessToken(refreshTokenValue string) (*OAuth2Token, error){
+func (tokenService *DefaultTokenService) RefreshAccessToken(refreshTokenValue string) (*OAuth2Token, error){
 
 	refreshToken, err := tokenService.tokenStore.ReadRefreshToken(refreshTokenValue)
 
@@ -205,15 +218,15 @@ func (tokenService *TokenService) RefreshAccessToken(refreshTokenValue string) (
 
 }
 
-func (tokenService *TokenService) GetAccessToken(details *OAuth2Details) (*OAuth2Token, error)  {
+func (tokenService *DefaultTokenService) GetAccessToken(details *OAuth2Details) (*OAuth2Token, error)  {
 	return tokenService.tokenStore.GetAccessToken(details)
 }
 
-func (tokenService *TokenService) ReadAccessToken(tokenValue string) (*OAuth2Token, error){
+func (tokenService *DefaultTokenService) ReadAccessToken(tokenValue string) (*OAuth2Token, error){
 	return tokenService.tokenStore.ReadAccessToken(tokenValue)
 }
 
-func (tokenService *TokenService) GetOAuth2DetailsByAccessToken(tokenValue string) (*OAuth2Details, error) {
+func (tokenService *DefaultTokenService) GetOAuth2DetailsByAccessToken(tokenValue string) (*OAuth2Details, error) {
 
 	accessToken, err := tokenService.tokenStore.ReadAccessToken(tokenValue)
 	if err == nil{
