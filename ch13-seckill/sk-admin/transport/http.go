@@ -37,7 +37,7 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.SkAdminEndpoints, zip
 
 	r.Methods("GET").Path("/product/list").Handler(kithttp.NewServer(
 		endpoints.GetProductEndpoint,
-		decodeRequest,
+		decodeGetListRequest,
 		encodeResponse,
 		options...,
 	))
@@ -58,7 +58,7 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.SkAdminEndpoints, zip
 
 	r.Methods("GET").Path("/activity/list").Handler(kithttp.NewServer(
 		endpoints.GetActivityEndpoint,
-		decodeRequest,
+		decodeGetListRequest,
 		encodeResponse,
 		options...,
 	))
@@ -79,13 +79,8 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.SkAdminEndpoints, zip
 }
 
 // decodeUserRequest decode request params to struct
-func decodeRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var userRequest endpts.UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&userRequest); err != nil {
-		return nil, err
-	}
-	return userRequest, nil
-
+func decodeGetListRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	return endpts.GetListRequest{}, nil
 }
 
 // encode errors from business-logic

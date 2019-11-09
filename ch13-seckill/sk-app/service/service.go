@@ -79,6 +79,7 @@ func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, in
 	config.SkAppContext.UserConnMap[userKey] = req.ResultChan
 	//将请求送入通道并推入到redis队列当中
 	config.SkAppContext.SecReqChan <- req
+	log.Printf("userId [%d] [%d]", time.Duration(conf.SecKill.AppWaitResultTimeout), conf.SecKill.AppWaitResultTimeout)
 
 	ticker := time.NewTicker(time.Millisecond * time.Duration(conf.SecKill.AppWaitResultTimeout))
 

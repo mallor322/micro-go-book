@@ -1,14 +1,13 @@
-
 http:
   host: localhost
-  port: 9031
+  port: 9032
   serviceName: sk-core # 要缓存sk-app
 
 
 discover:
-  Host: 106.15.233.99
+  Host: 114.67.98.210
   port: 8500
-  instanceId: user-service-localhost
+  instanceId: sk-core-localhost
 
 config:
   id: config-service

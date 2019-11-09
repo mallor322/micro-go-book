@@ -31,6 +31,7 @@ func init2() {
 	if err := Sub("service", &SecKill); err != nil {
 		log.Fatal("Fail to parse config", err)
 	}
+	log.Printf("%v", SecKill)
 }
 
 func initDefault() {

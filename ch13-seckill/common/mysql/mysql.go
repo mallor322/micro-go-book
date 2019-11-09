@@ -10,6 +10,9 @@ var engin *gorose.Engin
 var err error
 
 func InitMysql(hostMysql, portMysql, userMysql, pwdMysql, dbMysql string) {
+	fmt.Printf(userMysql)
+	fmt.Printf(dbMysql)
+
 	DbConfig := gorose.Config{
 		// Default database configuration
 		Driver: "mysql",                                                                                                              // Database driver(mysql,sqlite,postgres,oracle,mssql)

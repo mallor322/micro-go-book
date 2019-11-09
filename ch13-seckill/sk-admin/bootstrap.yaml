@@ -2,13 +2,13 @@
 http:
   host: localhost
   port: 9030
-  serviceName: user
+  serviceName: sk-admin
 
 
 discover:
   Host: 114.67.98.210
   port: 8500
-  instanceId: user-service-localhost
+  instanceId: sk-admin-localhost
 
 config:
   id: config-service

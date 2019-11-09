@@ -26,6 +26,7 @@ type ActivityServiceImpl struct {
 func (p ActivityServiceImpl) GetActivityList() ([]gorose.Data, error) {
 	activityEntity := model.NewActivityModel()
 	activityList, err := activityEntity.GetActivityList()
+	log.Printf("ActivityEntity.GetActivityList, err : %v")
 	if err != nil {
 		log.Printf("ActivityEntity.GetActivityList, err : %v", err)
 		return nil, err
@@ -67,7 +68,7 @@ func (p ActivityServiceImpl) CreateActivity(activity *model.Activity) error {
 	}
 
 	log.Printf("syncToZk")
-	//写入到Etcd
+	//写入到Zk
 	err = p.syncToZk(activity)
 	if err != nil {
 		log.Printf("activity product info sync to etcd failed, err : %v", err)
@@ -108,11 +109,20 @@ func (p ActivityServiceImpl) syncToZk(activity *model.Activity) error {
 	// permission
 	var acls = zk.WorldACL(zk.PermAll)
 
-	// create
-	_, err_create := conn.Create(zkPath, byteData, flags, acls)
-	if err_create != nil {
-		fmt.Println(err_create)
+	// create or update
+	exisits, _, _ := conn.Exists(zkPath)
+	if exisits {
+		_, err_set := conn.Set(zkPath, byteData, flags)
+		if err_set != nil {
+			fmt.Println(err_set)
+		}
+	} else {
+		_, err_create := conn.Create(zkPath, byteData, flags, acls)
+		if err_create != nil {
+			fmt.Println(err_create)
+		}
 	}
+
 	log.Printf("put to zk success, data = [%v]", string(data))
 	return nil
 }

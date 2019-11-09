@@ -7,6 +7,7 @@ import (
 	"github.com/gohouse/gorose/v2"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
+	"log"
 )
 
 // CalculateEndpoint define endpoint
@@ -48,6 +49,7 @@ type CreateResponse struct {
 //  make endpoint
 func MakeGetActivityEndpoint(svc service.ActivityService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		log.Printf("GetActivityList")
 		activityList, calError := svc.GetActivityList()
 		if calError != nil {
 			return GetResponse{Result: nil, Error: calError}, nil
@@ -87,6 +89,8 @@ func MakeCreateProductEndpoint(svc service.ProductService) endpoint.Endpoint {
 
 // HealthRequest 健康检查请求结构
 type HealthRequest struct{}
+
+type GetListRequest struct{}
 
 // HealthResponse 健康检查响应结构
 type HealthResponse struct {
