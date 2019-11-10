@@ -9,12 +9,12 @@ import (
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
+	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/transport"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
-	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
 	"github.com/openzipkin/zipkin-go/propagation/b3"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
@@ -43,21 +43,35 @@ func main() {
 
 	var tokenService service.TokenService
 	var tokenGranter service.TokenGranter
+	var tokenEnhancer service.TokenEnhancer
+	var tokenStore service.TokenStore
+	var userDetailsService service.UserDetailsService
 	var clientDetailsService service.ClientDetailsService
 	var srv service.Service
 
 	// add logging middleware
 
+	tokenEnhancer = service.NewJwtTokenEnhancer("secret")
+	tokenStore = service.NewJwtTokenStore(tokenEnhancer.(*service.JwtTokenEnhancer))
+	tokenService = service.NewTokenService(tokenStore, tokenEnhancer)
+	userDetailsService = service.NewRemoteUserDetailService()
+	clientDetailsService = service.NewMysqlClientDetailsService()
+	srv = service.NewCommentService()
+
+	tokenGranter = service.NewComposeTokenGranter(map[string]service.TokenGranter{
+		"password": service.NewUsernamePasswordTokenGranter("password", userDetailsService,  tokenService),
+	})
+
 
 	tokenEndpoint := endpoint.MakeTokenEndpoint(tokenGranter, clientDetailsService)
 	tokenEndpoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(tokenEndpoint)
 	tokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "token-endpoint")(tokenEndpoint)
-	tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(tokenEndpoint)
+	//tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(tokenEndpoint)
 
 	checkTokenEndpoint := endpoint.MakeCheckTokenEndpoint(tokenService)
-	tokenEndpoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(checkTokenEndpoint)
-	tokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "check-endpoint")(checkTokenEndpoint)
-	tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(checkTokenEndpoint)
+	checkTokenEndpoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(checkTokenEndpoint)
+	checkTokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "check-endpoint")(checkTokenEndpoint)
+	//tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(checkTokenEndpoint)
 
 
 	//创建健康检查的Endpoint
@@ -100,7 +114,7 @@ func main() {
 		ctx := metadata.NewIncomingContext(context.Background(), md)
 		handler := transport.NewGRPCServer(ctx, endpts, serverTracer)
 		gRPCServer := grpc.NewServer()
-		pb.RegisterUserServiceServer(gRPCServer, handler)
+		pb.RegisterOAuthServiceServer(gRPCServer, handler)
 		errChan <- gRPCServer.Serve(listener)
 	}()
 	go func() {
