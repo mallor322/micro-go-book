@@ -76,10 +76,11 @@ func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, in
 
 	userKey := fmt.Sprintf("%d_%d", req.UserId, req.ProductId)
 	fmt.Println("userKey : ", userKey)
-	config.SkAppContext.UserConnMap[userKey] = req.ResultChan
+	ResultChan := make(chan *model.SecResult, 1)
+
+	config.SkAppContext.UserConnMap[userKey] = ResultChan
 	//将请求送入通道并推入到redis队列当中
 	config.SkAppContext.SecReqChan <- req
-	log.Printf("userId [%d] [%d]", time.Duration(conf.SecKill.AppWaitResultTimeout), conf.SecKill.AppWaitResultTimeout)
 
 	ticker := time.NewTicker(time.Millisecond * time.Duration(conf.SecKill.AppWaitResultTimeout))
 
@@ -99,7 +100,7 @@ func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, in
 		code = srv_err.ErrClientClosed
 		err = fmt.Errorf("client already closed")
 		return nil, code, err
-	case result := <-req.ResultChan:
+	case result := <-ResultChan:
 		code = result.Code
 		if code != 1002 {
 			return data, code, srv_err.GetErrMsg(code)

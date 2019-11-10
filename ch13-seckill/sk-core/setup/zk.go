@@ -38,17 +38,11 @@ func loadSecConf(conn *zk.Conn) {
 	if err1 != nil {
 		log.Printf("Unmsharl second product info failed, err : %v", err1)
 	}
-	log.Print("loadSecConf finished ", v)
 
 	updateSecProductInfo(secProductInfo)
 }
 
 func waitSecProductEvent(event zk.Event) {
-	log.Print(">>>>>>>>>>>>>>>>>>>")
-	log.Println("path:", event.Path)
-	log.Println("type:", event.Type.String())
-	log.Println("state:", event.State.String())
-	log.Println("<<<<<<<<<<<<<<<<<<<")
 	if event.Path == conf.Zk.SecProductKey {
 
 	}

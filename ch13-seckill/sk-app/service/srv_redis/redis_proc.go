@@ -37,11 +37,10 @@ func WriteHandle() {
 func ReadHandle() {
 	for {
 		conn := conf.Redis.RedisConn
-
 		//阻塞弹出
-		data, err := conn.BRPop(time.Minute, conf.Redis.Layer2proxyQueueName).Result()
+		data, err := conn.BRPop(time.Second, conf.Redis.Layer2proxyQueueName).Result()
 		if err != nil {
-			log.Printf("brpop layer2proxy failed. Error : %v", err)
+			//log.Printf("brpop layer2proxy failed. Error : %v", err)
 			continue
 		}
 
@@ -61,6 +60,7 @@ func ReadHandle() {
 			log.Printf("user not found : %v", userKey)
 			continue
 		}
+		log.Printf("request result send to chan")
 
 		resultChan <- result
 		log.Printf("request result send to chan succeee, userKey : %v", userKey)

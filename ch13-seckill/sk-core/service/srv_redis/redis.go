@@ -32,14 +32,14 @@ func RunProcess() {
 }
 
 func HandleReader() {
-	log.Println("read goroutine running")
+	log.Printf("read goroutine running %v", conf.Redis.Proxy2layerQueueName)
 	for {
 		conn := conf.Redis.RedisConn
 		for {
 			//从Redis队列中取出数据
-			data, err := conn.BRPop(time.Minute, conf.Redis.Proxy2layerQueueName).Result()
+			data, err := conn.BRPop(time.Second, conf.Redis.Proxy2layerQueueName).Result()
 			if err != nil {
-				log.Printf("blpop from data failed, err : %v", err)
+				//log.Printf("HandleReader blpop from data failed, err : %v", err)
 				continue
 			}
 			log.Printf("brpop from proxy to layer queue, data : %s\n", data)
@@ -55,8 +55,8 @@ func HandleReader() {
 			//判断是否超时
 			nowTime := time.Now().Unix()
 			//int64(config.SecLayerCtx.SecLayerConf.MaxRequestWaitTimeout)
-			fmt.Println(nowTime, " ", req.AccessTime, " ", 100)
-			if nowTime-req.AccessTime >= int64(conf.SecKill.MaxRequestWaitTimeout) {
+			fmt.Println(nowTime, " ", req.SecTime, " ", 100)
+			if nowTime-req.SecTime >= int64(conf.SecKill.MaxRequestWaitTimeout) {
 				log.Printf("req[%v] is expire", req)
 				continue
 			}
@@ -94,7 +94,7 @@ func sendToRedis(res *config.SecResult) (err error) {
 		return
 	}
 
-	fmt.Println("推入队列前~~")
+	fmt.Printf("推入队列前~~ %v", conf.Redis.Layer2proxyQueueName)
 	conn := conf.Redis.RedisConn
 	err = conn.LPush(conf.Redis.Layer2proxyQueueName, string(data)).Err()
 	fmt.Println("推入队列后~~")

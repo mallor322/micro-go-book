@@ -11,6 +11,7 @@ import (
 
 //初始化Redis
 func InitRedis() {
+	log.Printf("init redis ")
 	client := redis.NewClient(&redis.Options{
 		Addr:     "39.98.179.73:6379", //conf.Redis.Host,
 		Password: "082203",            //conf.Redis.Password,
@@ -116,7 +117,7 @@ func syncIpBlackList(conn *redis.Client) {
 
 //初始化redis进程
 func initRedisProcess() {
-	log.Printf("initRedisProcess")
+	log.Printf("initRedisProcess %d %d", conf.SecKill.AppWriteToHandleGoroutineNum, conf.SecKill.AppReadFromHandleGoroutineNum)
 	for i := 0; i < conf.SecKill.AppWriteToHandleGoroutineNum; i++ {
 		go srv_redis.WriteHandle()
 	}

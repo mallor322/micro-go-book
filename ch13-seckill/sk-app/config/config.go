@@ -47,6 +47,10 @@ func init() {
 		Logger.Log("Fail to parse trace", err)
 	}
 
+	if err := conf.Sub("redis", &conf.Redis); err != nil {
+		Logger.Log("Fail to parse trace", err)
+	}
+
 	zipkinUrl := "http://" + conf.TraceConfig.Host + ":" + conf.TraceConfig.Port + conf.TraceConfig.Url
 	Logger.Log("zipkin url", zipkinUrl)
 	initTracer(zipkinUrl)

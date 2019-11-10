@@ -39,6 +39,15 @@ func init() {
 	if err := conf.Sub("trace", &conf.TraceConfig); err != nil {
 		Logger.Log("Fail to parse trace", err)
 	}
+
+	if err := conf.Sub("redis", &conf.Redis); err != nil {
+		Logger.Log("Fail to parse trace", err)
+	}
+
+	if err := conf.Sub("service", &conf.SecKill); err != nil {
+		Logger.Log("Fail to parse trace", err)
+	}
+
 	zipkinUrl := "http://" + conf.TraceConfig.Host + ":" + conf.TraceConfig.Port + conf.TraceConfig.Url
 	Logger.Log("zipkin url", zipkinUrl)
 	initTracer(zipkinUrl)
@@ -88,11 +97,10 @@ type SecRequest struct {
 	ProductId     int             `json:"product_id"` //商品ID
 	Source        string          `json:"source"`
 	AuthCode      string          `json:"auth_code"`
-	SecTime       string          `json:"sec_time"`
+	SecTime       int64           `json:"sec_time"`
 	Nance         string          `json:"nance"`
 	UserId        int             `json:"user_id"`
 	UserAuthSign  string          `json:"user_auth_sign"` //用户授权签名
-	AccessTime    int64           `json:"access_time"`
 	ClientAddr    string          `json:"client_addr"`
 	ClientRefence string          `json:"client_refence"`
 	CloseNotify   <-chan bool     `json:"-"`

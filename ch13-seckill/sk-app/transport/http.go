@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/zipkin"
 	"github.com/go-kit/kit/transport"
@@ -91,6 +92,7 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 
 // encodeArithmeticResponse encode response to return
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+	fmt.Printf("encodeResponse %v", response)
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	return json.NewEncoder(w).Encode(response)
 }
