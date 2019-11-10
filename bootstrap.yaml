@@ -1,0 +1,16 @@
+
+http:
+  host: 127.0.0.1
+  port: 9009
+  serviceName: oauth
+
+
+discover:
+  Host: 114.67.98.210
+  port: 8500
+  instanceId: oauth-service-localhost
+
+config:
+  id: config-service
+  profile: "dev"
+  label: "master"
