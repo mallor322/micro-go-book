@@ -26,6 +26,7 @@ type SecInfoRequest struct {
 type Response struct {
 	Result map[string]interface{} `json:"result"`
 	Error  error                  `json:"error"`
+	Code   int                    `json:"code"`
 }
 
 type SecInfoListResponse struct {
@@ -55,8 +56,8 @@ func MakeSecInfoListEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeSecKillEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(model.SecRequest)
-		ret, _, calError := svc.SecKill(&req)
-		return Response{Result: ret, Error: calError}, nil
+		ret, code, calError := svc.SecKill(&req)
+		return Response{Result: ret, Code: code, Error: calError}, nil
 	}
 }
 
