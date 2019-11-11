@@ -1,14 +1,14 @@
 
 http:
   host: localhost
-  port: 10085
+  port: 10086
   serviceName: discovery
 
 
 discover:
   Host: 127.0.0.1
   port: 8500
-  instanceId: calculate-service-localhost
+  instanceId: use-calculate-service-localhost
 
 config:
   id: config-service

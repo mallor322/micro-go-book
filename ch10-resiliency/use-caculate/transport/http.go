@@ -8,7 +8,7 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	endpts "github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/endpoint"
+	endpts "github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-caculate/endpoint"
 	"net/http"
 	"strconv"
 )
@@ -18,7 +18,7 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints endpts.CalculateEndpoints, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints endpts.UseCalculateEndpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 
 	options := []kithttp.ServerOption{
@@ -26,9 +26,9 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.CalculateEndpoints, l
 		kithttp.ServerErrorEncoder(encodeError),
 	}
 
-	r.Methods("GET").Path("/calculate").Handler(kithttp.NewServer(
-		endpoints.CalculateEndpoint,
-		decodeCalculateRequest,
+	r.Methods("GET").Path("/use/calculate").Handler(kithttp.NewServer(
+		endpoints.UseCalculateEndpoint,
+		decodeUseCalculateRequest,
 		encodeJsonResponse,
 		options...,
 	))
@@ -45,12 +45,12 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.CalculateEndpoints, l
 	return r
 }
 
-// decodeCalculateRequest decode request params to struct
-func decodeCalculateRequest(_ context.Context, r *http.Request) (interface{}, error) {
+// decodeCalcualteRequest decode request params to struct
+func decodeUseCalculateRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	a, _ := strconv.Atoi(r.URL.Query().Get("a"))
 	b, _ := strconv.Atoi(r.URL.Query().Get("b"))
 
-	return endpts.CalculateRequest{
+	return endpts.UseCalculateRequest{
 		A : a,
 		B : b,
 	}, nil

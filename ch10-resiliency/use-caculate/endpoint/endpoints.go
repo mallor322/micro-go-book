@@ -3,33 +3,38 @@ package endpoint
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-caculate/service"
 )
 
-type CalculateEndpoints struct {
-	CalculateEndpoint	endpoint.Endpoint
+type UseCalculateEndpoints struct {
+	UseCalculateEndpoint	endpoint.Endpoint
 	HealthCheckEndpoint endpoint.Endpoint
 }
 
 
-type CalculateRequest struct {
+type UseCalculateRequest struct {
 	A int
 	B int
 }
 
-type CalculateResponse struct {
+type UseCalculateResponse struct {
 	Result int `json:"result"`
 	Error string `json:"error"`
 
 }
 
 //  make endpoint
-func MakeCalculateEndpoint(svc service.Service) endpoint.Endpoint {
+func MakeUseCalculateEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(CalculateRequest)
-		result := svc.Calculate(req.A, req.B)
-		return CalculateResponse{
+		req := request.(UseCalculateRequest)
+		result, err := svc.UseCalculate(req.A, req.B)
+		var errString string
+		if err != nil{
+			errString = err.Error()
+		}
+		return UseCalculateResponse{
 			Result:result,
+			Error:errString,
 		}, nil
 	}
 }

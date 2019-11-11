@@ -4,10 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/service"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/transport"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-caculate/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-caculate/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-caculate/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-caculate/transport"
 	"github.com/keets2012/Micro-Go-Pracrise/common/discover"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
@@ -20,12 +20,12 @@ import (
 func main() {
 
 	var (
-		servicePort = flag.Int("service.port", 10085, "service port")
+		servicePort = flag.Int("service.port", 10086, "service port")
 		serviceHost = flag.String("service.host", "127.0.0.1", "service host")
 
 		consulPort = flag.Int("consul.port", 8500, "consul port")
 		consulHost = flag.String("consul.host", "127.0.0.1", "consul host")
-		serviceName = flag.String("service.name", "Calculate", "service name")
+		serviceName = flag.String("service.name", "UseCalculate", "service name")
 	)
 
 	flag.Parse()
@@ -44,15 +44,15 @@ func main() {
 	}
 
 	var svc service.Service
-	svc = service.NewCalculateServiceImpl()
+	svc = service.NewCalculateServiceImpl(discoveryClient)
 
 	// 创建打招呼的Endpoint
-	calculateEndpoint := endpoint.MakeCalculateEndpoint(svc)
+	useCalculateEndpoint := endpoint.MakeUseCalculateEndpoint(svc)
 	//创建健康检查的Endpoint
 	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
 
-	endpts := endpoint.CalculateEndpoints{
-		CalculateEndpoint:		calculateEndpoint,
+	endpts := endpoint.UseCalculateEndpoints{
+		UseCalculateEndpoint:	useCalculateEndpoint,
 		HealthCheckEndpoint:	healthEndpoint,
 	}
 

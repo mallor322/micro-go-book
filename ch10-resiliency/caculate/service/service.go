@@ -14,7 +14,6 @@ type Service interface {
 }
 
 
-
 type CalculateServiceImpl struct {
 }
 
