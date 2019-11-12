@@ -31,7 +31,7 @@ func main() {
 
 	var (
 		servicePort = flag.String("service.port", bootstrap.HttpConfig.Port, "service port")
-		grpcAddr    = flag.String("grpc", ":9008", "gRPC listen address.")
+		grpcAddr    = flag.String("grpc", bootstrap.RpcConfig.Port, "gRPC listen address.")
 	)
 
 	flag.Parse()
@@ -98,8 +98,8 @@ func main() {
 	}()
 	//grpc server
 	go func() {
-		fmt.Println("grpc Server start at port" + *grpcAddr)
-		listener, err := net.Listen("tcp", *grpcAddr)
+		fmt.Println("grpc Server start at port:" + *grpcAddr)
+		listener, err := net.Listen("tcp", ":" + *grpcAddr)
 		if err != nil {
 			errChan <- err
 			return

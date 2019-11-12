@@ -5,6 +5,11 @@ http:
   serviceName: oauth
 
 
+rpc:
+  host: localhost
+  port: 9008
+
+
 discover:
   Host: 114.67.98.210
   port: 8500
