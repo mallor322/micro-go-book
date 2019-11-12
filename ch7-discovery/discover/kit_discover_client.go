@@ -1,41 +1,37 @@
-package kit
+package discover
 
 import (
 	"github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
-	ch7_discovery "github.com/keets2012/Micro-Go-Pracrise/ch7-discovery"
 	"log"
 	"strconv"
 )
 
-type ConsulClient struct {
+type KitDiscoverClient struct {
 	Host   string // Consul Host
 	Port   int    // Consul Port
 	client consul.Client
 }
 
-func New(consulHost string, consulPort int) *ConsulClient {
+func NewKitDiscoverClient(consulHost string, consulPort int) (DiscoveryClient, error) {
 	// 通过 Consul Host 和 Consul Port 创建一个 consul.Client
 	consulConfig := api.DefaultConfig()
 	consulConfig.Address = consulHost + ":" + strconv.Itoa(consulPort)
 	apiClient, err := api.NewClient(consulConfig)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	client := consul.NewClient(apiClient)
 
-	return &ConsulClient{
+	return &KitDiscoverClient{
 		Host:   consulHost,
 		Port:   consulPort,
 		client: client,
-	}
+	}, err
 }
 
-func (consulClient *ConsulClient) Register(serviceName, instanceId, healthCheckUrl string, instancePort int, meta map[string]string, logger *log.Logger) bool {
-
-	// 获取服务实例 IP
-	instanceHost := ch7_discovery.GetLocalIpAddress()
+func (consulClient *KitDiscoverClient) Register(serviceName, instanceId, healthCheckUrl string, instanceHost string, instancePort int, meta map[string]string, logger *log.Logger) bool {
 
 	// 1. 构建服务实例元数据
 	serviceRegistration := &api.AgentServiceRegistration{
@@ -62,7 +58,7 @@ func (consulClient *ConsulClient) Register(serviceName, instanceId, healthCheckU
 	return true
 }
 
-func (consulClient *ConsulClient) DeRegister(instanceId string, logger *log.Logger) bool {
+func (consulClient *KitDiscoverClient) DeRegister(instanceId string, logger *log.Logger) bool {
 
 	// 构建包含服务实例 ID 的元数据结构体
 	serviceRegistration := &api.AgentServiceRegistration{
@@ -80,7 +76,7 @@ func (consulClient *ConsulClient) DeRegister(instanceId string, logger *log.Logg
 	return true
 }
 
-func (consulClient *ConsulClient) DiscoverServices(serviceName string) []interface{} {
+func (consulClient *KitDiscoverClient) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
 
 	// 根据服务名请求服务实例列表，可以添加额外的筛选参数
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)

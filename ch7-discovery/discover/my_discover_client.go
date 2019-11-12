@@ -1,9 +1,8 @@
-package diy
+package discover
 
 import (
 	"bytes"
 	"encoding/json"
-	ch7_discovery "github.com/keets2012/Micro-Go-Pracrise/ch7-discovery"
 	"log"
 	"net/http"
 	"strconv"
@@ -36,15 +35,21 @@ type Weights struct {
 	Warning int `json:"Warning"`
 }
 
-type ConsulClient struct {
+type MyDiscoverClient struct {
 	Host string // Consul 的 Host
 	Port int    // Consul 的 端口
 }
 
-func (consulClient *ConsulClient) Register(serviceName, instanceId, healthCheckUrl string, instancePort int, meta map[string]string, logger *log.Logger) bool {
+func NewMyDiscoverClient(consulHost string, consulPort int) (DiscoveryClient, error) {
+	return &MyDiscoverClient{
+		Host: consulHost,
+		Port: consulPort,
+	}, nil
+}
 
-	// 获取服务的本地IP
-	instanceHost := ch7_discovery.GetLocalIpAddress()
+
+func (consulClient *MyDiscoverClient) Register(serviceName, instanceId, healthCheckUrl string,instanceHost string, instancePort int, meta map[string]string, logger *log.Logger) bool {
+
 
 	// 1.封装服务实例的元数据
 	instanceInfo := &InstanceInfo{
@@ -69,7 +74,7 @@ func (consulClient *ConsulClient) Register(serviceName, instanceId, healthCheckU
 
 	// 2. 向 Consul 发送服务注册的请求
 	req, err := http.NewRequest("PUT",
-		"http://"+consulClient.Host+":"+strconv.Itoa(consulClient.Port)+"/v1/agent/service/string-service",
+		"http://"+consulClient.Host+":"+strconv.Itoa(consulClient.Port)+"/v1/agent/service/register",
 		bytes.NewReader(byteData))
 
 	if err == nil {
@@ -93,7 +98,7 @@ func (consulClient *ConsulClient) Register(serviceName, instanceId, healthCheckU
 	return false
 }
 
-func (consulClient *ConsulClient) DeRegister(instanceId string, logger *log.Logger) bool {
+func (consulClient *MyDiscoverClient) DeRegister(instanceId string, logger *log.Logger) bool {
 
 	// 1.发送注销请求
 	req, err := http.NewRequest("PUT",
@@ -116,14 +121,8 @@ func (consulClient *ConsulClient) DeRegister(instanceId string, logger *log.Logg
 	return false
 }
 
-func New(consulHost string, consulPort int) *ConsulClient {
-	return &ConsulClient{
-		Host: consulHost,
-		Port: consulPort,
-	}
-}
 
-func (consulClient *ConsulClient) DiscoverServices(serviceName string) []interface{} {
+func (consulClient *MyDiscoverClient) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
 
 	// 1. 从 Consul 中获取服务实例列表
 	req, err := http.NewRequest("GET",

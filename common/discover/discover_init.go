@@ -60,10 +60,7 @@ func Register() {
 	}
 
 	if !ConsulService.Register(instanceId, bootstrap.HttpConfig.Host, "/health",
-		bootstrap.HttpConfig.Port, bootstrap.HttpConfig.ServiceName, map[string]string{
-			"rpcHost": bootstrap.RpcConfig.Host,
-			"rpcPort": bootstrap.RpcConfig.Port,
-		}, nil, Logger) {
+		bootstrap.HttpConfig.Port, bootstrap.HttpConfig.ServiceName, nil, nil, Logger) {
 		Logger.Printf("string-service for service %s failed.", bootstrap.HttpConfig.ServiceName)
 		// 注册失败，服务启动失败
 		panic(0)
