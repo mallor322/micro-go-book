@@ -17,3 +17,7 @@ func (s *CommentService) HealthCheck() bool {
 	return true
 }
 
+func NewCommentService() *CommentService {
+	return &CommentService{}
+}
+

@@ -9,23 +9,23 @@ import (
 )
 
 type grpcServer struct {
-	check grpc.Handler
+	checkTokenServer grpc.Handler
 }
 
-func (s *grpcServer) Check(ctx context.Context, r *pb.UserRequest) (*pb.UserResponse, error) {
-	_, resp, err := s.check.ServeGRPC(ctx, r)
+func (s *grpcServer) CheckToken(ctx context.Context, r *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
+	_, resp, err := s.checkTokenServer.ServeGRPC(ctx, r)
 	if err != nil {
 		return nil, err
 	}
-	return resp.(*pb.UserResponse), nil
+	return resp.(*pb.CheckTokenResponse), nil
 }
 
-func NewGRPCServer(ctx context.Context, endpoints endpts.OAuth2Endpoints, serverTracer grpc.ServerOption) pb.UserServiceServer {
+func NewGRPCServer(ctx context.Context, endpoints endpts.OAuth2Endpoints, serverTracer grpc.ServerOption) pb.OAuthServiceServer {
 	return &grpcServer{
-		check: grpc.NewServer(
+		checkTokenServer: grpc.NewServer(
 			endpoints.CheckTokenEndpoint,
-			client.DecodeGRPCUserRequest,
-			client.EncodeGRPCUserResponse,
+			client.DecodeGRPCCheckTokenRequest,
+			client.EncodeGRPCCheckTokenResponse,
 			serverTracer,
 		),
 	}

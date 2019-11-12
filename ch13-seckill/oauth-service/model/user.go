@@ -3,7 +3,7 @@ package model
 
 type UserDetails struct {
 	// 用户标识
-	UserId int
+	UserId int64
 	// 用户名 唯一
 	Username string
 	// 用户密码

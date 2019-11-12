@@ -12,7 +12,23 @@ type ClientDetailsService interface {
 
 }
 
-type ClientService struct {
-
+type MysqlClientDetailsService struct {
 }
+
+func NewMysqlClientDetailsService() ClientDetailsService {
+	return &MysqlClientDetailsService{}
+}
+
+func (service *MysqlClientDetailsService)GetClientDetailByClientId(ctx context.Context, clientId string)(*model.ClientDetails, error) {
+
+	return &model.ClientDetails{
+		ClientId:                    "clientId",
+		ClientSecret:                "clientSecret",
+		AccessTokenValiditySeconds:  1800,
+		RefreshTokenValiditySeconds: 18000,
+		RegisteredRedirectUri:       "http://127.0.0.1",
+		AuthorizedGrantTypes:        [] string{"password", "refresh_token"},
+	}, nil
+}
+
 
