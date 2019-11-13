@@ -13,6 +13,28 @@ type StringEndpoints struct {
 	HealthCheckEndpoint endpoint.Endpoint
 }
 
+func (ue StringEndpoints) Concat(ctx context.Context, a string, b string) (string, error) {
+	//ctx := context.Background()
+	resp, err := ue.StringEndpoint(ctx, StringRequest{
+		A:           a,
+		B:           b,
+		RequestType: "Concat",
+	})
+	response := resp.(StringResponse)
+	return response.Result, err
+}
+
+func (ue StringEndpoints) Diff(ctx context.Context, a string, b string) (string, error) {
+	//ctx := context.Background()
+	resp, err := ue.StringEndpoint(ctx, StringRequest{
+		A:           a,
+		B:           b,
+		RequestType: "Diff",
+	})
+	response := resp.(StringResponse)
+	return response.Result, err
+}
+
 var (
 	ErrInvalidRequestType = errors.New("RequestType has only two type: Concat, Diff")
 )

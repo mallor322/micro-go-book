@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"strings"
 )
@@ -20,20 +21,17 @@ var (
 // Service Define a service interface
 type Service interface {
 	// Concat a and b
-	Concat(a, b string) (string, error)
+	Concat(ctx context.Context, a, b string) (string, error)
 
 	// a,b common string value
-	Diff(a, b string) (string, error)
-
-	// HealthCheck check service health status
-	HealthCheck() bool
+	Diff(ctx context.Context, a, b string) (string, error)
 }
 
 //ArithmeticService implement Service interface
 type StringService struct {
 }
 
-func (s StringService) Concat(a, b string) (string, error) {
+func (s StringService) Concat(ctx context.Context, a, b string) (string, error) {
 	// test for length overflow
 	if len(a)+len(b) > StrMaxSize {
 		return "", ErrMaxSize
@@ -41,7 +39,7 @@ func (s StringService) Concat(a, b string) (string, error) {
 	return a + b, nil
 }
 
-func (s StringService) Diff(a, b string) (string, error) {
+func (s StringService) Diff(ctx context.Context, a, b string) (string, error) {
 	if len(a) < 1 || len(b) < 1 {
 		return "", nil
 	}
@@ -60,12 +58,6 @@ func (s StringService) Diff(a, b string) (string, error) {
 		}
 	}
 	return res, nil
-}
-
-// HealthCheck implement Service method
-// 用于检查服务的健康状态，这里仅仅返回true。
-func (s StringService) HealthCheck() bool {
-	return true
 }
 
 // ServiceMiddleware define service middleware
