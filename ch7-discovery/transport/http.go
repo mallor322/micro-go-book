@@ -59,13 +59,10 @@ func decodeSayHelloRequest(_ context.Context, r *http.Request) (interface{}, err
 
 // decodeDiscoveryRequest decode request params to struct
 func decodeDiscoveryRequest(_ context.Context, r *http.Request) (interface{}, error) {
-
 	serviceName := r.URL.Query().Get("serviceName")
-
 	if serviceName == ""{
 		return nil, ErrorBadRequest
 	}
-
 	return endpts.DiscoveryRequest{
 		ServiceName:serviceName,
 	}, nil
