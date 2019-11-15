@@ -99,11 +99,9 @@ func (consulClient *MyDiscoverClient) Register(serviceName, instanceId, healthCh
 }
 
 func (consulClient *MyDiscoverClient) DeRegister(instanceId string, logger *log.Logger) bool {
-
 	// 1.发送注销请求
 	req, err := http.NewRequest("PUT",
 		"http://"+consulClient.Host+":"+strconv.Itoa(consulClient.Port)+"/v1/agent/service/deregister/"+instanceId, nil)
-
 	client := http.Client{}
 	resp, err := client.Do(req)
 
@@ -123,11 +121,9 @@ func (consulClient *MyDiscoverClient) DeRegister(instanceId string, logger *log.
 
 
 func (consulClient *MyDiscoverClient) DiscoverServices(serviceName string, logger *log.Logger) []interface{} {
-
 	// 1. 从 Consul 中获取服务实例列表
 	req, err := http.NewRequest("GET",
 		"http://"+consulClient.Host+":"+strconv.Itoa(consulClient.Port)+"/v1/health/service/"+serviceName, nil)
-
 	client := http.Client{}
 	resp, err := client.Do(req)
 

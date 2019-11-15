@@ -10,11 +10,12 @@ import (
 type DiscoveryClientInstance struct {
 	Host   string //  Host
 	Port   int    //  Port
+	// 连接 consul 的配置
 	config *api.Config
 	client consul.Client
 	mutex sync.Mutex
+	// 服务实例缓存字段
 	instancesMap sync.Map
-
 }
 
 type ServiceInstance struct {
