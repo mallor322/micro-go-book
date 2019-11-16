@@ -30,6 +30,7 @@ func TestMain(m *testing.M) {
 	defer conn.Close()
 
 	svr := client.UserCheck(conn, clientTracer)
+
 	result, err := svr.Check(ctx, "Add", "pps")
 	if err != nil {
 		fmt.Println("Check error", err.Error())

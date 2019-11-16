@@ -7,32 +7,28 @@ import (
 
 // Service Define a service interface
 type UserDetailsService interface {
-
 	// Get UserDetails By username
-	GetUserDetailByUsername(ctx context.Context, username string)(*model.UserDetails, error)
-
+	GetUserDetailByUsername(ctx context.Context, username string) (*model.UserDetails, error)
 }
 
 //UserService implement Service interface
 type RemoteUserService struct {
-
 }
 
-func (service *RemoteUserService) GetUserDetailByUsername(ctx context.Context, username string)(*model.UserDetails, error){
+func (service *RemoteUserService) GetUserDetailByUsername(ctx context.Context, username string) (*model.UserDetails, error) {
+	Check(username)
 	return &model.UserDetails{
-		UserId:1,
-		Username:username,
-		Password:"password",
+		UserId:      1,
+		Username:    username,
+		Password:    "password",
 		Authorities: []string{"Admin", "Super"},
 	}, nil
 }
-
 
 func NewRemoteUserDetailService() *RemoteUserService {
 	return &RemoteUserService{
 	}
 }
-
 
 // ServiceMiddleware define service middleware
 type ServiceMiddleware func(Service) Service
