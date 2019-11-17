@@ -20,32 +20,27 @@ var (
 // MakeHttpHandler make http handler use mux
 func MakeHttpHandler(ctx context.Context, endpoints endpts.CalculateEndpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
-
 	options := []kithttp.ServerOption{
 		kithttp.ServerErrorHandler(transport.NewLogErrorHandler(logger)),
 		kithttp.ServerErrorEncoder(encodeError),
 	}
-
+    // 算术相加接口 /calculate
 	r.Methods("GET").Path("/calculate").Handler(kithttp.NewServer(
 		endpoints.CalculateEndpoint,
 		decodeCalculateRequest,
 		encodeJsonResponse,
 		options...,
 	))
-
-
-	// create health check handler
+	// 健康检查接口 /health
 	r.Methods("GET").Path("/health").Handler(kithttp.NewServer(
 		endpoints.HealthCheckEndpoint,
 		decodeHealthCheckRequest,
 		encodeJsonResponse,
 		options...,
 	))
-
 	return r
 }
-
-// decodeCalculateRequest decode request params to struct
+// decodeCalculateRequest 编码请求参数为 CalculateRequest
 func decodeCalculateRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	a, _ := strconv.Atoi(r.URL.Query().Get("a"))
 	b, _ := strconv.Atoi(r.URL.Query().Get("b"))
@@ -55,22 +50,16 @@ func decodeCalculateRequest(_ context.Context, r *http.Request) (interface{}, er
 		B : b,
 	}, nil
 }
-
-
-
-// decodeHealthCheckRequest decode request
+// decodeHealthCheckRequest 编码请求为 HealthRequest
 func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	return endpts.HealthRequest{}, nil
 }
-
-// encodeJsonResponse encode response to return
+// encodeJsonResponse 解码 respose 结构体为 http JSON 响应
 func encodeJsonResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	return json.NewEncoder(w).Encode(response)
 }
-
-
-// encode errors from business-logic
+// 解码业务逻辑中出现的 err 到 http 响应
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	switch err {

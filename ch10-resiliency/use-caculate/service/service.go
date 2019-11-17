@@ -16,24 +16,29 @@ import (
 
 type Service interface {
 
-
-	// HealthCheck check service health status
+	// 健康检查
 	HealthCheck() bool
-
-	// calculateService
+	// 调用算术相加
 	UseCalculate(a int , b int ) (int, error)
-
 
 }
 
-var ErrServiceInstance  = errors.New("no instances are working")
+var (
+	ErrServiceInstance  = errors.New("no instances are working")
+	ErrHystrixFallbackExecute = errors.New("hystrix fall back execute")
+)
+
 
 type UseCalculateServiceImpl struct {
 	discoveryClient discover.DiscoveryClient
-
 }
 
-func NewCalculateServiceImpl(client discover.DiscoveryClient) Service  {
+func NewUseCalculateServiceImpl(client discover.DiscoveryClient) Service  {
+
+	hystrix.ConfigureCommand("Calculate.calculate", hystrix.CommandConfig{
+		// 设置触发最低请求阀值为 5，方便我们观察结果
+		RequestVolumeThreshold: 5,
+	})
 	return &UseCalculateServiceImpl{
 		client,
 	}
@@ -48,13 +53,10 @@ type CalculateResponse struct {
 func (service *UseCalculateServiceImpl) UseCalculate(a int , b int ) (int, error){
 
 	serviceName := "Calculate"
-
 	var addResult int
 
 	err := hystrix.Do("Calculate.calculate", func() error {
-
 		instances := service.discoveryClient.DiscoverServices(serviceName, config.Logger)
-
 		if instances == nil || len(instances) == 0 {
 			config.Logger.Println("No Calculate instances are working!")
 			return ErrServiceInstance
@@ -85,20 +87,14 @@ func (service *UseCalculateServiceImpl) UseCalculate(a int , b int ) (int, error
 		}
 
 		addResult = result.Result
-
 		return nil
 
 	}, func(e error) error {
-		return e
+		return ErrHystrixFallbackExecute
 	})
-
 	return addResult, err
-
 }
 
-
-
-// HealthCheck implement Service method
 // 用于检查服务的健康状态，这里仅仅返回true
 func (*UseCalculateServiceImpl) HealthCheck() bool {
 	return true

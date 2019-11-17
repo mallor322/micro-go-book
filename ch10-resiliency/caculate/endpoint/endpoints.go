@@ -10,8 +10,6 @@ type CalculateEndpoints struct {
 	CalculateEndpoint	endpoint.Endpoint
 	HealthCheckEndpoint endpoint.Endpoint
 }
-
-
 type CalculateRequest struct {
 	A int
 	B int
@@ -20,10 +18,8 @@ type CalculateRequest struct {
 type CalculateResponse struct {
 	Result int `json:"result"`
 	Error string `json:"error"`
-
 }
-
-//  make endpoint
+//  创建算术相加 Endpoint
 func MakeCalculateEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(CalculateRequest)
@@ -33,8 +29,6 @@ func MakeCalculateEndpoint(svc service.Service) endpoint.Endpoint {
 		}, nil
 	}
 }
-
-
 // HealthRequest 健康检查请求结构
 type HealthRequest struct{}
 
@@ -43,7 +37,7 @@ type HealthResponse struct {
 	Status bool `json:"status"`
 }
 
-// MakeHealthCheckEndpoint 创建健康检查Endpoint
+// 创建健康检查Endpoint
 func MakeHealthCheckEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		status := svc.HealthCheck()

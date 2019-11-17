@@ -2,15 +2,10 @@ package service
 
 
 type Service interface {
-
-
-	// HealthCheck check service health status
+	// 健康检查
 	HealthCheck() bool
-
-	// calculateService
+	// 算术相加ice
 	Calculate(a int , b int ) int
-
-
 }
 
 
@@ -25,9 +20,6 @@ func (*CalculateServiceImpl) Calculate(a int , b int ) int {
 	return a + b
 }
 
-
-
-// HealthCheck implement Service method
 // 用于检查服务的健康状态，这里仅仅返回true
 func (*CalculateServiceImpl) HealthCheck() bool {
 	return true

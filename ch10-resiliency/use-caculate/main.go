@@ -44,7 +44,7 @@ func main() {
 	}
 
 	var svc service.Service
-	svc = service.NewCalculateServiceImpl(discoveryClient)
+	svc = service.NewUseCalculateServiceImpl(discoveryClient)
 
 	// 创建打招呼的Endpoint
 	useCalculateEndpoint := endpoint.MakeUseCalculateEndpoint(svc)
