@@ -11,19 +11,19 @@ var (
 type HttpConf struct {
 	Host        string
 	Port        string
-	ServiceName string
 }
 
 // RPC配置
 type RpcConf struct {
 	Port	string
-	Host 	string
 }
 
 //服务发现与注册配置
 type DiscoverConf struct {
 	Host       string
 	Port       string
+	ServiceName string
+	Weight	 	int
 	InstanceId string
 }
 

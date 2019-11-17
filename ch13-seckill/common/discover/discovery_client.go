@@ -21,8 +21,14 @@ type DiscoveryClientInstance struct {
 type ServiceInstance struct {
 	Host     string //  Host
 	Port     int    //  Port
+	Weight 	 int    // 权重
 	GrpcPort int
 }
+
+
+
+
+
 type DiscoveryClient interface {
 	/**
 	 * 服务注册接口
@@ -30,9 +36,10 @@ type DiscoveryClient interface {
 	 * @param instanceId 服务实例Id
 	 * @param instancePort 服务实例端口
 	 * @param healthCheckUrl 健康检查地址
+	 * @param weight 权重
 	 * @param meta 服务实例元数据
 	 */
-	Register(instanceId, svcHost, healthCheckUrl, svcPort string, svcName string, meta map[string]string, tags []string, logger *log.Logger) bool
+	Register(instanceId, svcHost, healthCheckUrl, svcPort string, svcName string, weight int, meta map[string]string, tags []string, logger *log.Logger) bool
 
 	/**
 	 * 服务注销接口
@@ -44,5 +51,5 @@ type DiscoveryClient interface {
 	 * 发现服务实例接口
 	 * @param serviceName 服务名
 	 */
-	DiscoverServices(serviceName string, logger *log.Logger) []*api.AgentService
+	DiscoverServices(serviceName string, logger *log.Logger) []*ServiceInstance
 }

@@ -25,6 +25,7 @@ func (service *RemoteUserService) GetUserDetailByUsername(ctx context.Context, u
 	if err != nil || !res {
 		return nil, InvalidAuthentication
 	} else {
+
 		return &model.UserDetails{
 			UserId:      1,
 			Username:    username,

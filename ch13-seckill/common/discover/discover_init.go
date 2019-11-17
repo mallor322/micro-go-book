@@ -2,6 +2,7 @@ package discover
 
 import (
 	"fmt"
+	"github.com/hashicorp/consul/api"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	uuid "github.com/satori/go.uuid"
 	"log"
@@ -56,19 +57,20 @@ func Register() {
 	instanceId := bootstrap.DiscoverConfig.InstanceId
 
 	if instanceId == "" {
-		instanceId = bootstrap.HttpConfig.ServiceName + uuid.NewV4().String()
+		instanceId = bootstrap.DiscoverConfig.ServiceName + uuid.NewV4().String()
 	}
 
 	if !ConsulService.Register(instanceId, bootstrap.HttpConfig.Host, "/health",
-		bootstrap.HttpConfig.Port, bootstrap.HttpConfig.ServiceName, map[string]string{
-			"rpcHost": bootstrap.RpcConfig.Host,
+		bootstrap.HttpConfig.Port, bootstrap.DiscoverConfig.ServiceName,
+		bootstrap.DiscoverConfig.Weight,
+		map[string]string{
 			"rpcPort": bootstrap.RpcConfig.Port,
 		}, nil, Logger) {
-		Logger.Printf("string-service for service %s failed.", bootstrap.HttpConfig.ServiceName)
+		Logger.Printf("string-service for service %s failed.", bootstrap.DiscoverConfig.ServiceName)
 		// 注册失败，服务启动失败
 		panic(0)
 	}
-	Logger.Printf("string-service for service %s success.", bootstrap.HttpConfig.ServiceName)
+	Logger.Printf(bootstrap.DiscoverConfig.ServiceName + "-service for service %s success.", bootstrap.DiscoverConfig.ServiceName)
 
 }
 
@@ -81,10 +83,12 @@ func Deregister() {
 	instanceId := bootstrap.DiscoverConfig.InstanceId
 
 	if instanceId == "" {
-		instanceId = bootstrap.HttpConfig.ServiceName + uuid.NewV4().String()
+		instanceId = bootstrap.DiscoverConfig.ServiceName + "-" +uuid.NewV4().String()
 	}
 	if !ConsulService.DeRegister(instanceId, Logger) {
-		Logger.Printf("deregister for service %s failed.", bootstrap.HttpConfig.ServiceName)
+		Logger.Printf("deregister for service %s failed.", bootstrap.DiscoverConfig.ServiceName)
 		panic(0)
 	}
 }
+
+

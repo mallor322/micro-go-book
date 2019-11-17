@@ -28,7 +28,7 @@ func New(consulHost string, consulPort string) *DiscoveryClientInstance {
 	}
 }
 
-func (consulClient *DiscoveryClientInstance) Register(instanceId, svcHost, healthCheckUrl, svcPort string, svcName string, meta map[string]string, tags []string, logger *log.Logger) bool {
+func (consulClient *DiscoveryClientInstance) Register(instanceId, svcHost, healthCheckUrl, svcPort string, svcName string, weight int, meta map[string]string, tags []string, logger *log.Logger) bool {
 	port, _ := strconv.Atoi(svcPort)
 
 	// 1. 构建服务实例元数据
@@ -39,6 +39,9 @@ func (consulClient *DiscoveryClientInstance) Register(instanceId, svcHost, healt
 		Port:    port,
 		Meta:    meta,
 		Tags:    tags,
+		Weights: &api.AgentWeights{
+			Passing: weight,
+		},
 		Check: &api.AgentServiceCheck{
 			DeregisterCriticalServiceAfter: "30s",
 			HTTP:                           "http://" + svcHost + ":" + strconv.Itoa(port) + healthCheckUrl,
@@ -75,19 +78,19 @@ func (consulClient *DiscoveryClientInstance) DeRegister(instanceId string, logge
 	return true
 }
 
-func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []*api.AgentService {
+func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []*ServiceInstance {
 
 	//  该服务已监控并缓存
 	instanceList, ok := consulClient.instancesMap.Load(serviceName)
 	if ok {
-		return instanceList.([]*api.AgentService)
+		return instanceList.([]*ServiceInstance)
 	}
 	// 申请锁
 	consulClient.mutex.Lock()
 	// 再次检查是否监控
 	instanceList, ok = consulClient.instancesMap.Load(serviceName)
 	if ok {
-		return instanceList.([]*api.AgentService)
+		return instanceList.([]*ServiceInstance)
 	} else {
 		// 注册监控
 		go func() {
@@ -100,13 +103,20 @@ func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string
 					return
 				}
 				v, ok := i.([]*api.ServiceEntry)
-				if !ok || len(v) == 0 {
+				if !ok {
 					return // 数据异常，忽略
 				}
-				var healthServices []*api.AgentService
+
+				// 没有服务实例在线
+				if len(v) == 0 {
+					consulClient.instancesMap.Store(serviceName, []*ServiceInstance{})
+				}
+
+				var healthServices []*ServiceInstance
+
 				for _, service := range v {
 					if service.Checks.AggregatedStatus() == api.HealthPassing {
-						healthServices = append(healthServices, service.Service)
+						healthServices = append(healthServices, newServiceInstance(service.Service))
 					}
 				}
 				consulClient.instancesMap.Store(serviceName, healthServices)
@@ -120,15 +130,33 @@ func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string
 	// 根据服务名请求服务实例列表
 	entries, _, err := consulClient.client.Service(serviceName, "", false, nil)
 	if err != nil {
-		consulClient.instancesMap.Store(serviceName, []*api.AgentService{})
+		consulClient.instancesMap.Store(serviceName, []*ServiceInstance{})
 		logger.Println("Discover Service Error!")
 		return nil
 	}
-	instances := make([]*api.AgentService, len(entries))
+	instances := make([]*ServiceInstance, len(entries))
 	for i := 0; i < len(instances); i++ {
-		instances[i] = entries[i].Service
+		instances[i] = newServiceInstance(entries[i].Service)
 	}
 	consulClient.instancesMap.Store(serviceName, instances)
 	return instances
+
+}
+
+
+func newServiceInstance(service *api.AgentService) *ServiceInstance {
+
+	rpcPort := service.Port - 1
+	if service.Meta != nil{
+		if rpcPortString, ok := service.Meta["rpcPort"]; ok{
+			rpcPort, _ = strconv.Atoi(rpcPortString)
+		}
+	}
+	return &ServiceInstance{
+		Host:service.Address,
+		Port:service.Port,
+		GrpcPort:rpcPort,
+		Weight:service.Weights.Passing,
+	}
 
 }
