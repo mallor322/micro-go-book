@@ -7,6 +7,7 @@ import (
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
 	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
@@ -72,7 +73,7 @@ func main() {
 	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
 	healthEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "health-endpoint")(healthEndpoint)
 
-	endpts := endpoint.UserEndpoints{
+	endpts := client.UserEndpoints{
 		UserEndpoint:        userPoint,
 		HealthCheckEndpoint: healthEndpoint,
 	}

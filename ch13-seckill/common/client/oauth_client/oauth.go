@@ -1,15 +1,13 @@
-package client
+package oauth_client
 
 import (
 	"context"
-	"errors"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/hashicorp/consul/api"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"google.golang.org/grpc"
 	"log"
-	"math/rand"
 	"os"
 	"time"
 )
@@ -25,6 +23,9 @@ type OAuthClient interface {
 type OAuthClientImpl struct {
 	serviceName string
 	loadBalance LoadBalance
+	before      []ClientRequestFunc
+	after       []ClientResponseFunc
+	finalizer   []ClientFinalizerFunc
 }
 
 func (impl *OAuthClientImpl) CheckToken(ctx context.Context, request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {

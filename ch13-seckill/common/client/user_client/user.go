@@ -1,26 +1,18 @@
-package client
+package user_client
 
 import (
-	"context"
-	"fmt"
-	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
+	"github.com/go-kit/kit/circuitbreaker"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
-	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
-	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
-	"github.com/openzipkin/zipkin-go"
 	"google.golang.org/grpc"
-	"time"
 )
 
 var (
 	serviceName = "user"
 )
 
-func UserCheck(conn *grpc.ClientConn, clientTracer kitgrpc.ClientOption) service.Service {
+func UserCheck(conn *grpc.ClientConn, clientTracer kitgrpc.ClientOption) UserEndpoints {
 
 	var ep = grpctransport.NewClient(conn,
 		"pb.UserService",
@@ -31,12 +23,14 @@ func UserCheck(conn *grpc.ClientConn, clientTracer kitgrpc.ClientOption) service
 		clientTracer,
 	).Endpoint()
 
-	userEp := endpts.UserEndpoints{
+	ep = circuitbreaker.Hystrix("user.check")(ep)
+	userEp := UserEndpoints{
 		UserEndpoint: ep,
 	}
 	return userEp
 }
 
+/*
 func Check(username, password string) (bool, error) {
 	serviceInstance := discover.DiscoveryService(serviceName)
 
@@ -60,3 +54,4 @@ func Check(username, password string) (bool, error) {
 	}
 	return result, err
 }
+*/

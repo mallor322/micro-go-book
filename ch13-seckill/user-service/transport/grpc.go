@@ -20,7 +20,7 @@ func (s *grpcServer) Check(ctx context.Context, r *pb.UserRequest) (*pb.UserResp
 	return resp.(*pb.UserResponse), nil
 }
 
-func NewGRPCServer(ctx context.Context, endpoints endpts.UserEndpoints, serverTracer grpc.ServerOption) pb.UserServiceServer {
+func NewGRPCServer(ctx context.Context, endpoints client.UserEndpoints, serverTracer grpc.ServerOption) pb.UserServiceServer {
 	return &grpcServer{
 		check: grpc.NewServer(
 			endpoints.UserEndpoint,
