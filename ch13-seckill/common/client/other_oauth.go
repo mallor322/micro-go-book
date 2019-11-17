@@ -34,7 +34,9 @@ type OAuthClientImpl struct {
 }
 
 func (impl *OAuthClientImpl) CheckToken(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
-	var funcAfterDecor1 = impl.CheckToken
+	var funcAfterDecor1 = func(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
+		return nil, nil
+	}
 	impl.manager.Decorator(&funcAfterDecor1, OAuthClient.CheckToken, "/pb.OAuthService/CheckToken", context.Background(), &pb.CheckTokenResponse{})
 	return funcAfterDecor1(&pb.CheckTokenRequest{})
 }
@@ -129,6 +131,10 @@ func NewOAuthClient(serviceName string, lb LoadBalance) (OAuthClient, error) {
 		/**
 		TODO:需要出示manager，或者直接使用defaultManager
 		*/
+		manager: &DefaultClientManager{
+			serviceName: serviceName,
+			loadBalance: lb,
+		},
 		serviceName: serviceName,
 		loadBalance: lb,
 	}, nil
