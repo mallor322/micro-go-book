@@ -6,9 +6,9 @@ import (
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
+	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
-	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
 	"github.com/openzipkin/zipkin-go"
@@ -42,6 +42,7 @@ func Check(username, password string) (bool, error) {
 
 	grpcAddr := fmt.Sprintf("%s:%d", serviceInstance.Host, serviceInstance.Port-1)
 	tr := localconfig.ZipkinTracer
+
 	parentSpan := tr.StartSpan("test")
 	ctx := zipkin.NewContext(context.Background(), parentSpan)
 

@@ -36,7 +36,7 @@ func (p *UserModel) GetUserList() ([]gorose.Data, error) {
 	return list, nil
 }
 
-func (p *UserModel) GetUserByUsername(username string) (*User,  error)  {
+/*func (p *UserModel) GetUserByUsername(username string) (*User,  error)  {
 
 	conn := mysql.DB()
 	if result, err := conn.Table(p.getTableName()).Where(map[string]interface{}{"username": username}).First(); err == nil{
@@ -44,7 +44,8 @@ func (p *UserModel) GetUserByUsername(username string) (*User,  error)  {
 	}else {
 		return nil, err
 	}
-}
+
+}*/
 
 func (p *UserModel) CheckUser(username string, password string) (bool, error) {
 	conn := mysql.DB()

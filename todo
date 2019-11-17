@@ -6,3 +6,11 @@
  OAuth迁移
  token 保存到服务器，token可服务器失效
  提供检查token的GRPC接口
+
+1. 书稿 依赖部分 lb 接口封装，client 调用 auth 方式，
+
+ 1. grpc call error condition
+ 2. string-service 移至 7
+ 3. 10 章增加 lb，及其概念，使用到 gw，接口定义
+ 4. rpc client 封装
+ 5.

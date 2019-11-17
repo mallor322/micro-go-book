@@ -1,79 +1,95 @@
 package client
 
 import (
-	"fmt"
-	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
-	grpctransport "github.com/go-kit/kit/transport/grpc"
-	kitgrpc "github.com/go-kit/kit/transport/grpc"
-	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
+	"context"
+	"errors"
+	"github.com/afex/hystrix-go/hystrix"
+	"github.com/hashicorp/consul/api"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"google.golang.org/grpc"
+	"log"
+	"math/rand"
+	"os"
 	"time"
 )
 
-//type BaseClient interface {
-//
-//}
-//
-//type BaseClientImpt struct {
-//
-//}
-//
-//
-//type MyClient interface {
-//	BaseClient
-//
-//
-//}
-// TODO 2019-11-10 加一层client的定义，区分和service的，在client加一些负载均衡的策略
+var logger *log.Logger = log.New(os.Stderr, "", log.LstdFlags)
+var defaultLoadBalance LoadBalance = &RandomLoadBalance{}
+var discoveryClient discover.DiscoveryClient = discover.New("114.67.98.210", "8500")
 
-//func NewClient(serviceName, request, reponse, reflect.Kind) MyClient  {
-//
-//	reflect.Value
-//	Value.
-//	// ????
-//	return MyClient
-//}
-
-func CheckTokenFunc(tokenValue string) (*OAuth2Details, error) {
-	serviceName := "user"
-	serviceInstance := discover.DiscoveryService(serviceName)
-
-	grpcAddr := fmt.Sprintf("%s:%d", serviceInstance.Host, serviceInstance.Port-1)
-	tr := localconfig.ZipkinTracer
-	//parentSpan := tr.StartSpan("test")
-	//ctx := zipkin.NewContext(context.Background(), parentSpan)
-	//todo context for trace info
-	clientTracer := kitzipkin.GRPCClientTrace(tr, kitzipkin.Name("grpc-transport"))
-	conn, err := grpc.Dial(grpcAddr, grpc.WithInsecure(), grpc.WithTimeout(1*time.Second))
-	if err != nil {
-		fmt.Println("gRPC dial err:", err)
-	}
-	defer conn.Close()
-
-	svr := CheckToken(conn, clientTracer)
-	res, err := svr.GetOAuth2DetailsByAccessToken(tokenValue)
-	if err != nil {
-		fmt.Println("Check error", err.Error())
-	}
-	return res, err
+type OAuthClient interface {
+	CheckToken(ctx context.Context, request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error)
 }
 
-func CheckToken(conn *grpc.ClientConn, clientTracer kitgrpc.ClientOption) service.CheckTokenService {
+type OAuthClientImpl struct {
+	serviceName string
+	loadBalance LoadBalance
+}
 
-	var ep = grpctransport.NewClient(conn,
-		"pb.OAuthService",
-		"CheckToken",
-		EncodeGRPCCheckTokenRequest,
-		DecodeGRPCCheckTokenResponse,
-		pb.CheckTokenResponse{},
-		clientTracer,
-	).Endpoint()
+func (impl *OAuthClientImpl) CheckToken(ctx context.Context, request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
 
-	return &endpoint.OAuth2Endpoints{
-		CheckTokenEndpoint: ep,
+	var resp *pb.CheckTokenResponse
+
+	err := hystrix.Do("test_check_token", func() error {
+
+		instances := discoveryClient.DiscoverServices(impl.serviceName, logger)
+		if instance, err := impl.loadBalance.SelectOne(instances); err == nil {
+
+			if rpcPort, ok := instance.Meta["rpcPort"]; ok {
+				if conn, err := grpc.Dial(instance.Address+":"+rpcPort, grpc.WithInsecure(), grpc.WithTimeout(1*time.Second)); err == nil {
+
+					cl := pb.NewOAuthServiceClient(conn)
+
+					resp, err = cl.CheckToken(ctx, request)
+				} else {
+					return err
+				}
+			} else {
+				return errors.New("no rpc service in " + instance.Address)
+			}
+
+		} else {
+			return err
+		}
+		return nil
+	}, func(e error) error {
+		logger.Println(e.Error())
+		return e
+	})
+
+	return resp, err
+
+}
+
+type LoadBalance interface {
+	SelectOne(instances []*api.AgentService) (*api.AgentService, error)
+}
+
+type RandomLoadBalance struct {
+}
+
+func (*RandomLoadBalance) SelectOne(instances []*api.AgentService) (*api.AgentService, error) {
+
+	if instances == nil || len(instances) == 0 {
+		return nil, errors.New("no instance existed")
 	}
+
+	return instances[rand.Int()%len(instances)], nil
+
+}
+
+func NewOAuthClient(serviceName string, lb LoadBalance) (OAuthClient, error) {
+	if serviceName == "" {
+		serviceName = "oauth"
+	}
+	if lb == nil {
+		lb = defaultLoadBalance
+	}
+
+	return &OAuthClientImpl{
+		serviceName: serviceName,
+		loadBalance: lb,
+	}, nil
+
 }
