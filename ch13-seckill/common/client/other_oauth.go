@@ -46,7 +46,13 @@ type ClientManager interface {
 type DefaultClientManager struct {
 	serviceName string
 	loadBalance LoadBalance
+	after       []InvokerAfterFunc
+	before      []InvokerBeforeFunc
 }
+
+type InvokerAfterFunc func() (err error)
+
+type InvokerBeforeFunc func() (err error)
 
 func (manager *DefaultClientManager) Decorator(decoPtr, fn interface{}, path string, ctx context.Context, outVal interface{}) (err error) {
 	var decoratedFunc, targetFunc reflect.Value
