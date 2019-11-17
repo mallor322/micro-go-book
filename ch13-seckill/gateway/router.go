@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
@@ -8,6 +9,7 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/gateway/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
 	"net/http"
@@ -51,8 +53,12 @@ func preFilter(r *http.Request) bool {
 	if authToken == "" {
 		return false
 	}
-	oauthDetails, remoteErr := client.CheckTokenFunc(authToken)
-	if remoteErr != nil || oauthDetails == nil {
+	oauthClient, _ := client.NewOAuthClient("oauth", nil)
+
+	resp, remoteErr := oauthClient.CheckToken(context.Background(), &pb.CheckTokenRequest{
+		Token: authToken,
+	})
+	if remoteErr != nil || resp == nil {
 		return false
 	} else {
 		return true

@@ -20,6 +20,7 @@ func (ue UserEndpoints) Check(ctx context.Context, username string, password str
 		Password: password,
 	})
 	response := resp.(UserResponse)
+	err = errors.New("bad request!")
 	return response.Result, err
 }
 

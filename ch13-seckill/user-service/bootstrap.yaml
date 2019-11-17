@@ -5,7 +5,7 @@ http:
 
 
 discover:
-  Host: 106.15.233.99
+  Host: 114.67.98.210
   port: 8500
   instanceId: user-service-localhost
   serviceName: user

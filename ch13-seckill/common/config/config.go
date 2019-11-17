@@ -2,11 +2,15 @@ package conf
 
 import (
 	"fmt"
+	"github.com/go-kit/kit/log"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	"github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
+	_ "github.com/openzipkin/zipkin-go/reporter/recorder"
 	"github.com/spf13/viper"
-	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -14,31 +18,55 @@ const (
 	kConfigType = "CONFIG_TYPE"
 )
 
-func init2() {
-	viper.AutomaticEnv()
-	initDefault()
-
-	if err := LoadRemoteConfig(); err != nil {
-		log.Fatal("Fail to load config", err)
-	}
-
-	if err := Sub("redis", &Redis); err != nil {
-		log.Fatal("Fail to parse config", err)
-	}
-	if err := Sub("etcd", &Etcd); err != nil {
-		log.Fatal("Fail to parse config", err)
-	}
-	if err := Sub("service", &SecKill); err != nil {
-		log.Fatal("Fail to parse config", err)
-	}
-	log.Printf("%v", SecKill)
-}
+var ZipkinTracer *zipkin.Tracer
+var Logger log.Logger
 
 func initDefault() {
 	viper.SetDefault(kConfigType, "yaml")
 
 }
 
+func init() {
+	Logger = log.NewLogfmtLogger(os.Stderr)
+	Logger = log.With(Logger, "ts", log.DefaultTimestampUTC)
+	Logger = log.With(Logger, "caller", log.DefaultCaller)
+	viper.AutomaticEnv()
+	initDefault()
+
+	if err := LoadRemoteConfig(); err != nil {
+		Logger.Log("Fail to load remote config", err)
+	}
+
+	if err := Sub("mysql", &MysqlConfig); err != nil {
+		Logger.Log("Fail to parse mysql", err)
+	}
+	if err := Sub("trace", &TraceConfig); err != nil {
+		Logger.Log("Fail to parse trace", err)
+	}
+	zipkinUrl := "http://" + TraceConfig.Host + ":" + TraceConfig.Port + TraceConfig.Url
+	Logger.Log("zipkin url", zipkinUrl)
+	initTracer(zipkinUrl)
+}
+
+func initTracer(zipkinURL string) {
+	var (
+		err           error
+		useNoopTracer = zipkinURL == ""
+		reporter      = zipkinhttp.NewReporter(zipkinURL)
+	)
+	//defer reporter.Close()
+	zEP, _ := zipkin.NewEndpoint(bootstrap.HttpConfig.ServiceName, bootstrap.HttpConfig.Port)
+	ZipkinTracer, err = zipkin.NewTracer(
+		reporter, zipkin.WithLocalEndpoint(zEP), zipkin.WithNoopTracer(useNoopTracer),
+	)
+	if err != nil {
+		Logger.Log("err", err)
+		os.Exit(1)
+	}
+	if !useNoopTracer {
+		Logger.Log("tracer", "Zipkin", "type", "Native", "URL", zipkinURL)
+	}
+}
 func LoadRemoteConfig() (err error) {
 	serviceInstance := discover.DiscoveryService(bootstrap.ConfigServerConfig.Id)
 	configServer := "http://" + serviceInstance.Host + ":" + strconv.Itoa(serviceInstance.Port)
@@ -56,12 +84,12 @@ func LoadRemoteConfig() (err error) {
 	if err = viper.ReadConfig(resp.Body); err != nil {
 		return
 	}
-	log.Println("Load config from: ", confAddr)
+	Logger.Log("Load config from: ", confAddr)
 	return
 }
 
 func Sub(key string, value interface{}) error {
-	log.Printf("配置文件的前缀为：%v", key)
+	Logger.Log("配置文件的前缀为：%v", key)
 	sub := viper.Sub(key)
 	sub.AutomaticEnv()
 	sub.SetEnvPrefix(key)
