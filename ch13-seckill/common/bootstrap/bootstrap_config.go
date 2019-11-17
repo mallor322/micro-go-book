@@ -1,34 +1,33 @@
 package bootstrap
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"log"
 )
 
-func init() {
-	viper.AutomaticEnv()
-	initBootstrapConfig()
-	//读取yaml文件
-	//v := viper.New()
-
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("err:%s\n", err)
-	}
-	if err := subParse("http", &HttpConfig); err != nil {
-		log.Fatal("Fail to parse Http config", err)
-	}
-	if err := subParse("discover", &DiscoverConfig); err != nil {
-		log.Fatal("Fail to parse Discover config", err)
-	}
-	if err := subParse("config", &ConfigServerConfig); err != nil {
-		log.Fatal("Fail to parse config server", err)
-	}
-
-	if err := subParse("rpc", &RpcConfig); err != nil {
-		log.Fatal("Fail to parse rpc server", err)
-	}
-}
+//func init() {
+//	viper.AutomaticEnv()
+//	initBootstrapConfig()
+//	//读取yaml文件
+//	//v := viper.New()
+//
+//	if err := viper.ReadInConfig(); err != nil {
+//		fmt.Printf("err:%s\n", err)
+//	}
+//	if err := subParse("http", &HttpConfig); err != nil {
+//		log.Fatal("Fail to parse Http config", err)
+//	}
+//	if err := subParse("discover", &DiscoverConfig); err != nil {
+//		log.Fatal("Fail to parse Discover config", err)
+//	}
+//	if err := subParse("config", &ConfigServerConfig); err != nil {
+//		log.Fatal("Fail to parse config server", err)
+//	}
+//
+//	if err := subParse("rpc", &RpcConfig); err != nil {
+//		log.Fatal("Fail to parse rpc server", err)
+//	}
+//}
 func initBootstrapConfig() {
 	//设置读取的配置文件
 	viper.SetConfigName("bootstrap")

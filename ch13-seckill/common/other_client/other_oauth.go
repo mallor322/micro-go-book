@@ -1,23 +1,23 @@
-package other_client
+package main
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
-	"github.com/hashicorp/consul/api"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/loadbalance"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"google.golang.org/grpc"
 	"log"
-	"math/rand"
 	"os"
 	"reflect"
+	"strconv"
 	"time"
 )
 
 var logger *log.Logger = log.New(os.Stderr, "", log.LstdFlags)
-var defaultLoadBalance LoadBalance = &RandomLoadBalance{}
+var defaultLoadBalance loadbalance.LoadBalance = &loadbalance.RandomLoadBalance{}
 var discoveryClient discover.DiscoveryClient = discover.New("114.67.98.210", "8500")
 
 type OAuthClient interface {
@@ -30,15 +30,19 @@ type OAuthClientImpl struct {
 	 */
 	manager     ClientManager
 	serviceName string
-	loadBalance LoadBalance
+	loadBalance loadbalance.LoadBalance
 }
 
 func (impl *OAuthClientImpl) CheckToken(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
-	var funcAfterDecor1 = func(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
-		return nil, nil
-	}
+	var funcAfterDecor1 = impl.CheckTokenInternale
 	impl.manager.Decorator(&funcAfterDecor1, OAuthClient.CheckToken, "/pb.OAuthService/CheckToken", context.Background(), &pb.CheckTokenResponse{})
 	return funcAfterDecor1(&pb.CheckTokenRequest{})
+}
+
+func (impl *OAuthClientImpl) CheckTokenInternale(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
+
+	return nil, nil
+
 }
 
 type ClientManager interface {
@@ -47,7 +51,7 @@ type ClientManager interface {
 
 type DefaultClientManager struct {
 	serviceName string
-	loadBalance LoadBalance
+	loadBalance loadbalance.LoadBalance
 	after       []InvokerAfterFunc
 	before      []InvokerBeforeFunc
 }
@@ -64,22 +68,22 @@ func (manager *DefaultClientManager) Decorator(decoPtr, fn interface{}, path str
 	v := reflect.MakeFunc(targetFunc.Type(),
 		func(in []reflect.Value) (out []reflect.Value) {
 
-			err := hystrix.Do("test_check_token", func() error {
+			hystrix.Do("test_check_token", func() error {
 
 				instances := discoveryClient.DiscoverServices("serviceName", logger)
-				if instance, err := manager.loadBalance.SelectOne(instances); err == nil {
+				if instance, err := manager.loadBalance.SelectService(instances); err == nil {
 
-					if rpcPort, ok := instance.Meta["rpcPort"]; ok {
-						if conn, err := grpc.Dial(instance.Address+":"+rpcPort, grpc.WithInsecure(), grpc.WithTimeout(1*time.Second)); err == nil {
+					if instance.GrpcPort > 0 {
+						if conn, err := grpc.Dial(instance.Host+":"+strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(), grpc.WithTimeout(1*time.Second)); err == nil {
 							// TODO: in需要扩充
 							// 如何使用反射？？？new出这个instance？
-							_ := conn.Invoke(ctx, path, in[0], outVal, nil)
+							conn.Invoke(ctx, path, in[0], outVal, nil)
 							out[0] = reflect.ValueOf(outVal)
 						} else {
 							return err
 						}
 					} else {
-						return errors.New("no rpc service in " + instance.Address)
+						return errors.New("no rpc service in " + instance.Host)
 					}
 
 				} else {
@@ -102,24 +106,7 @@ func (manager *DefaultClientManager) Decorator(decoPtr, fn interface{}, path str
 	return
 }
 
-type LoadBalance interface {
-	SelectOne(instances []*api.AgentService) (*api.AgentService, error)
-}
-
-type RandomLoadBalance struct {
-}
-
-func (*RandomLoadBalance) SelectOne(instances []*api.AgentService) (*api.AgentService, error) {
-
-	if instances == nil || len(instances) == 0 {
-		return nil, errors.New("no instance existed")
-	}
-
-	return instances[rand.Int()%len(instances)], nil
-
-}
-
-func NewOAuthClient(serviceName string, lb LoadBalance) (OAuthClient, error) {
+func NewOAuthClient(serviceName string, lb loadbalance.LoadBalance) (OAuthClient, error) {
 	if serviceName == "" {
 		serviceName = "oauth"
 	}
@@ -128,9 +115,6 @@ func NewOAuthClient(serviceName string, lb LoadBalance) (OAuthClient, error) {
 	}
 
 	return &OAuthClientImpl{
-		/**
-		TODO:需要出示manager，或者直接使用defaultManager
-		*/
 		manager: &DefaultClientManager{
 			serviceName: serviceName,
 			loadBalance: lb,
