@@ -1,15 +1,18 @@
-package hystrix
+package main
 
 import (
 	"errors"
 	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/go-kit/kit/log"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/gateway/config"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
 	"net/http"
 	"net/http/httputil"
+	"reflect"
 	"strings"
 	"sync"
 )
@@ -31,6 +34,34 @@ func Routes(zipkinTracer *zipkin.Tracer, fbMsg string, logger log.Logger) http.H
 	}
 }
 
+func preFilter(r *http.Request) bool {
+	//查询原始请求路径，如：/string-service/calculate/10/5
+	reqPath := r.URL.Path
+	if reqPath == "" {
+		return false
+	}
+	res, err := Contains(reqPath, config.AuthPermitConfig.PermitAll)
+	if err != nil {
+		return false
+	}
+	if res {
+		return true
+	}
+	authToken := r.Header.Get("Authorization")
+	if authToken == "" {
+		return false
+	}
+	oauthDetails, remoteErr := client.CheckTokenFunc(authToken)
+	if remoteErr != nil || oauthDetails == nil {
+		return false
+	} else {
+		return true
+	}
+}
+
+func postFilter() {
+	// for custom filter
+}
 func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//查询原始请求路径，如：/string-service/calculate/10/5
 	reqPath := r.URL.Path
@@ -97,4 +128,21 @@ func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		w.Write([]byte(err.Error()))
 	}
+}
+func Contains(obj interface{}, target interface{}) (bool, error) {
+	targetValue := reflect.ValueOf(target)
+	switch reflect.TypeOf(target).Kind() {
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < targetValue.Len(); i++ {
+			if targetValue.Index(i).Interface() == obj {
+				return true, nil
+			}
+		}
+	case reflect.Map:
+		if targetValue.MapIndex(reflect.ValueOf(obj)).IsValid() {
+			return true, nil
+		}
+	}
+
+	return false, errors.New("not in array")
 }

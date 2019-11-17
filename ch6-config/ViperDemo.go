@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
+	"reflect"
 )
 
 var Resume ResumeInformation
@@ -25,7 +27,7 @@ func initDefault() {
 	//设置读取的配置文件
 	viper.SetConfigName("resume_config")
 	//添加读取的配置文件路径
-	viper.AddConfigPath("./config/")
+	viper.AddConfigPath("./ch6-config/config/")
 	//windows环境下为%GOPATH，linux环境下为$GOPATH
 	viper.AddConfigPath("$GOPATH/src/")
 	//设置配置文件类型
@@ -41,7 +43,25 @@ func main() {
 	)
 	//反序列化
 	parseYaml(viper.GetViper())
+	fmt.Println(Contains("Basketball", Resume.Habits))
+}
 
+func Contains(obj interface{}, target interface{}) (bool, error) {
+	targetValue := reflect.ValueOf(target)
+	switch reflect.TypeOf(target).Kind() {
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < targetValue.Len(); i++ {
+			if targetValue.Index(i).Interface() == obj {
+				return true, nil
+			}
+		}
+	case reflect.Map:
+		if targetValue.MapIndex(reflect.ValueOf(obj)).IsValid() {
+			return true, nil
+		}
+	}
+
+	return false, errors.New("not in array")
 }
 
 type ResumeInformation struct {

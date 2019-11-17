@@ -7,7 +7,6 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
-	hys "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/hystrix"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
 	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
@@ -60,7 +59,7 @@ func main() {
 		"component": "gateway_server",
 	}
 
-	hystrixRouter := hys.Routes(zipkinTracer, "Circuit Breaker:Service unavailable", logger)
+	hystrixRouter := Routes(zipkinTracer, "Circuit Breaker:Service unavailable", logger)
 
 	handler := zipkinhttpsvr.NewServerMiddleware(
 		zipkinTracer,

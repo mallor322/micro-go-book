@@ -14,3 +14,12 @@ config:
   id: config-service
   profile: "dev"
   label: "master"
+
+auth:
+  permit-all:
+    -
+      /oauth/login/**
+    -
+      /notice/**
+    -
+      /user/api/external/**

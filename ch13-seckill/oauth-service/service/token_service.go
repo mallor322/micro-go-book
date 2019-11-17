@@ -6,6 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	. "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
 	uuid "github.com/satori/go.uuid"
+	authmodel "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
 	"net/http"
 	"strconv"
 	"time"
@@ -55,9 +56,11 @@ func NewUsernamePasswordTokenGranter(grantType string, userDetailsService UserDe
 }
 
 
-func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context, grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
+func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context,
+	grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
 	if grantType != tokenGranter.supportGrantType{
-		return nil, errors.New("Target Grant Type is " + grantType + ", but current grant type is " + tokenGranter.supportGrantType)
+		return nil, errors.New("Target Grant Type is " + grantType +
+			", but current grant type is " + tokenGranter.supportGrantType)
 	}
 	// 从请求体中获取用户名密码
 	username := reader.FormValue("username")
@@ -78,7 +81,7 @@ func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context, gra
 	}
 
 	// 根据用户信息和客户端信息生成访问令牌
-	return tokenGranter.tokenService.CreateAccessToken(&OAuth2Details{
+	return tokenGranter.tokenService.CreateAccessToken(&authmodel.OAuth2Details{
 		Client:client,
 		User:userDetails,
 
@@ -87,15 +90,15 @@ func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context, gra
 }
 
 type CheckTokenService interface {
-	GetOAuth2DetailsByAccessToken(tokenValue string) (*OAuth2Details, error)
+	GetOAuth2DetailsByAccessToken(tokenValue string) (*authmodel.OAuth2Details, error)
 
 }
 
 type TokenService interface {
 
-	CreateAccessToken(oauth2Details *OAuth2Details) (*OAuth2Token, error)
+	CreateAccessToken(oauth2Details *authmodel.OAuth2Details) (*OAuth2Token, error)
 	RefreshAccessToken(refreshTokenValue string) (*OAuth2Token, error)
-	GetAccessToken(details *OAuth2Details) (*OAuth2Token, error)
+	GetAccessToken(details *authmodel.OAuth2Details) (*OAuth2Token, error)
 	ReadAccessToken(tokenValue string) (*OAuth2Token, error)
 	CheckTokenService
 
@@ -116,7 +119,7 @@ func NewTokenService(tokenStore TokenStore, tokenEnhancer TokenEnhancer) TokenSe
 }
 
 
-func (tokenService *DefaultTokenService) CreateAccessToken(oauth2Details *OAuth2Details) (*OAuth2Token, error) {
+func (tokenService *DefaultTokenService) CreateAccessToken(oauth2Details *authmodel.OAuth2Details) (*OAuth2Token, error) {
 
 	existToken, err := tokenService.tokenStore.GetAccessToken(oauth2Details)
 	var refreshToken *OAuth2Token
@@ -170,7 +173,7 @@ func (tokenService *DefaultTokenService) createAccessToken(refreshToken *OAuth2T
 	return accessToken, nil
 }
 
-func (tokenService *DefaultTokenService) createRefreshToken(oauth2Details *OAuth2Details) (*OAuth2Token, error) {
+func (tokenService *DefaultTokenService) createRefreshToken(oauth2Details *authmodel.OAuth2Details) (*OAuth2Token, error) {
 	validitySeconds := oauth2Details.Client.RefreshTokenValiditySeconds
 	s, _ := time.ParseDuration(strconv.Itoa(validitySeconds) + "s")
 	expiredTime := time.Now().Add(s)
@@ -242,23 +245,23 @@ func (tokenService *DefaultTokenService) GetOAuth2DetailsByAccessToken(tokenValu
 type TokenStore interface {
 
 	// 存储访问令牌
-	StoreAccessToken(oauth2Token *OAuth2Token, oauth2Details *OAuth2Details)
+	StoreAccessToken(oauth2Token *OAuth2Token, oauth2Details *authmodel.OAuth2Details)
 	// 根据令牌值获取访问令牌结构体
 	ReadAccessToken(tokenValue string) (*OAuth2Token, error)
 	// 根据令牌值获取令牌对应的客户端和用户信息
-	ReadOAuth2Details(tokenValue string)(*OAuth2Details, error)
+	ReadOAuth2Details(tokenValue string)(*authmodel.OAuth2Details, error)
 	// 根据客户端信息和用户信息获取访问令牌
-	GetAccessToken(oauth2Details *OAuth2Details)(*OAuth2Token, error);
+	GetAccessToken(oauth2Details *authmodel.OAuth2Details)(*OAuth2Token, error);
 	// 移除存储的访问令牌
 	RemoveAccessToken(tokenValue string)
 	// 存储刷新令牌
-	StoreRefreshToken(oauth2Token *OAuth2Token, oauth2Details *OAuth2Details)
+	StoreRefreshToken(oauth2Token *OAuth2Token, oauth2Details *authmodel.OAuth2Details)
 	// 移除存储的刷新令牌
 	RemoveRefreshToken(oauth2Token string)
 	// 根据令牌值获取刷新令牌
 	ReadRefreshToken(tokenValue string)(*OAuth2Token, error)
 	// 根据令牌值获取刷新令牌对应的客户端和用户信息
-	ReadOAuth2DetailsForRefreshToken(tokenValue string)(*OAuth2Details, error)
+	ReadOAuth2DetailsForRefreshToken(tokenValue string)(*authmodel.OAuth2Details, error)
 
 }
 
@@ -284,13 +287,13 @@ func (tokenStore *JwtTokenStore)ReadAccessToken(tokenValue string) (*OAuth2Token
 
 }
 // 根据令牌值获取令牌对应的客户端和用户信息
-func  (tokenStore *JwtTokenStore) ReadOAuth2Details(tokenValue string)(*OAuth2Details, error){
+func  (tokenStore *JwtTokenStore) ReadOAuth2Details(tokenValue string)(*authmodel.OAuth2Details, error){
 	_, oauth2Details, err := tokenStore.jwtTokenEnhancer.Extract(tokenValue)
 	return oauth2Details, err
 
 }
 // 根据客户端信息和用户信息获取访问令牌
-func (tokenStore *JwtTokenStore) GetAccessToken(oauth2Details *OAuth2Details)(*OAuth2Token, error){
+func (tokenStore *JwtTokenStore) GetAccessToken(oauth2Details *authmodel.OAuth2Details)(*OAuth2Token, error){
 	return nil, errors.New("JwtTokenStore not support")
 }
 // 移除存储的访问令牌
@@ -311,7 +314,7 @@ func (tokenStore *JwtTokenStore) ReadRefreshToken(tokenValue string)(*OAuth2Toke
 	return oauth2Token, err
 }
 // 根据令牌值获取刷新令牌对应的客户端和用户信息
-func (tokenStore *JwtTokenStore)ReadOAuth2DetailsForRefreshToken(tokenValue string)(*OAuth2Details, error){
+func (tokenStore *JwtTokenStore)ReadOAuth2DetailsForRefreshToken(tokenValue string)(*authmodel.OAuth2Details, error){
 	_, oauth2Details, err := tokenStore.jwtTokenEnhancer.Extract(tokenValue)
 	return oauth2Details, err
 }
@@ -319,9 +322,9 @@ func (tokenStore *JwtTokenStore)ReadOAuth2DetailsForRefreshToken(tokenValue stri
 
 type TokenEnhancer interface {
 	// 组装 Token 信息
-	Enhance(oauth2Token *OAuth2Token, oauth2Details *OAuth2Details) (*OAuth2Token, error)
+	Enhance(oauth2Token *OAuth2Token, oauth2Details *authmodel.OAuth2Details) (*OAuth2Token, error)
 	// 从 Token 中还原信息
-	Extract(tokenValue string) (*OAuth2Token, *OAuth2Details, error)
+	Extract(tokenValue string) (*OAuth2Token, *authmodel.OAuth2Details, error)
 
 }
 
@@ -343,11 +346,11 @@ func NewJwtTokenEnhancer(secretKey string) TokenEnhancer {
 
 }
 
-func (enhancer *JwtTokenEnhancer) Enhance(oauth2Token *OAuth2Token, oauth2Details *OAuth2Details) (*OAuth2Token, error) {
+func (enhancer *JwtTokenEnhancer) Enhance(oauth2Token *OAuth2Token, oauth2Details *authmodel.OAuth2Details) (*OAuth2Token, error) {
 	return enhancer.sign(oauth2Token, oauth2Details)
 }
 
-func (enhancer *JwtTokenEnhancer) Extract(tokenValue string) (*OAuth2Token, *OAuth2Details, error)  {
+func (enhancer *JwtTokenEnhancer) Extract(tokenValue string) (*OAuth2Token, *authmodel.OAuth2Details, error)  {
 
 	token, err := jwt.ParseWithClaims(tokenValue, &OAuth2TokenCustomClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return enhancer.secretKey, nil
@@ -362,7 +365,7 @@ func (enhancer *JwtTokenEnhancer) Extract(tokenValue string) (*OAuth2Token, *OAu
 			RefreshToken:&claims.RefreshToken,
 			TokenValue:tokenValue,
 			ExpiresTime: &expiresTime,
-		}, &OAuth2Details{
+		}, &authmodel.OAuth2Details{
 			User:&claims.UserDetails,
 			Client:&claims.ClientDetails,
 		}, nil
@@ -372,7 +375,7 @@ func (enhancer *JwtTokenEnhancer) Extract(tokenValue string) (*OAuth2Token, *OAu
 
 }
 
-func (enhancer *JwtTokenEnhancer) sign(oauth2Token *OAuth2Token, oauth2Details *OAuth2Details)  (*OAuth2Token, error) {
+func (enhancer *JwtTokenEnhancer) sign(oauth2Token *OAuth2Token, oauth2Details *authmodel.OAuth2Details)  (*OAuth2Token, error) {
 
 	expireTime := oauth2Token.ExpiresTime
 	clientDetails := *oauth2Details.Client
