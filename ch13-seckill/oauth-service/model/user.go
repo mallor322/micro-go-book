@@ -14,5 +14,6 @@ type UserDetails struct {
 
 
 func (userDetails *UserDetails) IsMatch (username string, password string) bool {
+
 	return userDetails.Password == password && userDetails.Username == username
 }

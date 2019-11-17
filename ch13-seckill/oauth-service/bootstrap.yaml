@@ -2,7 +2,6 @@
 http:
   host: localhost
   port: 9009
-  serviceName: oauth
 
 
 rpc:
@@ -14,6 +13,8 @@ discover:
   Host: 114.67.98.210
   port: 8500
   instanceId: oauth-service-localhost
+  serviceName: oauth
+  weight: 10
 
 config:
   id: config-service
