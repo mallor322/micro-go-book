@@ -4,10 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/service"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/caculate/transport"
+	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/transport"
 	"github.com/keets2012/Micro-Go-Pracrise/common/discover"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
@@ -24,7 +24,7 @@ func main() {
 		serviceHost = flag.String("service.host", "127.0.0.1", "service host")
 		consulPort = flag.Int("consul.port", 8500, "consul port")
 		consulHost = flag.String("consul.host", "127.0.0.1", "consul host")
-		serviceName = flag.String("service.name", "Calculate", "service name")
+		serviceName = flag.String("service.name", "string", "service name")
 	)
 
 	flag.Parse()
@@ -40,21 +40,22 @@ func main() {
 
 	}
 	var svc service.Service
-	svc = service.NewCalculateServiceImpl()
-	// 创建算术相加的 Endpoint
-	calculateEndpoint := endpoint.MakeCalculateEndpoint(svc)
-	//创建健康检查的 Endpoint
+	svc = service.StringService{}
+	stringEndpoint := endpoint.MakeStringEndpoint(svc)
+
+	//创建健康检查的Endpoint
 	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
 
-	endpts := endpoint.CalculateEndpoints{
-		CalculateEndpoint:		calculateEndpoint,
-		HealthCheckEndpoint:	healthEndpoint,
+	//把算术运算Endpoint和健康检查Endpoint封装至StringEndpoints
+	endpts := endpoint.StringEndpoints{
+		StringEndpoint:      stringEndpoint,
+		HealthCheckEndpoint: healthEndpoint,
 	}
 
 	//创建http.Handler
 	r := transport.MakeHttpHandler(ctx, endpts, config.KitLogger)
 
-	instanceId := *serviceName + uuid.NewV4().String()
+	instanceId := *serviceName + "-" + uuid.NewV4().String()
 
 	//http server
 	go func() {
@@ -62,7 +63,7 @@ func main() {
 		config.Logger.Println("Http Server start at port:" + strconv.Itoa(*servicePort))
 		//启动前执行注册
 		if !discoveryClient.Register(*serviceName, instanceId, "/health", *serviceHost,  *servicePort, nil, config.Logger){
-			config.Logger.Printf("calculate-service for service %s failed.", serviceName)
+			config.Logger.Printf("string-service for service %s failed.", serviceName)
 			// 注册失败，服务启动失败
 			os.Exit(-1)
 		}

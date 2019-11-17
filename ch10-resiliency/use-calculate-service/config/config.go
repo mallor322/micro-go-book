@@ -17,6 +17,6 @@ func init() {
 	KitLogger = kitlog.NewLogfmtLogger(os.Stderr)
 	KitLogger = kitlog.With(KitLogger, "ts", kitlog.DefaultTimestampUTC)
 	KitLogger = kitlog.With(KitLogger, "caller", kitlog.DefaultCaller)
-
 }
+
 
