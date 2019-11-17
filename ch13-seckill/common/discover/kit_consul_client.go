@@ -1,6 +1,7 @@
 package discover
 
 import (
+	"fmt"
 	"github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
 	"github.com/hashicorp/consul/api/watch"
@@ -32,6 +33,7 @@ func (consulClient *DiscoveryClientInstance) Register(instanceId, svcHost, healt
 	port, _ := strconv.Atoi(svcPort)
 
 	// 1. 构建服务实例元数据
+	fmt.Println(weight)
 	serviceRegistration := &api.AgentServiceRegistration{
 		ID:      instanceId,
 		Name:    svcName,

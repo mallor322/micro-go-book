@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
 	"net/http"
@@ -71,21 +71,21 @@ func MakeTokenEndpoint(svc service.TokenGranter, clientService service.ClientDet
 		if clientId, clientSecret, ok := req.Reader.BasicAuth(); ok{
 			clientDetails, err = clientService.GetClientDetailByClientId(ctx, clientId)
 			if err != nil{
-				config.Logger.Log("clientId " + clientId  + " is not existed", ErrInvalidRequest)
+				conf.Logger.Log("clientId " + clientId  + " is not existed", ErrInvalidRequest)
 				return TokenResponse{
 					Error:err.Error(),
 				}, nil
 			}
 
 			if !clientDetails.IsMatch(clientId, clientSecret){
-				config.Logger.Log("clientId and clientSecret not match", ErrInvalidRequest)
+				conf.Logger.Log("clientId and clientSecret not match", ErrInvalidRequest)
 				return TokenResponse{
 					Error:ErrInvalidClientRequest.Error(),
 				},nil
 			}
 
 		}else {
-			config.Logger.Log("Error parse clientId and clientSecret in header", ErrInvalidRequest)
+			conf.Logger.Log("Error parse clientId and clientSecret in header", ErrInvalidRequest)
 			return TokenResponse{
 				Error:ErrInvalidClientRequest.Error(),
 			},nil

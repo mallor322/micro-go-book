@@ -2,7 +2,6 @@ package discover
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/api"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
 	uuid "github.com/satori/go.uuid"
 	"log"
@@ -40,11 +39,7 @@ func DiscoveryService(serviceName string) ServiceInstance {
 	}
 	selectOne := instances[0]
 
-	return ServiceInstance{
-		Host:     selectOne.Address,
-		Port:     selectOne.Port,
-		GrpcPort: selectOne.Port - 1,
-	}
+	return *selectOne
 }
 
 func Register() {

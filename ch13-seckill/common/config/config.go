@@ -55,7 +55,7 @@ func initTracer(zipkinURL string) {
 		reporter      = zipkinhttp.NewReporter(zipkinURL)
 	)
 	//defer reporter.Close()
-	zEP, _ := zipkin.NewEndpoint(bootstrap.HttpConfig.ServiceName, bootstrap.HttpConfig.Port)
+	zEP, _ := zipkin.NewEndpoint(bootstrap.DiscoverConfig.ServiceName, bootstrap.HttpConfig.Port)
 	ZipkinTracer, err = zipkin.NewTracer(
 		reporter, zipkin.WithLocalEndpoint(zEP), zipkin.WithNoopTracer(useNoopTracer),
 	)
@@ -72,7 +72,7 @@ func LoadRemoteConfig() (err error) {
 	configServer := "http://" + serviceInstance.Host + ":" + strconv.Itoa(serviceInstance.Port)
 	confAddr := fmt.Sprintf("%v/%v/%v-%v.%v",
 		configServer, bootstrap.ConfigServerConfig.Label,
-		bootstrap.HttpConfig.ServiceName, bootstrap.ConfigServerConfig.Profile,
+		bootstrap.DiscoverConfig.ServiceName, bootstrap.ConfigServerConfig.Profile,
 		viper.Get(kConfigType))
 	resp, err := http.Get(confAddr)
 	if err != nil {

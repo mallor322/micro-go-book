@@ -7,36 +7,7 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 )
 
-type OAuth2Details struct {
-	Client *ClientDetails
 
-	User *UserDetails
-}
-type UserDetails struct {
-	// 用户标识
-	UserId int64
-	// 用户名 唯一
-	Username string
-	// 用户密码
-	Password string
-	// 用户具有的权限
-	Authorities []string // 具备的权限
-}
-
-type ClientDetails struct {
-	// client 的标识
-	ClientId string
-	// client 的密钥
-	ClientSecret string
-	// 访问令牌有效时间，秒
-	AccessTokenValiditySeconds int
-	// 刷新令牌有效时间，秒
-	RefreshTokenValiditySeconds int
-	// 重定向地址，授权码类型中使用
-	RegisteredRedirectUri string
-	// 可以使用的授权类型
-	AuthorizedGrantTypes []string
-}
 
 func EncodeGRPCCheckTokenRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*endpoint.CheckTokenRequest)
