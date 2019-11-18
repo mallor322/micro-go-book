@@ -1,8 +1,8 @@
-package main
+package plugins
 
 import (
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/string-service/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-string-service/service"
 	"time"
 )
 
@@ -20,11 +20,12 @@ func LoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
 	}
 }
 
-func (mw loggingMiddleware) Concat(a, b string) (ret string, err error) {
+
+func (mw loggingMiddleware) UseStringService(operationType, a, b string) (ret string, err error) {
 
 	defer func(begin time.Time) {
 		mw.logger.Log(
-			"function", "Concat",
+			"function", "UseStringService",
 			"a", a,
 			"b", b,
 			"result", ret,
@@ -32,23 +33,7 @@ func (mw loggingMiddleware) Concat(a, b string) (ret string, err error) {
 		)
 	}(time.Now())
 
-	ret, err = mw.Service.Concat(a, b)
-	return ret, err
-}
-
-func (mw loggingMiddleware) Diff(a, b string) (ret string, err error) {
-
-	defer func(begin time.Time) {
-		mw.logger.Log(
-			"function", "Diff",
-			"a", a,
-			"b", b,
-			"result", ret,
-			"took", time.Since(begin),
-		)
-	}(time.Now())
-
-	ret, err = mw.Service.Diff(a, b)
+	ret, err = mw.Service.UseStringService(operationType, a, b)
 	return ret, err
 }
 

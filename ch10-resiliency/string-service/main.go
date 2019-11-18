@@ -19,6 +19,7 @@ import (
 
 func main() {
 
+	// 获取命令行参数
 	var (
 		servicePort = flag.Int("service.port", 10085, "service port")
 		serviceHost = flag.String("service.host", "127.0.0.1", "service host")

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/afex/hystrix-go/hystrix"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/string-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-string-service/endpoint"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
@@ -18,16 +19,17 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints endpoint.StringEndpoints, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints endpoint.UseStringEndpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
+
 
 	options := []kithttp.ServerOption{
 		kithttp.ServerErrorHandler(transport.NewLogErrorHandler(logger)),
-		kithttp.ServerErrorEncoder(kithttp.DefaultErrorEncoder),
+		kithttp.ServerErrorEncoder(encodeError),
 	}
 
 	r.Methods("POST").Path("/op/{type}/{a}/{b}").Handler(kithttp.NewServer(
-		endpoints.StringEndpoint,
+		endpoints.UseStringEndpoint,
 		decodeStringRequest,
 		encodeStringResponse,
 		options...,
@@ -42,6 +44,11 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.StringEndpoints, lo
 		encodeStringResponse,
 		options...,
 	))
+
+	// 添加 hytrix 监控数据
+	hystrixStreamHandler := hystrix.NewStreamHandler()
+	hystrixStreamHandler.Start()
+	r.Handle("/hystrix/stream", hystrixStreamHandler)
 
 	return r
 }
@@ -64,7 +71,7 @@ func decodeStringRequest(_ context.Context, r *http.Request) (interface{}, error
 		return nil, ErrorBadRequest
 	}
 
-	return endpoint.StringRequest{
+	return endpoint.UseStringRequest{
 		RequestType: requestType,
 		A:           pa,
 		B:           pb,
@@ -80,4 +87,15 @@ func encodeStringResponse(ctx context.Context, w http.ResponseWriter, response i
 // decodeHealthCheckRequest decode request
 func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	return endpoint.HealthRequest{}, nil
+}
+
+func encodeError(_ context.Context, err error, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	switch err {
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"error": err.Error(),
+	})
 }

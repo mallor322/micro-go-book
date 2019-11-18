@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/service"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/string-service/service"
 	"strings"
 )
 
-// CalculateEndpoint define endpoint
+// StringEndpoint define endpoint
 type StringEndpoints struct {
 	StringEndpoint      endpoint.Endpoint
 	HealthCheckEndpoint endpoint.Endpoint
@@ -44,7 +44,7 @@ func MakeStringEndpoint(svc service.Service) endpoint.Endpoint {
 
 		a = req.A
 		b = req.B
-
+		// 根据请求操作类型请求具体的操作方法
 		if strings.EqualFold(req.RequestType, "Concat") {
 			res, _ = svc.Concat(a, b)
 		} else if strings.EqualFold(req.RequestType, "Diff") {

@@ -9,8 +9,8 @@ import (
 )
 
 // CalculateEndpoint define endpoint
-type UseStringEndpoints struct {
-	UseStringEndpoint      endpoint.Endpoint
+type StringEndpoints struct {
+	StringEndpoint      endpoint.Endpoint
 	HealthCheckEndpoint endpoint.Endpoint
 }
 
@@ -20,22 +20,22 @@ var (
 )
 
 // StringRequest define request struct
-type UseStringRequest struct {
+type StringRequest struct {
 	RequestType string `json:"request_type"`
 	A           string `json:"a"`
 	B           string `json:"b"`
 }
 
 // StringResponse define response struct
-type UseStringResponse struct {
+type StringResponse struct {
 	Result string `json:"result"`
 	Error  error  `json:"error"`
 }
 
 // MakeStringEndpoint make endpoint
-func MakeUseStringEndpoint(svc service.Service) endpoint.Endpoint {
+func MakeStringEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(UseStringRequest)
+		req := request.(StringRequest)
 
 		var (
 			res, a, b string
@@ -44,7 +44,7 @@ func MakeUseStringEndpoint(svc service.Service) endpoint.Endpoint {
 
 		a = req.A
 		b = req.B
-
+		// 根据请求操作类型请求具体的操作方法
 		if strings.EqualFold(req.RequestType, "Concat") {
 			res, _ = svc.Concat(a, b)
 		} else if strings.EqualFold(req.RequestType, "Diff") {
@@ -53,7 +53,7 @@ func MakeUseStringEndpoint(svc service.Service) endpoint.Endpoint {
 			return nil, ErrInvalidRequestType
 		}
 
-		return UseStringResponse{Result: res, Error: opError}, nil
+		return StringResponse{Result: res, Error: opError}, nil
 	}
 }
 

@@ -2,40 +2,56 @@ package endpoint
 
 import (
 	"context"
-	"errors"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/string-service/service"
-	"strings"
+	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-string-service/service"
 )
 
 // CalculateEndpoint define endpoint
-type StringEndpoints struct {
-	StringEndpoint      endpoint.Endpoint
+type UseStringEndpoints struct {
+	UseStringEndpoint      endpoint.Endpoint
 	HealthCheckEndpoint endpoint.Endpoint
 }
 
 
-var (
-	ErrInvalidRequestType = errors.New("RequestType has only two type: Concat, Diff")
-)
-
 // StringRequest define request struct
-type StringRequest struct {
+type UseStringRequest struct {
 	RequestType string `json:"request_type"`
 	A           string `json:"a"`
 	B           string `json:"b"`
 }
 
 // StringResponse define response struct
-type StringResponse struct {
+type UseStringResponse struct {
 	Result string `json:"result"`
-	Error  error  `json:"error"`
+	Error  string  `json:"error"`
 }
 
-// MakeStringEndpoint make endpoint
-func MakeStringEndpoint(svc service.Service) endpoint.Endpoint {
+//// MakeStringEndpoint make endpoint
+//func MakeUseStringEndpoint(svc service.Service) endpoint.Endpoint {
+//	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+//		req := request.(UseStringRequest)
+//
+//		var (
+//			res, a, b, opErrorString string
+//			opError   error
+//		)
+//
+//		a = req.A
+//		b = req.B
+//
+//		res, opError = svc.UseStringService(req.RequestType, a, b)
+//
+//		if opError != nil{
+//			opErrorString = opError.Error()
+//		}
+//
+//		return UseStringResponse{Result: res, Error: opErrorString}, nil
+//	}
+//}
+
+func MakeUseStringEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(StringRequest)
+		req := request.(UseStringRequest)
 
 		var (
 			res, a, b string
@@ -45,17 +61,12 @@ func MakeStringEndpoint(svc service.Service) endpoint.Endpoint {
 		a = req.A
 		b = req.B
 
-		if strings.EqualFold(req.RequestType, "Concat") {
-			res, _ = svc.Concat(a, b)
-		} else if strings.EqualFold(req.RequestType, "Diff") {
-			res, _ = svc.Diff(a, b)
-		} else {
-			return nil, ErrInvalidRequestType
-		}
+		res, opError = svc.UseStringService(req.RequestType, a, b)
 
-		return StringResponse{Result: res, Error: opError}, nil
+		return UseStringResponse{Result: res}, opError
 	}
 }
+
 
 // HealthRequest 健康检查请求结构
 type HealthRequest struct{}

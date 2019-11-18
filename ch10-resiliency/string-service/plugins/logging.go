@@ -1,4 +1,4 @@
-package main
+package plugins
 
 import (
 	"github.com/go-kit/kit/log"
@@ -21,7 +21,7 @@ func LoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
 }
 
 func (mw loggingMiddleware) Concat(a, b string) (ret string, err error) {
-
+	// 函数执行结束后打印日志
 	defer func(begin time.Time) {
 		mw.logger.Log(
 			"function", "Concat",
@@ -37,7 +37,7 @@ func (mw loggingMiddleware) Concat(a, b string) (ret string, err error) {
 }
 
 func (mw loggingMiddleware) Diff(a, b string) (ret string, err error) {
-
+	// 函数执行结束后打印日志
 	defer func(begin time.Time) {
 		mw.logger.Log(
 			"function", "Diff",

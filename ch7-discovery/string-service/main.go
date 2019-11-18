@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/endpoint"
+	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch7-discovery/string-service/transport"
 	"github.com/keets2012/Micro-Go-Pracrise/common/discover"
@@ -19,6 +20,7 @@ import (
 
 func main() {
 
+	// 获取命令行参数
 	var (
 		servicePort = flag.Int("service.port", 10085, "service port")
 		serviceHost = flag.String("service.host", "127.0.0.1", "service host")
@@ -41,6 +43,9 @@ func main() {
 	}
 	var svc service.Service
 	svc = service.StringService{}
+	// add logging middleware
+	svc = plugins.LoggingMiddleware(config.KitLogger)(svc)
+
 	stringEndpoint := endpoint.MakeStringEndpoint(svc)
 
 	//创建健康检查的Endpoint
