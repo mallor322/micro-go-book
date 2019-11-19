@@ -21,7 +21,7 @@ import (
 func main() {
 
 	var (
-		servicePort = flag.Int("service.port", 10086, "service port")
+		servicePort = flag.Int("service.port", 10098, "service port")
 		serviceHost = flag.String("service.host", "127.0.0.1", "service host")
 		consulPort = flag.Int("consul.port", 8500, "consul port")
 		consulHost = flag.String("consul.host", "127.0.0.1", "consul host")
@@ -76,7 +76,6 @@ func main() {
 		"http://127.0.0.1",
 		[] string{"password", "refresh_token"},
 	}})
-	srv = service.NewCommentService()
 
 	tokenGranter = service.NewComposeTokenGranter(map[string]service.TokenGranter{
 		"password": service.NewUsernamePasswordTokenGranter("password", userDetailsService,  tokenService),
@@ -87,6 +86,9 @@ func main() {
 	tokenEndpoint = endpoint.MakeClientAuthorizationMiddleware(config.KitLogger)(tokenEndpoint)
 	checkTokenEndpoint := endpoint.MakeCheckTokenEndpoint(tokenService)
 	checkTokenEndpoint = endpoint.MakeClientAuthorizationMiddleware(config.KitLogger)(checkTokenEndpoint)
+
+	srv = service.NewCommentService()
+
 
 	simpleEndpoint := endpoint.MakeSimpleEndpoint(srv)
 	simpleEndpoint = endpoint.MakeOAuth2AuthorizationMiddleware(config.KitLogger)(simpleEndpoint)

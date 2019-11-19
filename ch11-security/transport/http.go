@@ -98,6 +98,8 @@ func makeOAuth2AuthorizationContext(tokenService service.TokenService, logger lo
 			if err == nil {
 				return context.WithValue(ctx, endpoint.OAuth2DetailsKey, oauth2Details)
 			}
+		}else {
+			err = ErrorTokenRequest
 		}
 
 		return context.WithValue(ctx, endpoint.OAuth2ErrorKey, err)
