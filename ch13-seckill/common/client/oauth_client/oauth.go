@@ -36,9 +36,10 @@ func (impl *OAuthClientImpl) CheckToken(ctx context.Context, request *pb.CheckTo
 		instances := discoveryClient.DiscoverServices(impl.serviceName, logger)
 		if instance, err := impl.loadBalance.SelectService(instances); err == nil {
 
-			if instance.GrpcPort > 0{
+			if instance.GrpcPort > 0 {
 				if conn, err := grpc.Dial(instance.Host+":"+strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(), grpc.WithTimeout(1*time.Second)); err == nil {
 					cl := pb.NewOAuthServiceClient(conn)
+					cl.CheckToken()
 					resp, err = cl.CheckToken(ctx, request)
 				}
 			} else {
@@ -57,9 +58,6 @@ func (impl *OAuthClientImpl) CheckToken(ctx context.Context, request *pb.CheckTo
 	return resp, err
 
 }
-
-
-
 
 func NewOAuthClient(serviceName string, lb loadbalance.LoadBalance) (OAuthClient, error) {
 	if serviceName == "" {

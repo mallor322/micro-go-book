@@ -4,13 +4,19 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
-	cli "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client/user_client"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"reflect"
 )
 
+type UserEndpoints struct {
+	UserEndpoint        endpoint.Endpoint
+	HealthCheckEndpoint endpoint.Endpoint
+}
+
 // UserEndpoint define endpoint
-func (u *cli.UserEndpoints) Check(ctx context.Context, username string, password string) (bool, error) {
+func (u *UserEndpoints) Check(ctx context.Context, username string, password string) (bool, error) {
 	//ctx := context.Background()
+	reflect.TypeOf(UserEndpoints{})
 	resp, err := u.UserEndpoint(ctx, UserRequest{
 		Username: username,
 		Password: password,
@@ -20,7 +26,7 @@ func (u *cli.UserEndpoints) Check(ctx context.Context, username string, password
 	return response.Result, err
 }
 
-func (ue cli.UserEndpoints) HealthCheck() bool {
+func (ue *UserEndpoints) HealthCheck() bool {
 	return false
 }
 
