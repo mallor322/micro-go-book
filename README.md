@@ -15,5 +15,5 @@ go install github.com/golang/protobuf/protoc-gen-go/
 ```
 
 ```
-protoc --go_out=./ user.proto
+protoc string.proto --go_out=plugins=grpc:.
 ```

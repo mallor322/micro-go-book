@@ -9,6 +9,7 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
 	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	gozipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -20,7 +21,7 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints endpts.UserEndpoints, zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints client.UserEndpoints, zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 	zipkinServer := zipkin.HTTPServerTrace(zipkinTracer, zipkin.Name("http-transport"))
 

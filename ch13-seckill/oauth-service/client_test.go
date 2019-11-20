@@ -27,6 +27,9 @@ type OAuthClient interface {
 type OAuthClientImpl struct {
 	serviceName string
 	loadBalance LoadBalance
+	before      []ClientRequestFunc
+	after       []ClientResponseFunc
+	finalizer   []ClientFinalizerFunc
 }
 
 func (impl *OAuthClientImpl) CheckToken(ctx context.Context, request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
