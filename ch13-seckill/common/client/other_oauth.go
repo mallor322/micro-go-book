@@ -3,25 +3,23 @@ package other_client
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
-	"github.com/hashicorp/consul/api"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/loadbalance"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	"google.golang.org/grpc"
 	"log"
-	"math/rand"
 	"os"
-	"reflect"
+	"strconv"
 	"time"
 )
 
 var logger *log.Logger = log.New(os.Stderr, "", log.LstdFlags)
-var defaultLoadBalance LoadBalance = &RandomLoadBalance{}
+var defaultLoadBalance loadbalance.LoadBalance = &loadbalance.RandomLoadBalance{}
 var discoveryClient discover.DiscoveryClient = discover.New("114.67.98.210", "8500")
 
 type OAuthClient interface {
-	CheckToken(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error)
+	CheckToken(ctx context.Context, request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error)
 }
 
 type OAuthClientImpl struct {
@@ -30,24 +28,27 @@ type OAuthClientImpl struct {
 	 */
 	manager     ClientManager
 	serviceName string
-	loadBalance LoadBalance
+	loadBalance loadbalance.LoadBalance
 }
 
-func (impl *OAuthClientImpl) CheckToken(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
-	var funcAfterDecor1 = func(request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
-		return nil, nil
+func (impl *OAuthClientImpl) CheckToken(ctx context.Context, request *pb.CheckTokenRequest) (*pb.CheckTokenResponse, error) {
+	response := new(pb.CheckTokenResponse)
+	if err := impl.manager.DecoratorInvoke( "/pb.OAuthService/CheckToken", "check_token", ctx, request, response); err == nil{
+		return response, nil
+	}else {
+		return nil, err
 	}
-	impl.manager.Decorator(&funcAfterDecor1, OAuthClient.CheckToken, "/pb.OAuthService/CheckToken", context.Background(), &pb.CheckTokenResponse{})
-	return funcAfterDecor1(&pb.CheckTokenRequest{})
+
 }
+
 
 type ClientManager interface {
-	Decorator(decoPtr, fn interface{}, path string, ctx context.Context, outVal interface{}) (err error)
+	DecoratorInvoke(path string, hystrixName string, ctx context.Context, inputVal interface{}, outVal interface{}) (err error)
 }
 
 type DefaultClientManager struct {
 	serviceName string
-	loadBalance LoadBalance
+	loadBalance loadbalance.LoadBalance
 	after       []InvokerAfterFunc
 	before      []InvokerBeforeFunc
 }
@@ -56,32 +57,29 @@ type InvokerAfterFunc func() (err error)
 
 type InvokerBeforeFunc func() (err error)
 
-func (manager *DefaultClientManager) Decorator(decoPtr, fn interface{}, path string, ctx context.Context, outVal interface{}) (err error) {
-	var decoratedFunc, targetFunc reflect.Value
+func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName string, ctx context.Context, inputVal interface{}, outVal interface{}) (err error) {
 
-	decoratedFunc = reflect.ValueOf(decoPtr).Elem()
-	targetFunc = reflect.ValueOf(fn)
-	v := reflect.MakeFunc(targetFunc.Type(),
-		func(in []reflect.Value) (out []reflect.Value) {
+			for _, fn := range manager.before{
+				if err = fn(); err != nil{
+					return err
+				}
+			}
 
-			err := hystrix.Do("test_check_token", func() error {
+			if err =  hystrix.Do(hystrixName, func() error {
 
-				instances := discoveryClient.DiscoverServices("serviceName", logger)
-				if instance, err := manager.loadBalance.SelectOne(instances); err == nil {
-
-					if rpcPort, ok := instance.Meta["rpcPort"]; ok {
-						if conn, err := grpc.Dial(instance.Address+":"+rpcPort, grpc.WithInsecure(), grpc.WithTimeout(1*time.Second)); err == nil {
-							// TODO: in需要扩充
-							// 如何使用反射？？？new出这个instance？
-							_ := conn.Invoke(ctx, path, in[0], outVal, nil)
-							out[0] = reflect.ValueOf(outVal)
+				instances := discoveryClient.DiscoverServices(manager.serviceName, logger)
+				if instance, err := manager.loadBalance.SelectService(instances); err == nil {
+					if instance.GrpcPort > 0 {
+						if conn, err := grpc.Dial(instance.Host + ":" + strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(), grpc.WithTimeout(1*time.Second)); err == nil {
+							if err = conn.Invoke(ctx, path, inputVal, outVal); err != nil{
+								return err
+							}
 						} else {
 							return err
 						}
 					} else {
-						return errors.New("no rpc service in " + instance.Address)
+						return errors.New("no rpc service in " + instance.Host)
 					}
-
 				} else {
 					return err
 				}
@@ -89,37 +87,20 @@ func (manager *DefaultClientManager) Decorator(decoPtr, fn interface{}, path str
 			}, func(e error) error {
 				logger.Println(e.Error())
 				return e
-			})
-
-			fmt.Println("before")
-
-			out = targetFunc.Call(in)
-			fmt.Println("after")
-			return
-		})
-
-	decoratedFunc.Set(v)
-	return
+			}); err != nil{
+				return err
+			}else {
+				for _, fn := range manager.after{
+					if err = fn(); err != nil{
+						return err
+					}
+				}
+				return nil
+			}
 }
 
-type LoadBalance interface {
-	SelectOne(instances []*api.AgentService) (*api.AgentService, error)
-}
 
-type RandomLoadBalance struct {
-}
-
-func (*RandomLoadBalance) SelectOne(instances []*api.AgentService) (*api.AgentService, error) {
-
-	if instances == nil || len(instances) == 0 {
-		return nil, errors.New("no instance existed")
-	}
-
-	return instances[rand.Int()%len(instances)], nil
-
-}
-
-func NewOAuthClient(serviceName string, lb LoadBalance) (OAuthClient, error) {
+func NewOAuthClient(serviceName string, lb loadbalance.LoadBalance) (OAuthClient, error) {
 	if serviceName == "" {
 		serviceName = "oauth"
 	}
