@@ -39,6 +39,8 @@ func (impl *OAuthClientImpl) CheckToken(ctx context.Context, request *pb.CheckTo
 			if instance.GrpcPort > 0 {
 				if conn, err := grpc.Dial(instance.Host+":"+strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(), grpc.WithTimeout(1*time.Second)); err == nil {
 					cl := pb.NewOAuthServiceClient(conn)
+					kl := pb.NewUserServiceClient(conn)
+					kl.Check()
 					cl.CheckToken()
 					resp, err = cl.CheckToken(ctx, request)
 				}
