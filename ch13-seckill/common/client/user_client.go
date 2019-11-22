@@ -21,14 +21,12 @@ type UserClientImpl struct {
 
 func (impl *UserClientImpl) CheckUser(ctx context.Context, request *pb.UserRequest) (*pb.UserResponse, error) {
 	response := new(pb.UserResponse)
-	if err := impl.manager.DecoratorInvoke( "/pb.UserService/Check", "user_check", ctx, request, response); err == nil{
+	if err := impl.manager.DecoratorInvoke("/pb.UserService/Check", "user_check", ctx, request, response); err == nil {
 		return response, nil
-	}else {
+	} else {
 		return nil, err
 	}
-
 }
-
 
 func NewUserClient(serviceName string, lb loadbalance.LoadBalance) (UserClient, error) {
 	if serviceName == "" {

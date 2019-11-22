@@ -8,19 +8,14 @@ import (
 )
 
 func TestUserClientImpl_CheckUser(t *testing.T) {
-
-
-
 	client, _ := NewUserClient("user", nil)
 
 	if response, err := client.CheckUser(context.Background(), &pb.UserRequest{
-		Username:"xuan",
-		Password:"xuan",
-	});  err == nil {
+		Username: "xuan",
+		Password: "xuan",
+	}); err == nil {
 		fmt.Println(response.Result)
-	}else {
+	} else {
 		fmt.Println(err.Error())
 	}
-
-
 }

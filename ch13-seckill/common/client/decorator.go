@@ -18,9 +18,7 @@ import (
 )
 
 var (
-
 	ErrRPCService = errors.New("no rpc service")
-
 )
 
 var defaultLoadBalance loadbalance.LoadBalance = &loadbalance.RandomLoadBalance{}
@@ -30,12 +28,12 @@ type ClientManager interface {
 }
 
 type DefaultClientManager struct {
-	serviceName string
-	logger *log.Logger
+	serviceName     string
+	logger          *log.Logger
 	discoveryClient discover.DiscoveryClient
-	loadBalance loadbalance.LoadBalance
-	after       []InvokerAfterFunc
-	before      []InvokerBeforeFunc
+	loadBalance     loadbalance.LoadBalance
+	after           []InvokerAfterFunc
+	before          []InvokerBeforeFunc
 }
 
 type InvokerAfterFunc func() (err error)
@@ -44,20 +42,20 @@ type InvokerBeforeFunc func() (err error)
 
 func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName string, ctx context.Context, inputVal interface{}, outVal interface{}) (err error) {
 
-	for _, fn := range manager.before{
-		if err = fn(); err != nil{
+	for _, fn := range manager.before {
+		if err = fn(); err != nil {
 			return err
 		}
 	}
 
-	if err =  hystrix.Do(hystrixName, func() error {
+	if err = hystrix.Do(hystrixName, func() error {
 
 		instances := manager.discoveryClient.DiscoverServices(manager.serviceName, manager.logger)
 		if instance, err := manager.loadBalance.SelectService(instances); err == nil {
 			if instance.GrpcPort > 0 {
-				if conn, err := grpc.Dial(instance.Host + ":" + strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(),
-					grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(genTracer(), otgrpc.LogPayloads())),grpc.WithTimeout(1*time.Second)); err == nil {
-					if err = conn.Invoke(ctx, path, inputVal, outVal); err != nil{
+				if conn, err := grpc.Dial(instance.Host+":"+strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(),
+					grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(genTracer(), otgrpc.LogPayloads())), grpc.WithTimeout(1*time.Second)); err == nil {
+					if err = conn.Invoke(ctx, path, inputVal, outVal); err != nil {
 						return err
 					}
 				} else {
@@ -73,19 +71,17 @@ func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName st
 	}, func(e error) error {
 		manager.logger.Println(e.Error())
 		return e
-	}); err != nil{
+	}); err != nil {
 		return err
-	}else {
-		for _, fn := range manager.after{
-			if err = fn(); err != nil{
+	} else {
+		for _, fn := range manager.after {
+			if err = fn(); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
 }
-
-
 
 func genTracer() opentracing.Tracer {
 
