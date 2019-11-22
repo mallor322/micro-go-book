@@ -71,8 +71,11 @@ func postFilter() {
 func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//查询原始请求路径，如：/string-service/calculate/10/5
 	reqPath := r.URL.Path
-	if reqPath == "" {
-		return
+	var err error
+	if reqPath == "" || !preFilter(r) {
+		err = errors.New("illegal request!")
+		w.WriteHeader(403)
+		w.Write([]byte(err.Error()))
 	}
 	//按照分隔符'/'对路径进行分解，获取服务名称serviceName
 	pathArray := strings.Split(reqPath, "/")
@@ -86,7 +89,7 @@ func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//执行命令
-	err := hystrix.Do(serviceName, func() (err error) {
+	err = hystrix.Do(serviceName, func() (err error) {
 
 		//调用consul api查询serviceNam
 		serviceInstance := discover.DiscoveryService(serviceName)
