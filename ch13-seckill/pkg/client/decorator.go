@@ -5,10 +5,10 @@ import (
 	"errors"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/loadbalance"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/loadbalance"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin-contrib/zipkin-go-opentracing"
 	"google.golang.org/grpc"
@@ -24,7 +24,8 @@ var (
 var defaultLoadBalance loadbalance.LoadBalance = &loadbalance.RandomLoadBalance{}
 
 type ClientManager interface {
-	DecoratorInvoke(path string, hystrixName string, ctx context.Context, inputVal interface{}, outVal interface{}) (err error)
+	DecoratorInvoke(path string, hystrixName string, tracer opentracing.Tracer,
+		ctx context.Context, inputVal interface{}, outVal interface{}) (err error)
 }
 
 type DefaultClientManager struct {
@@ -40,7 +41,8 @@ type InvokerAfterFunc func() (err error)
 
 type InvokerBeforeFunc func() (err error)
 
-func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName string, ctx context.Context, inputVal interface{}, outVal interface{}) (err error) {
+func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName string,
+	tracer opentracing.Tracer, ctx context.Context, inputVal interface{}, outVal interface{}) (err error) {
 
 	for _, fn := range manager.before {
 		if err = fn(); err != nil {
@@ -54,7 +56,7 @@ func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName st
 		if instance, err := manager.loadBalance.SelectService(instances); err == nil {
 			if instance.GrpcPort > 0 {
 				if conn, err := grpc.Dial(instance.Host+":"+strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(),
-					grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(genTracer(), otgrpc.LogPayloads())), grpc.WithTimeout(1*time.Second)); err == nil {
+					grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(genTracer(tracer), otgrpc.LogPayloads())), grpc.WithTimeout(1*time.Second)); err == nil {
 					if err = conn.Invoke(ctx, path, inputVal, outVal); err != nil {
 						return err
 					}
@@ -83,8 +85,10 @@ func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName st
 	}
 }
 
-func genTracer() opentracing.Tracer {
-
+func genTracer(tracer opentracing.Tracer) opentracing.Tracer {
+	if tracer != nil {
+		return tracer
+	}
 	zipkinUrl := "http://" + conf.TraceConfig.Host + ":" + conf.TraceConfig.Port + conf.TraceConfig.Url
 	zipkinRecorder := bootstrap.HttpConfig.Host + ":" + bootstrap.HttpConfig.Port
 	collector, err := zipkin.NewHTTPCollector(zipkinUrl)
@@ -94,12 +98,12 @@ func genTracer() opentracing.Tracer {
 
 	recorder := zipkin.NewRecorder(collector, false, zipkinRecorder, bootstrap.DiscoverConfig.ServiceName)
 
-	tracer, err := zipkin.NewTracer(
+	res, err := zipkin.NewTracer(
 		recorder, zipkin.ClientServerSameSpan(true),
 	)
 	if err != nil {
 		log.Fatalf("zipkin.NewTracer err: %v", err)
 	}
-	return tracer
+	return res
 
 }

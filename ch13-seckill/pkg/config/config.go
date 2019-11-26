@@ -3,8 +3,8 @@ package conf
 import (
 	"fmt"
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	_ "github.com/openzipkin/zipkin-go/reporter/recorder"

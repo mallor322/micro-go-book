@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-
 // NewTokenBucketLimitterWithBuildIn 使用x/time/rate创建限流中间件
 func NewTokenBucketLimitterWithBuildIn(bkt *rate.Limiter) endpoint.Middleware {
 	return func(next endpoint.Endpoint) endpoint.Endpoint {

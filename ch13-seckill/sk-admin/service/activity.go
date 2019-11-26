@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gohouse/gorose/v2"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/model"
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/unknwon/com"

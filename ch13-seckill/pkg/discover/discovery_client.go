@@ -8,12 +8,12 @@ import (
 )
 
 type DiscoveryClientInstance struct {
-	Host   string //  Host
-	Port   int    //  Port
+	Host string //  Host
+	Port int    //  Port
 	// 连接 consul 的配置
 	config *api.Config
 	client consul.Client
-	mutex sync.Mutex
+	mutex  sync.Mutex
 	// 服务实例缓存字段
 	instancesMap sync.Map
 }
@@ -21,13 +21,9 @@ type DiscoveryClientInstance struct {
 type ServiceInstance struct {
 	Host     string //  Host
 	Port     int    //  Port
-	Weight 	 int    // 权重
+	Weight   int    // 权重
 	GrpcPort int
 }
-
-
-
-
 
 type DiscoveryClient interface {
 	/**

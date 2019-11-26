@@ -53,7 +53,7 @@ func main() {
 	r := MakeHttpHandler(ctx, endpts, logger)
 
 	//创建注册对象
-	//TODO replace with common consul
+	//TODO replace with pkg consul
 	registar := Register(*consulHost, *consulPort, *serviceHost, *servicePort, logger)
 
 	go func() {

@@ -6,12 +6,11 @@ import (
 	"fmt"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
-	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
+	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/mysql"
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/plugins"
@@ -73,7 +72,7 @@ func main() {
 	healthEndpoint := endpoint.MakeHealthCheckEndpoint(svc)
 	healthEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "health-endpoint")(healthEndpoint)
 
-	endpts := client.UserEndpoints{
+	endpts := endpoint.UserEndpoints{
 		UserEndpoint:        userPoint,
 		HealthCheckEndpoint: healthEndpoint,
 	}

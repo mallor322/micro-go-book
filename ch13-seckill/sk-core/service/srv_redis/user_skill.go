@@ -3,7 +3,7 @@ package srv_redis
 import (
 	"crypto/md5"
 	"fmt"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_err"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_user"

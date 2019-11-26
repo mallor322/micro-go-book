@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/model"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_err"

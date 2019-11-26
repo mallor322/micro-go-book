@@ -2,7 +2,7 @@ package discover
 
 import (
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"
@@ -65,7 +65,7 @@ func Register() {
 		// 注册失败，服务启动失败
 		panic(0)
 	}
-	Logger.Printf(bootstrap.DiscoverConfig.ServiceName + "-service for service %s success.", bootstrap.DiscoverConfig.ServiceName)
+	Logger.Printf(bootstrap.DiscoverConfig.ServiceName+"-service for service %s success.", bootstrap.DiscoverConfig.ServiceName)
 
 }
 
@@ -78,12 +78,10 @@ func Deregister() {
 	instanceId := bootstrap.DiscoverConfig.InstanceId
 
 	if instanceId == "" {
-		instanceId = bootstrap.DiscoverConfig.ServiceName + "-" +uuid.NewV4().String()
+		instanceId = bootstrap.DiscoverConfig.ServiceName + "-" + uuid.NewV4().String()
 	}
 	if !ConsulService.DeRegister(instanceId, Logger) {
 		Logger.Printf("deregister for service %s failed.", bootstrap.DiscoverConfig.ServiceName)
 		panic(0)
 	}
 }
-
-

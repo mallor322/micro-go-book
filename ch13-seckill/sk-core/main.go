@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/setup"
 	"os"
 	"os/signal"

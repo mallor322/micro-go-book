@@ -2,12 +2,13 @@ package client
 
 import (
 	"context"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/loadbalance"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/loadbalance"
+	"github.com/opentracing/opentracing-go"
 )
 
 type UserClient interface {
-	CheckUser(ctx context.Context, request *pb.UserRequest) (*pb.UserResponse, error)
+	CheckUser(ctx context.Context, tracer opentracing.Tracer, request *pb.UserRequest) (*pb.UserResponse, error)
 }
 
 type UserClientImpl struct {
@@ -17,18 +18,19 @@ type UserClientImpl struct {
 	manager     ClientManager
 	serviceName string
 	loadBalance loadbalance.LoadBalance
+	tracer      opentracing.Tracer
 }
 
-func (impl *UserClientImpl) CheckUser(ctx context.Context, request *pb.UserRequest) (*pb.UserResponse, error) {
+func (impl *UserClientImpl) CheckUser(ctx context.Context, tracer opentracing.Tracer, request *pb.UserRequest) (*pb.UserResponse, error) {
 	response := new(pb.UserResponse)
-	if err := impl.manager.DecoratorInvoke("/pb.UserService/Check", "user_check", ctx, request, response); err == nil {
+	if err := impl.manager.DecoratorInvoke("/pb.UserService/Check", "user_check", tracer, ctx, request, response); err == nil {
 		return response, nil
 	} else {
 		return nil, err
 	}
 }
 
-func NewUserClient(serviceName string, lb loadbalance.LoadBalance) (UserClient, error) {
+func NewUserClient(serviceName string, lb loadbalance.LoadBalance, tracer opentracing.Tracer) (UserClient, error) {
 	if serviceName == "" {
 		serviceName = "user"
 	}
@@ -43,6 +45,7 @@ func NewUserClient(serviceName string, lb loadbalance.LoadBalance) (UserClient, 
 		},
 		serviceName: serviceName,
 		loadBalance: lb,
+		tracer:      tracer,
 	}, nil
 
 }

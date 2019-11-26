@@ -145,20 +145,19 @@ func (consulClient *DiscoveryClientInstance) DiscoverServices(serviceName string
 
 }
 
-
 func newServiceInstance(service *api.AgentService) *ServiceInstance {
 
 	rpcPort := service.Port - 1
-	if service.Meta != nil{
-		if rpcPortString, ok := service.Meta["rpcPort"]; ok{
+	if service.Meta != nil {
+		if rpcPortString, ok := service.Meta["rpcPort"]; ok {
 			rpcPort, _ = strconv.Atoi(rpcPortString)
 		}
 	}
 	return &ServiceInstance{
-		Host:service.Address,
-		Port:service.Port,
-		GrpcPort:rpcPort,
-		Weight:service.Weights.Passing,
+		Host:     service.Address,
+		Port:     service.Port,
+		GrpcPort: rpcPort,
+		Weight:   service.Weights.Passing,
 	}
 
 }
