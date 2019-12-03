@@ -4,13 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
-	"github.com/go-kit/kit/log"
 	"github.com/hashicorp/consul/api"
-	"math/rand"
+	"github.com/keets2012/Micro-Go-Pracrise/common/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/common/loadbalance"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"strings"
 	"sync"
+)
+
+var (
+	ErrNoInstances = errors.New("query service instance error")
+
 )
 
 type HystrixHandler struct {
@@ -19,17 +25,19 @@ type HystrixHandler struct {
 	hystrixs      map[string]bool
 	hystrixsMutex *sync.Mutex
 
-	consulClient *api.Client
-	logger       log.Logger
+	discoveryClient discover.DiscoveryClient
+	loadbalance loadbalance.LoadBalance
+	logger       *log.Logger
 }
 
-func NewHystrixHandler(consulClient *api.Client, logger log.Logger) *HystrixHandler {
+func NewHystrixHandler(discoveryClient discover.DiscoveryClient, loadbalance loadbalance.LoadBalance, logger *log.Logger) *HystrixHandler {
 
 	return &HystrixHandler{
-		consulClient:  consulClient,
-		logger:        logger,
-		hystrixs:      make(map[string]bool),
-		hystrixsMutex: &sync.Mutex{},
+		discoveryClient: discoveryClient,
+		logger:        	logger,
+		hystrixs:      	make(map[string]bool),
+		loadbalance:	loadbalance,
+		hystrixsMutex: 	&sync.Mutex{},
 	}
 
 }
@@ -65,15 +73,16 @@ func (hystrixHandler *HystrixHandler) ServeHTTP(rw http.ResponseWriter, req *htt
 	err := hystrix.Do(serviceName, func() error {
 
 		//调用consul api查询serviceName的服务实例列表
-		result, _, err := hystrixHandler.consulClient.Catalog().Service(serviceName, "", nil)
-		if err != nil {
-			hystrixHandler.logger.Log("ReverseProxy failed", "query service instace error", err.Error())
-			return errors.New("query service instace error")
+		instances := hystrixHandler.discoveryClient.DiscoverServices(serviceName, hystrixHandler.logger)
+		instanceList := make([]*api.AgentService, len(instances))
+		for i := 0; i < len(instances); i++ {
+			instanceList[i] = instances[i].(*api.AgentService)
 		}
+		// 使用负载均衡算法选取实例
+		selectInstance, err := hystrixHandler.loadbalance.SelectService(instanceList)
 
-		if len(result) == 0 {
-			hystrixHandler.logger.Log("ReverseProxy failed", "no such service instance", serviceName)
-			return errors.New("no such service instance " + serviceName)
+		if err != nil{
+			return ErrNoInstances
 		}
 
 		//创建Director
@@ -82,13 +91,11 @@ func (hystrixHandler *HystrixHandler) ServeHTTP(rw http.ResponseWriter, req *htt
 			//重新组织请求路径，去掉服务名称部分
 			destPath := strings.Join(pathArray[2:], "/")
 
-			//随机选择一个服务实例
-			tgt := result[rand.Int()%len(result)]
-			hystrixHandler.logger.Log("service id", tgt.ServiceID)
+			hystrixHandler.logger.Println("service id ", selectInstance.ID)
 
 			//设置代理服务地址信息
 			req.URL.Scheme = "http"
-			req.URL.Host = fmt.Sprintf("%s:%d", tgt.ServiceAddress, tgt.ServicePort)
+			req.URL.Host = fmt.Sprintf("%s:%d", selectInstance.Address, selectInstance.Port)
 			req.URL.Path = "/" + destPath
 		}
 
@@ -110,7 +117,7 @@ func (hystrixHandler *HystrixHandler) ServeHTTP(rw http.ResponseWriter, req *htt
 		return proxyError
 
 	}, func(e error) error {
-		hystrixHandler.logger.Log("proxy error ", e)
+		hystrixHandler.logger.Println("proxy error ", e)
 		return errors.New("fallback excute")
 	})
 

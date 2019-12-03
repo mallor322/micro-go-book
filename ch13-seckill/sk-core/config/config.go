@@ -2,9 +2,9 @@ package config
 
 import (
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	_ "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	_ "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_product"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_user"
 	"github.com/openzipkin/zipkin-go"

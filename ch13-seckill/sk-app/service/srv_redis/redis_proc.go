@@ -3,7 +3,7 @@ package srv_redis
 import (
 	"encoding/json"
 	"fmt"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/model"
 	"log"

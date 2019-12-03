@@ -2,9 +2,9 @@ package config
 
 import (
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	_ "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	_ "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	_ "github.com/openzipkin/zipkin-go/reporter/recorder"
@@ -30,7 +30,6 @@ func init() {
 		Logger.Log("Fail to load remote config", err)
 	}
 
-
 	if err := conf.Sub("mysql", &conf.MysqlConfig); err != nil {
 		Logger.Log("Fail to parse mysql", err)
 	}
@@ -53,7 +52,7 @@ func initTracer(zipkinURL string) {
 		reporter      = zipkinhttp.NewReporter(zipkinURL)
 	)
 	//defer reporter.Close()
-	zEP, _ := zipkin.NewEndpoint(bootstrap.HttpConfig.ServiceName, bootstrap.HttpConfig.Port)
+	zEP, _ := zipkin.NewEndpoint(bootstrap.DiscoverConfig.ServiceName, bootstrap.HttpConfig.Port)
 	ZipkinTracer, err = zipkin.NewTracer(
 		reporter, zipkin.WithLocalEndpoint(zEP), zipkin.WithNoopTracer(useNoopTracer),
 	)

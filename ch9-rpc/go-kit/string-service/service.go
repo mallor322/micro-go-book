@@ -23,7 +23,7 @@ type Service interface {
 	// Concat a and b
 	Concat(ctx context.Context, a, b string) (string, error)
 
-	// a,b common string value
+	// a,b pkg string value
 	Diff(ctx context.Context, a, b string) (string, error)
 }
 

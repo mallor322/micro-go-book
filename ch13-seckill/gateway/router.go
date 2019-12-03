@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/gateway/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/client"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttpsvr "github.com/openzipkin/zipkin-go/middleware/http"
 	"net/http"
@@ -71,8 +71,11 @@ func postFilter() {
 func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//查询原始请求路径，如：/string-service/calculate/10/5
 	reqPath := r.URL.Path
-	if reqPath == "" {
-		return
+	var err error
+	if reqPath == "" || !preFilter(r) {
+		err = errors.New("illegal request!")
+		w.WriteHeader(403)
+		w.Write([]byte(err.Error()))
 	}
 	//按照分隔符'/'对路径进行分解，获取服务名称serviceName
 	pathArray := strings.Split(reqPath, "/")
@@ -86,7 +89,7 @@ func (router HystrixRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//执行命令
-	err := hystrix.Do(serviceName, func() (err error) {
+	err = hystrix.Do(serviceName, func() (err error) {
 
 		//调用consul api查询serviceNam
 		serviceInstance := discover.DiscoveryService(serviceName)

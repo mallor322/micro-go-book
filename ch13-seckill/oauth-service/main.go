@@ -5,16 +5,16 @@ import (
 	"flag"
 	"fmt"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/bootstrap"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
-	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/config"
-	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/mysql"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/transport"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
+	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
+	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
+	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/mysql"
 	"github.com/openzipkin/zipkin-go/propagation/b3"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
@@ -59,9 +59,8 @@ func main() {
 	srv = service.NewCommentService()
 
 	tokenGranter = service.NewComposeTokenGranter(map[string]service.TokenGranter{
-		"password": service.NewUsernamePasswordTokenGranter("password", userDetailsService,  tokenService),
+		"password": service.NewUsernamePasswordTokenGranter("password", userDetailsService, tokenService),
 	})
-
 
 	tokenEndpoint := endpoint.MakeTokenEndpoint(tokenGranter, clientDetailsService)
 	tokenEndpoint = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(tokenEndpoint)
@@ -73,14 +72,13 @@ func main() {
 	checkTokenEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "check-endpoint")(checkTokenEndpoint)
 	//tokenEndpoint = plugins.ClientAuthorizationMiddleware(clientDetailsService)(checkTokenEndpoint)
 
-
 	//创建健康检查的Endpoint
 	healthEndpoint := endpoint.MakeHealthCheckEndpoint(srv)
 	healthEndpoint = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "health-endpoint")(healthEndpoint)
 
 	endpts := endpoint.OAuth2Endpoints{
-		TokenEndpoint:tokenEndpoint,
-		CheckTokenEndpoint:checkTokenEndpoint,
+		TokenEndpoint:       tokenEndpoint,
+		CheckTokenEndpoint:  checkTokenEndpoint,
 		HealthCheckEndpoint: healthEndpoint,
 	}
 
@@ -99,7 +97,7 @@ func main() {
 	//grpc server
 	go func() {
 		fmt.Println("grpc Server start at port:" + *grpcAddr)
-		listener, err := net.Listen("tcp", ":" + *grpcAddr)
+		listener, err := net.Listen("tcp", ":"+*grpcAddr)
 		if err != nil {
 			errChan <- err
 			return

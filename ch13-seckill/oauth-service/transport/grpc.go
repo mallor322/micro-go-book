@@ -3,7 +3,6 @@ package transport
 import (
 	"context"
 	"github.com/go-kit/kit/transport/grpc"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
 	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 )
@@ -24,8 +23,8 @@ func NewGRPCServer(ctx context.Context, endpoints endpts.OAuth2Endpoints, server
 	return &grpcServer{
 		checkTokenServer: grpc.NewServer(
 			endpoints.CheckTokenEndpoint,
-			client.DecodeGRPCCheckTokenRequest,
-			client.EncodeGRPCCheckTokenResponse,
+			DecodeGRPCCheckTokenRequest,
+			EncodeGRPCCheckTokenResponse,
 			serverTracer,
 		),
 	}

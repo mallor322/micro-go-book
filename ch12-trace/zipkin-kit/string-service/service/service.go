@@ -23,7 +23,7 @@ type Service interface {
 	// Concat a and b
 	Concat(a, b string) (string, error)
 
-	// a,b common string value
+	// a,b pkg string value
 	Diff(ctx context.Context, a, b string) (string, error)
 
 	// HealthCheck check service health status

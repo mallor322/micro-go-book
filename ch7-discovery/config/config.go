@@ -6,9 +6,6 @@ import (
 	"os"
 )
 
-const (
-	kConfigType = "CONFIG_TYPE"
-)
 
 var Logger *log.Logger
 var KitLogger kitlog.Logger

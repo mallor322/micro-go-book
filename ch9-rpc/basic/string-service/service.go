@@ -26,7 +26,7 @@ type Service interface {
 	// Concat a and b
 	Concat(req StringRequest, ret *string) error
 
-	// a,b common string value
+	// a,b pkg string value
 	Diff(req StringRequest, ret *string) error
 
 	// HealthCheck check service health status

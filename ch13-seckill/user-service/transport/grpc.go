@@ -3,7 +3,6 @@ package transport
 import (
 	"context"
 	"github.com/go-kit/kit/transport/grpc"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/client"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
 	endpts "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/endpoint"
 )
@@ -24,8 +23,8 @@ func NewGRPCServer(ctx context.Context, endpoints endpts.UserEndpoints, serverTr
 	return &grpcServer{
 		check: grpc.NewServer(
 			endpoints.UserEndpoint,
-			client.DecodeGRPCUserRequest,
-			client.EncodeGRPCUserResponse,
+			DecodeGRPCUserRequest,
+			EncodeGRPCUserResponse,
 			serverTracer,
 		),
 	}

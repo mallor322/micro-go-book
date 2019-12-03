@@ -6,7 +6,7 @@ import (
 	"fmt"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
-	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/common/discover"
+	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/service"
