@@ -53,9 +53,9 @@ func preFilter(r *http.Request) bool {
 	if authToken == "" {
 		return false
 	}
-	oauthClient, _ := client.NewOAuthClient("oauth", nil)
+	oauthClient, _ := client.NewOAuthClient("oauth", nil, nil)
 
-	resp, remoteErr := oauthClient.CheckToken(context.Background(), &pb.CheckTokenRequest{
+	resp, remoteErr := oauthClient.CheckToken(context.Background(), nil, &pb.CheckTokenRequest{
 		Token: authToken,
 	})
 	if remoteErr != nil || resp == nil {
