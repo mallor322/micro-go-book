@@ -26,27 +26,27 @@ func initDefault() {
 
 }
 
-//func init() {
-//	Logger = log.NewLogfmtLogger(os.Stderr)
-//	Logger = log.With(Logger, "ts", log.DefaultTimestampUTC)
-//	Logger = log.With(Logger, "caller", log.DefaultCaller)
-//	viper.AutomaticEnv()
-//	initDefault()
-//
-//	if err := LoadRemoteConfig(); err != nil {
-//		Logger.Log("Fail to load remote config", err)
-//	}
-//
-//	if err := Sub("mysql", &MysqlConfig); err != nil {
-//		Logger.Log("Fail to parse mysql", err)
-//	}
-//	if err := Sub("trace", &TraceConfig); err != nil {
-//		Logger.Log("Fail to parse trace", err)
-//	}
-//	zipkinUrl := "http://" + TraceConfig.Host + ":" + TraceConfig.Port + TraceConfig.Url
-//	Logger.Log("zipkin url", zipkinUrl)
-//	initTracer(zipkinUrl)
-//}
+func init() {
+	Logger = log.NewLogfmtLogger(os.Stderr)
+	Logger = log.With(Logger, "ts", log.DefaultTimestampUTC)
+	Logger = log.With(Logger, "caller", log.DefaultCaller)
+	viper.AutomaticEnv()
+	initDefault()
+
+	if err := LoadRemoteConfig(); err != nil {
+		Logger.Log("Fail to load remote config", err)
+	}
+
+	if err := Sub("mysql", &MysqlConfig); err != nil {
+		Logger.Log("Fail to parse mysql", err)
+	}
+	if err := Sub("trace", &TraceConfig); err != nil {
+		Logger.Log("Fail to parse trace", err)
+	}
+	zipkinUrl := "http://" + TraceConfig.Host + ":" + TraceConfig.Port + TraceConfig.Url
+	Logger.Log("zipkin url", zipkinUrl)
+	initTracer(zipkinUrl)
+}
 
 func initTracer(zipkinURL string) {
 	var (
