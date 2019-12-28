@@ -2,6 +2,9 @@ http:
   host: localhost
   port: 9032
 
+rpc:
+  host: localhost
+  port: 9132
 
 discover:
   Host: 114.67.98.210

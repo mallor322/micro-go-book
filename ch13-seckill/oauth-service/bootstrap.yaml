@@ -1,12 +1,12 @@
 
 http:
   host: localhost
-  port: 9009
+  port: 9019
 
 
 rpc:
   host: localhost
-  port: 9008
+  port: 9018
 
 
 discover:

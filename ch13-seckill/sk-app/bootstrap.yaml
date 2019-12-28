@@ -4,6 +4,10 @@ http:
   port: 9031
 
 
+rpc:
+  host: localhost
+  port: 9132
+
 discover:
   Host: 114.67.98.210
   port: 8500

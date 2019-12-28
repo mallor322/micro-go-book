@@ -73,11 +73,14 @@ func InitServer(host string, servicePort string) {
 	SecKillEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(SecKillEnd)
 	SecKillEnd = kitzipkin.TraceEndpoint(config.ZipkinTracer, "sec-kill")(SecKillEnd)
 
+	testEnd := endpoint.MakeTestEndpoint(skAppService)
+
 	endpts := endpoint.SkAppEndpoints{
 		SecKillEndpoint:        SecKillEnd,
 		HeathCheckEndpoint:     healthCheckEnd,
 		GetSecInfoEndpoint:     GetSecInfoEnd,
 		GetSecInfoListEndpoint: GetSecInfoListEnd,
+		TestEndpoint:           testEnd,
 	}
 	ctx := context.Background()
 	//创建http.Handler

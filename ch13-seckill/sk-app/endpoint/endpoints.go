@@ -13,6 +13,7 @@ type SkAppEndpoints struct {
 	HeathCheckEndpoint     endpoint.Endpoint
 	GetSecInfoEndpoint     endpoint.Endpoint
 	GetSecInfoListEndpoint endpoint.Endpoint
+	TestEndpoint           endpoint.Endpoint
 }
 
 func (ue SkAppEndpoints) HealthCheck() bool {
@@ -58,6 +59,12 @@ func MakeSecKillEndpoint(svc service.Service) endpoint.Endpoint {
 		req := request.(model.SecRequest)
 		ret, code, calError := svc.SecKill(&req)
 		return Response{Result: ret, Code: code, Error: calError}, nil
+	}
+}
+
+func MakeTestEndpoint(svc service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		return Response{Result: nil, Code: 1, Error: nil}, nil
 	}
 }
 

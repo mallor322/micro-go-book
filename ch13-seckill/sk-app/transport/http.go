@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/tracing/zipkin"
 	"github.com/go-kit/kit/transport"
@@ -55,12 +54,19 @@ func MakeHttpHandler(ctx context.Context, endpoints endpts.SkAppEndpoints, zipki
 		options...,
 	))
 
+	r.Methods("GET").Path("/sec/test").Handler(kithttp.NewServer(
+		endpoints.TestEndpoint,
+		decodeSecInfoListRequest,
+		encodeResponse,
+		options...,
+	))
+
 	r.Path("/metrics").Handler(promhttp.Handler())
 
 	// create health check handler
 	r.Methods("GET").Path("/health").Handler(kithttp.NewServer(
 		endpoints.HeathCheckEndpoint,
-		decodeHealthCheckRequest,
+		decodeTestRequest,
 		encodeResponse,
 		options...,
 	))
@@ -92,13 +98,16 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 
 // encodeArithmeticResponse encode response to return
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-	fmt.Printf("encodeResponse %v", response)
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	return json.NewEncoder(w).Encode(response)
 }
 
 // decodeHealthCheckRequest decode request
 func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	return endpts.HealthRequest{}, nil
+}
+
+func decodeTestRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	return endpts.HealthRequest{}, nil
 }
 
