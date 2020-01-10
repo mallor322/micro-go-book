@@ -9,8 +9,8 @@ import (
 //初始化redis
 func InitRedis() {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "39.98.179.73:6379", //conf.Redis.Host,
-		Password: "082203",            //conf.Redis.Password,
+		Addr:     conf.Redis.Host,
+		Password: conf.Redis.Password,
 		DB:       conf.Redis.Db,
 	})
 
