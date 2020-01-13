@@ -46,7 +46,7 @@ func InitServer(host string, servicePort string) {
 		Name:      "request_latency",
 		Help:      "Total duration of requests in microseconds.",
 	}, fieldKeys)
-	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 100)
+	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 5000)
 
 	var (
 		skAppService service.Service
