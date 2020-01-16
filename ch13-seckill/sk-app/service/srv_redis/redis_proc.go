@@ -40,7 +40,7 @@ func ReadHandle() {
 		//阻塞弹出
 		data, err := conn.BRPop(time.Second, conf.Redis.Layer2proxyQueueName).Result()
 		if err != nil {
-			//log.Printf("brpop layer2proxy failed. Error : %v", err)
+			log.Printf("brpop layer2proxy failed. Error : %v", err)
 			continue
 		}
 

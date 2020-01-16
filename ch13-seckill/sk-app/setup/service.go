@@ -6,6 +6,7 @@ import (
 	"fmt"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
+	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/endpoint"
@@ -16,6 +17,7 @@ import (
 	"golang.org/x/time/rate"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -59,21 +61,22 @@ func InitServer(host string, servicePort string) {
 
 	healthCheckEnd := endpoint.MakeHealthCheckEndpoint(skAppService)
 	healthCheckEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(healthCheckEnd)
-	healthCheckEnd = kitzipkin.TraceEndpoint(config.ZipkinTracer, "heath-check")(healthCheckEnd)
+	healthCheckEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "heath-check")(healthCheckEnd)
 
 	GetSecInfoEnd := endpoint.MakeSecInfoEndpoint(skAppService)
 	GetSecInfoEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(GetSecInfoEnd)
-	GetSecInfoEnd = kitzipkin.TraceEndpoint(config.ZipkinTracer, "sec-info")(GetSecInfoEnd)
+	GetSecInfoEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "sec-info")(GetSecInfoEnd)
 
 	GetSecInfoListEnd := endpoint.MakeSecInfoListEndpoint(skAppService)
 	GetSecInfoListEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(GetSecInfoListEnd)
-	GetSecInfoListEnd = kitzipkin.TraceEndpoint(config.ZipkinTracer, "sec-info-list")(GetSecInfoListEnd)
+	GetSecInfoListEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "sec-info-list")(GetSecInfoListEnd)
 
 	SecKillEnd := endpoint.MakeSecKillEndpoint(skAppService)
 	SecKillEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(SecKillEnd)
-	SecKillEnd = kitzipkin.TraceEndpoint(config.ZipkinTracer, "sec-kill")(SecKillEnd)
+	SecKillEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "sec-kill")(SecKillEnd)
 
 	testEnd := endpoint.MakeTestEndpoint(skAppService)
+	testEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "test")(testEnd)
 
 	endpts := endpoint.SkAppEndpoints{
 		SecKillEndpoint:        SecKillEnd,
@@ -84,7 +87,7 @@ func InitServer(host string, servicePort string) {
 	}
 	ctx := context.Background()
 	//创建http.Handler
-	r := transport.MakeHttpHandler(ctx, endpts, config.ZipkinTracer, config.Logger)
+	r := transport.MakeHttpHandler(ctx, endpts, localconfig.ZipkinTracer, localconfig.Logger)
 
 	//http server
 	go func() {

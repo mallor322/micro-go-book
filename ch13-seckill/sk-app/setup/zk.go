@@ -12,8 +12,8 @@ import (
 //初始化Etcd
 func InitZk() {
 	var hosts = []string{"39.98.179.73:2181"}
-	option := zk.WithEventCallback(waitSecProductEvent)
-	conn, _, err := zk.Connect(hosts, time.Second*5, option)
+	//option := zk.WithEventCallback(waitSecProductEvent)
+	conn, _, err := zk.Connect(hosts, time.Second*5)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -21,7 +21,7 @@ func InitZk() {
 
 	conf.Zk.ZkConn = conn
 	conf.Zk.SecProductKey = "/product"
-	go loadSecConf(conn)
+	loadSecConf(conn)
 }
 
 //加载秒杀商品信息
