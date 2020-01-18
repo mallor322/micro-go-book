@@ -51,8 +51,8 @@ func (s SkAppService) SecInfo(productId int) (date map[string]interface{}) {
 
 func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, int, error) {
 	//对Map加锁处理
-	//config.SkAppContext.RWSecProductLock.RLock()
-	//defer config.SkAppContext.RWSecProductLock.RUnlock()
+	config.SkAppContext.RWSecProductLock.RLock()
+	defer config.SkAppContext.RWSecProductLock.RUnlock()
 	var code int
 	//err := srv_limit.UserCheck(req)
 	//if err != nil {
