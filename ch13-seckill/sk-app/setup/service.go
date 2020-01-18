@@ -71,8 +71,13 @@ func InitServer(host string, servicePort string) {
 	GetSecInfoListEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(GetSecInfoListEnd)
 	GetSecInfoListEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "sec-info-list")(GetSecInfoListEnd)
 
+	/**
+	 * 秒杀接口单独限流
+	 */
+	secRatebucket := rate.NewLimiter(rate.Every(time.Microsecond*100), 1000)
+
 	SecKillEnd := endpoint.MakeSecKillEndpoint(skAppService)
-	SecKillEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(SecKillEnd)
+	SecKillEnd = plugins.NewTokenBucketLimitterWithBuildIn(secRatebucket)(SecKillEnd)
 	SecKillEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "sec-kill")(SecKillEnd)
 
 	testEnd := endpoint.MakeTestEndpoint(skAppService)
