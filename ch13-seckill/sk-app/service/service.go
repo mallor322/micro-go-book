@@ -7,6 +7,7 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/model"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service/srv_err"
 	"log"
+	"math/rand"
 	"time"
 )
 
@@ -151,7 +152,7 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 	start := false      //秒杀活动是否开始
 	end := false        //秒杀活动是否结束
 	status := "success" //状态
-
+	var err error
 	nowTime := time.Now().Unix()
 	//秒杀活动没有开始
 	if nowTime-v.StartTime < 0 {
@@ -159,6 +160,7 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 		end = false
 		status = "second kill not start"
 		code = srv_err.ErrActiveNotStart
+		err = fmt.Errorf(status)
 	}
 
 	//秒杀活动已经开始
@@ -172,6 +174,8 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 		end = true
 		status = "second kill is already end"
 		code = srv_err.ErrActiveAlreadyEnd
+		err = fmt.Errorf(status)
+
 	}
 
 	//商品已经被停止或售磬
@@ -180,6 +184,20 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 		end = false
 		status = "product is sale out"
 		code = srv_err.ErrActiveSaleOut
+		err = fmt.Errorf(status)
+
+	}
+
+	curRate := rand.Float64()
+	/**
+	 * 放大于购买比率的1.5倍的请求进入core层
+	 */
+	if curRate > v.BuyRate*1.5 {
+		start = false
+		end = false
+		status = "retry"
+		code = srv_err.ErrRetry
+		err = fmt.Errorf(status)
 	}
 
 	//组装数据
@@ -189,5 +207,5 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 		"end":        end,
 		"status":     status,
 	}
-	return data, code, nil
+	return data, code, err
 }
