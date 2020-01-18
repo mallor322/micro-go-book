@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	//kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
@@ -12,7 +12,7 @@ import (
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/transport"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	//stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/time/rate"
 	"log"
 	"net/http"
@@ -32,21 +32,21 @@ func InitServer(host string, servicePort string) {
 
 	errChan := make(chan error)
 
-	fieldKeys := []string{"method"}
+	//fieldKeys := []string{"method"}
 
-	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-		Namespace: "aoho",
-		Subsystem: "sk_app",
-		Name:      "request_count",
-		Help:      "Number of requests received.",
-	}, fieldKeys)
-
-	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "aoho",
-		Subsystem: "sk_app",
-		Name:      "request_latency",
-		Help:      "Total duration of requests in microseconds.",
-	}, fieldKeys)
+	//requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+	//	Namespace: "aoho",
+	//	Subsystem: "sk_app",
+	//	Name:      "request_count",
+	//	Help:      "Number of requests received.",
+	//}, fieldKeys)
+	//
+	//requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+	//	Namespace: "aoho",
+	//	Subsystem: "sk_app",
+	//	Name:      "request_latency",
+	//	Help:      "Total duration of requests in microseconds.",
+	//}, fieldKeys)
 	ratebucket := rate.NewLimiter(rate.Every(time.Second*1), 5000)
 
 	var (
