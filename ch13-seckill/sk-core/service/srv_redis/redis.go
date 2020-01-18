@@ -39,7 +39,7 @@ func HandleReader() {
 			//从Redis队列中取出数据
 			data, err := conn.BRPop(time.Second, conf.Redis.Proxy2layerQueueName).Result()
 			if err != nil {
-				//log.Printf("HandleReader blpop from data failed, err : %v", err)
+				log.Printf("HandleReader blpop from data failed, err : %v", err)
 				continue
 			}
 			log.Printf("brpop from proxy to layer queue, data : %s\n", data)
