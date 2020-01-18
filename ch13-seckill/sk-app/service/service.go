@@ -51,8 +51,8 @@ func (s SkAppService) SecInfo(productId int) (date map[string]interface{}) {
 
 func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, int, error) {
 	//对Map加锁处理
-	config.SkAppContext.RWSecProductLock.RLock()
-	defer config.SkAppContext.RWSecProductLock.RUnlock()
+	//config.SkAppContext.RWSecProductLock.RLock()
+	//defer config.SkAppContext.RWSecProductLock.RUnlock()
 	var code int
 	//err := srv_limit.UserCheck(req)
 	//if err != nil {
@@ -76,8 +76,10 @@ func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, in
 
 	userKey := fmt.Sprintf("%d_%d", req.UserId, req.ProductId)
 	ResultChan := make(chan *model.SecResult, 1)
-
+	config.SkAppContext.UserConnMapLock.Lock()
 	config.SkAppContext.UserConnMap[userKey] = ResultChan
+	config.SkAppContext.UserConnMapLock.Unlock()
+
 	//将请求送入通道并推入到redis队列当中
 	config.SkAppContext.SecReqChan <- req
 
@@ -137,8 +139,8 @@ func (s SkAppService) SecInfoList() ([]map[string]interface{}, int, error) {
 
 func SecInfoById(productId int) (map[string]interface{}, int, error) {
 	//对Map加锁处理
-	config.SkAppContext.RWSecProductLock.RLock()
-	defer config.SkAppContext.RWSecProductLock.RUnlock()
+	//config.SkAppContext.RWSecProductLock.RLock()
+	//defer config.SkAppContext.RWSecProductLock.RUnlock()
 
 	var code int
 	v, ok := conf.SecKill.SecProductInfoMap[productId]
