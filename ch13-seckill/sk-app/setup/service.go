@@ -8,7 +8,6 @@ import (
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
 	localconfig "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
 	register "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/endpoint"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/plugins"
 	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service"
@@ -56,8 +55,8 @@ func InitServer(host string, servicePort string) {
 	skAppService = service.SkAppService{}
 
 	// add logging middleware
-	skAppService = plugins.SkAppLoggingMiddleware(config.Logger)(skAppService)
-	skAppService = plugins.SkAppMetrics(requestCount, requestLatency)(skAppService)
+	//skAppService = plugins.SkAppLoggingMiddleware(config.Logger)(skAppService)
+	//skAppService = plugins.SkAppMetrics(requestCount, requestLatency)(skAppService)
 
 	healthCheckEnd := endpoint.MakeHealthCheckEndpoint(skAppService)
 	healthCheckEnd = plugins.NewTokenBucketLimitterWithBuildIn(ratebucket)(healthCheckEnd)
@@ -78,7 +77,7 @@ func InitServer(host string, servicePort string) {
 
 	SecKillEnd := endpoint.MakeSecKillEndpoint(skAppService)
 	SecKillEnd = plugins.NewTokenBucketLimitterWithBuildIn(secRatebucket)(SecKillEnd)
-	SecKillEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "sec-kill")(SecKillEnd)
+	//SecKillEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "sec-kill")(SecKillEnd)
 
 	testEnd := endpoint.MakeTestEndpoint(skAppService)
 	testEnd = kitzipkin.TraceEndpoint(localconfig.ZipkinTracer, "test")(testEnd)

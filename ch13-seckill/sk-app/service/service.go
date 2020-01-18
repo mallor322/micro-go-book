@@ -51,8 +51,8 @@ func (s SkAppService) SecInfo(productId int) (date map[string]interface{}) {
 
 func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, int, error) {
 	//对Map加锁处理
-	config.SkAppContext.RWSecProductLock.RLock()
-	defer config.SkAppContext.RWSecProductLock.RUnlock()
+	//config.SkAppContext.RWSecProductLock.RLock()
+	//defer config.SkAppContext.RWSecProductLock.RUnlock()
 	var code int
 	//err := srv_limit.UserCheck(req)
 	//if err != nil {
@@ -75,7 +75,6 @@ func (s SkAppService) SecKill(req *model.SecRequest) (map[string]interface{}, in
 	}
 
 	userKey := fmt.Sprintf("%d_%d", req.UserId, req.ProductId)
-	fmt.Println("userKey : ", userKey)
 	ResultChan := make(chan *model.SecResult, 1)
 
 	config.SkAppContext.UserConnMap[userKey] = ResultChan
@@ -152,7 +151,6 @@ func SecInfoById(productId int) (map[string]interface{}, int, error) {
 	status := "success" //状态
 
 	nowTime := time.Now().Unix()
-	log.Printf("now time is ", nowTime)
 	//秒杀活动没有开始
 	if nowTime-v.StartTime < 0 {
 		start = false
