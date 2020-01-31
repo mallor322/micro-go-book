@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
+	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/model"
 )
 
 var (

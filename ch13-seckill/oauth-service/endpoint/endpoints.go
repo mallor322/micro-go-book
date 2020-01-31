@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/service"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
+	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/model"
+	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/service"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/config"
 	"net/http"
 )
 

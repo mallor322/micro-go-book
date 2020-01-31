@@ -6,7 +6,7 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/metrics"
 	"github.com/juju/ratelimit"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"github.com/longjoy/micro-go-book/ch13-seckill/user-service/service"
 	"golang.org/x/time/rate"
 	"time"
 )

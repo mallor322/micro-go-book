@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/mysql"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-admin/setup"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/bootstrap"
+	conf "github.com/longjoy/micro-go-book/ch13-seckill/pkg/config"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/mysql"
+	"github.com/longjoy/micro-go-book/ch13-seckill/sk-admin/setup"
 )
 
 func main() {

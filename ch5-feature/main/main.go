@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch5-feature/compute"
+	"github.com/longjoy/micro-go-book/ch5-feature/compute"
 )
 
 func main()  {

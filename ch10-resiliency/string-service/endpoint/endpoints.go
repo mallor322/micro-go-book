@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/string-service/service"
+	"github.com/longjoy/micro-go-book/ch10-resiliency/string-service/service"
 	"strings"
 )
 

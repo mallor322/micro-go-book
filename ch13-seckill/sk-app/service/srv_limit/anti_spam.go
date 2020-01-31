@@ -2,8 +2,8 @@ package srv_limit
 
 import (
 	"fmt"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/config"
+	conf "github.com/longjoy/micro-go-book/ch13-seckill/pkg/config"
+	"github.com/longjoy/micro-go-book/ch13-seckill/sk-app/config"
 	"log"
 	"sync"
 )

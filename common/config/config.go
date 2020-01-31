@@ -2,8 +2,8 @@ package conf
 
 import (
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
-	"github.com/keets2012/Micro-Go-Pracrise/common/bootstrap"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/discover"
+	"github.com/longjoy/micro-go-book/common/bootstrap"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"

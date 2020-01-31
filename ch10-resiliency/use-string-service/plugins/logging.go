@@ -2,7 +2,7 @@ package plugins
 
 import (
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-string-service/service"
+	"github.com/longjoy/micro-go-book/ch10-resiliency/use-string-service/service"
 	"time"
 )
 

@@ -9,7 +9,7 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-string-service/endpoint"
+	"github.com/longjoy/micro-go-book/ch10-resiliency/use-string-service/endpoint"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )
