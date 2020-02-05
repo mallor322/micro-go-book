@@ -3,7 +3,7 @@ package conf
 import (
 	"github.com/coreos/etcd/clientv3"
 	"github.com/go-redis/redis"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_limit"
+	"github.com/longjoy/micro-go-book/ch13-seckill/sk-core/service/srv_limit"
 	"github.com/samuel/go-zookeeper/zk"
 	"sync"
 )

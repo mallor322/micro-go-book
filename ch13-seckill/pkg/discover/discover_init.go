@@ -2,7 +2,7 @@ package discover
 
 import (
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/bootstrap"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/bootstrap"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"

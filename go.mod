@@ -1,4 +1,4 @@
-module github.com/keets2012/Micro-Go-Pracrise
+module github.com/longjoy/micro-go-book
 
 go 1.12
 

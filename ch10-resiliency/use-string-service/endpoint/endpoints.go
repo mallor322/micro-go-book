@@ -3,7 +3,7 @@ package endpoint
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch10-resiliency/use-string-service/service"
+	"github.com/longjoy/micro-go-book/ch10-resiliency/use-string-service/service"
 )
 
 // CalculateEndpoint define endpoint

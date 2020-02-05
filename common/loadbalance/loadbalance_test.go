@@ -2,7 +2,7 @@ package loadbalance
 
 import (
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/discover"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/discover"
 	"testing"
 )
 

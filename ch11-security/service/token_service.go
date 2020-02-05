@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	. "github.com/keets2012/Micro-Go-Pracrise/ch11-security/model"
+	. "github.com/longjoy/micro-go-book/ch11-security/model"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"strconv"

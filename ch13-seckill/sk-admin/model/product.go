@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/gohouse/gorose/v2"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/mysql"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/mysql"
 	"log"
 )
 

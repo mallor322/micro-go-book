@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/model"
+	"github.com/longjoy/micro-go-book/ch11-security/model"
 )
 
 var (

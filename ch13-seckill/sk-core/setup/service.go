@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-core/service/srv_redis"
+	"github.com/longjoy/micro-go-book/ch13-seckill/sk-core/service/srv_redis"
 )
 
 func RunService() {

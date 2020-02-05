@@ -3,7 +3,7 @@ package plugins
 import (
 	"context"
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/user-service/service"
+	"github.com/longjoy/micro-go-book/ch13-seckill/user-service/service"
 	"time"
 )
 
