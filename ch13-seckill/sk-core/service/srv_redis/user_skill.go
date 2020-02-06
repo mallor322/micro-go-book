@@ -35,8 +35,8 @@ func HandleUser() {
 }
 
 func HandleSkill(req *config.SecRequest) (res *config.SecResult, err error) {
-	//config.SecLayerCtx.RWSecProductLock.RLock()
-	//defer config.SecLayerCtx.RWSecProductLock.RUnlock()
+	config.SecLayerCtx.RWSecProductLock.RLock()
+	defer config.SecLayerCtx.RWSecProductLock.RUnlock()
 
 	res = &config.SecResult{}
 	res.ProductId = req.ProductId
@@ -53,12 +53,12 @@ func HandleSkill(req *config.SecRequest) (res *config.SecResult, err error) {
 		res.Code = srv_err.ErrSoldout
 		return
 	}
-
-	//alreadySoldOut := product.SecLimit.Check(nowTime)
-	//if alreadySoldOut >= product.SoldMaxLimit {
-	//	res.Code = srv_err.ErrRetry
-	//	return
-	//}
+	nowTime := time.Now().Unix()
+	alreadySoldOut := product.SecLimit.Check(nowTime)
+	if alreadySoldOut >= product.SoldMaxLimit {
+		res.Code = srv_err.ErrRetry
+		return
+	}
 
 	config.SecLayerCtx.HistoryMapLock.Lock()
 	userHistory, ok := config.SecLayerCtx.HistoryMap[req.UserId]
@@ -95,7 +95,6 @@ func HandleSkill(req *config.SecRequest) (res *config.SecResult, err error) {
 	config.SecLayerCtx.ProductCountMgr.Add(req.ProductId, 1)
 
 	//用户Id、商品id、当前时间、密钥
-	nowTime := time.Now().Unix()
 
 	res.Code = srv_err.ErrSecKillSucc
 	tokenData := fmt.Sprintf("userId=%d&productId=%d&timestamp=%d&security=%s", req.UserId, req.ProductId, nowTime, conf.SecKill.TokenPassWd)
