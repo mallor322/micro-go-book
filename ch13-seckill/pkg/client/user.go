@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pb"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/loadbalance"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pb"
+	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/loadbalance"
 	"github.com/opentracing/opentracing-go"
 )
 

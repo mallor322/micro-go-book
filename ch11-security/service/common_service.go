@@ -12,26 +12,26 @@ type Service interface {
 	HealthCheck() bool
 }
 
-type CommentService struct {
+type CommonService struct {
 
 }
 
-func (s *CommentService) SimpleData(username string) string {
+func (s *CommonService) SimpleData(username string) string {
 	return "hello " + username + " ,simple data, with simple authority"
 }
 
-func (s *CommentService) AdminData(username string) string {
+func (s *CommonService) AdminData(username string) string {
 	return "hello " + username + " ,admin data, with admin authority"
 
 }
 
 // HealthCheck implement Service method
 // 用于检查服务的健康状态，这里仅仅返回true
-func (s *CommentService) HealthCheck() bool {
+func (s *CommonService) HealthCheck() bool {
 	return true
 }
 
-func NewCommentService() *CommentService {
-	return &CommentService{}
+func NewCommonService() *CommonService {
+	return &CommonService{}
 }
 

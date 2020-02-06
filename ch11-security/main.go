@@ -4,12 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/config"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/model"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/service"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/transport"
-	"github.com/keets2012/Micro-Go-Pracrise/common/discover"
+	"github.com/longjoy/micro-go-book/ch11-security/config"
+	"github.com/longjoy/micro-go-book/ch11-security/endpoint"
+	"github.com/longjoy/micro-go-book/ch11-security/model"
+	"github.com/longjoy/micro-go-book/ch11-security/service"
+	"github.com/longjoy/micro-go-book/ch11-security/transport"
+	"github.com/longjoy/micro-go-book/common/discover"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"os"
@@ -87,7 +87,7 @@ func main() {
 	checkTokenEndpoint := endpoint.MakeCheckTokenEndpoint(tokenService)
 	checkTokenEndpoint = endpoint.MakeClientAuthorizationMiddleware(config.KitLogger)(checkTokenEndpoint)
 
-	srv = service.NewCommentService()
+	srv = service.NewCommonService()
 
 
 	simpleEndpoint := endpoint.MakeSimpleEndpoint(srv)

@@ -8,8 +8,8 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/endpoint"
-	"github.com/keets2012/Micro-Go-Pracrise/ch11-security/service"
+	"github.com/longjoy/micro-go-book/ch11-security/endpoint"
+	"github.com/longjoy/micro-go-book/ch11-security/service"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 )

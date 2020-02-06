@@ -9,7 +9,7 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/endpoint"
+	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/endpoint"
 	gozipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"

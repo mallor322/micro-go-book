@@ -4,8 +4,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-go/string-services/svc1"
-	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-go/string-services/svc2"
+	"github.com/longjoy/micro-go-book/ch12-trace/zipkin-go/string-services/svc1"
+	"github.com/longjoy/micro-go-book/ch12-trace/zipkin-go/string-services/svc2"
 	"net/http"
 	"os"
 

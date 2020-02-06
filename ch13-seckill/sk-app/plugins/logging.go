@@ -2,8 +2,8 @@ package plugins
 
 import (
 	"github.com/go-kit/kit/log"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/model"
-	"github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/sk-app/service"
+	"github.com/longjoy/micro-go-book/ch13-seckill/sk-app/model"
+	"github.com/longjoy/micro-go-book/ch13-seckill/sk-app/service"
 	"time"
 )
 

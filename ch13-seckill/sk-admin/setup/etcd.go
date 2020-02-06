@@ -2,7 +2,7 @@ package setup
 
 import (
 	"github.com/coreos/etcd/clientv3"
-	conf "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/pkg/config"
+	conf "github.com/longjoy/micro-go-book/ch13-seckill/pkg/config"
 	"log"
 	"time"
 )

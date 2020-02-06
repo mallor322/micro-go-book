@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
-	"github.com/keets2012/Micro-Go-Pracrise/ch12-trace/zipkin-kit/client"
+	"github.com/longjoy/micro-go-book/ch12-trace/zipkin-kit/client"
 	"github.com/openzipkin/zipkin-go"
 	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	"google.golang.org/grpc"

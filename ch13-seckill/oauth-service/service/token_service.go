@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	. "github.com/keets2012/Micro-Go-Pracrise/ch13-seckill/oauth-service/model"
+	. "github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/model"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"strconv"
