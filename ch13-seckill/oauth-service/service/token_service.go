@@ -11,6 +11,17 @@ import (
 	"time"
 )
 
+var (
+
+	ErrNotSupportGrantType = errors.New("grant type is not supported")
+	ErrNotSupportOperation = errors.New("no support operation")
+	ErrInvalidUsernameAndPasswordRequest      = errors.New("invalid username, password")
+	ErrInvalidTokenRequest = errors.New("invalid token")
+	ErrExpiredToken        = errors.New("token is expired")
+
+
+)
+
 
 type TokenGranter interface {
 	Grant(ctx context.Context, grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error)
@@ -21,7 +32,7 @@ type ComposeTokenGranter struct {
 	TokenGrantDict map[string] TokenGranter
 }
 
-func NewComposeTokenGranter(tokenGrantDict map[string] TokenGranter) *ComposeTokenGranter {
+func NewComposeTokenGranter(tokenGrantDict map[string] TokenGranter) TokenGranter {
 	return &ComposeTokenGranter{
 		TokenGrantDict:tokenGrantDict,
 	}
@@ -33,7 +44,7 @@ func (tokenGranter *ComposeTokenGranter) Grant(ctx context.Context, grantType st
 	dispatchGranter := tokenGranter.TokenGrantDict[grantType]
 
 	if dispatchGranter == nil{
-		return nil, errors.New("Grant Type " + grantType + " is not supported")
+		return nil, ErrNotSupportGrantType
 	}
 
 	return dispatchGranter.Grant(ctx, grantType, client, reader)
@@ -46,7 +57,7 @@ type UsernamePasswordTokenGranter struct {
 	tokenService TokenService
 }
 
-func NewUsernamePasswordTokenGranter(grantType string, userDetailsService UserDetailsService, tokenService TokenService) *UsernamePasswordTokenGranter {
+func NewUsernamePasswordTokenGranter(grantType string, userDetailsService UserDetailsService, tokenService TokenService) TokenGranter {
 	return &UsernamePasswordTokenGranter{
 		supportGrantType:grantType,
 		userDetailsService:userDetailsService,
@@ -58,22 +69,22 @@ func NewUsernamePasswordTokenGranter(grantType string, userDetailsService UserDe
 func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context,
 	grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
 	if grantType != tokenGranter.supportGrantType{
-		return nil, errors.New("Target Grant Type is " + grantType +
-			", but current grant type is " + tokenGranter.supportGrantType)
+		return nil, ErrNotSupportGrantType
 	}
 	// 从请求体中获取用户名密码
 	username := reader.FormValue("username")
 	password := reader.FormValue("password")
 
 	if username == "" || password == ""{
-		return nil, errors.New( "please provide correct user information")
+		return nil, ErrInvalidUsernameAndPasswordRequest
 	}
 
 	// 验证用户名密码是否正确
 	userDetails, err := tokenGranter.userDetailsService.GetUserDetailByUsername(ctx, username, password)
 
 	if err != nil{
-		return nil, errors.New( "username "+ username +" is not exist")}
+		return nil, ErrInvalidUsernameAndPasswordRequest
+	}
 
 	// 根据用户信息和客户端信息生成访问令牌
 	return tokenGranter.tokenService.CreateAccessToken(&OAuth2Details{
@@ -84,19 +95,47 @@ func (tokenGranter *UsernamePasswordTokenGranter) Grant(ctx context.Context,
 
 }
 
-type CheckTokenService interface {
-	GetOAuth2DetailsByAccessToken(tokenValue string) (*OAuth2Details, error)
+type RefreshTokenGranter struct {
+	supportGrantType string
+	tokenService TokenService
 
 }
 
+func NewRefreshGranter(grantType string, userDetailsService UserDetailsService, tokenService TokenService) TokenGranter {
+	return &RefreshTokenGranter{
+		supportGrantType:grantType,
+		tokenService:tokenService,
+	}
+}
+
+
+func (tokenGranter *RefreshTokenGranter) Grant(ctx context.Context, grantType string, client *ClientDetails, reader *http.Request) (*OAuth2Token, error) {
+	if grantType != tokenGranter.supportGrantType{
+		return nil, ErrNotSupportGrantType
+	}
+	// 从请求中获取刷新令牌
+	refreshTokenValue := reader.URL.Query().Get("refresh_token")
+
+	if refreshTokenValue == ""{
+		return nil, ErrInvalidTokenRequest
+	}
+
+	return tokenGranter.tokenService.RefreshAccessToken(refreshTokenValue)
+
+}
+
+
 type TokenService interface {
-
+	// 根据访问令牌获取对应的用户信息和客户端信息
+	GetOAuth2DetailsByAccessToken(tokenValue string) (*OAuth2Details, error)
+	// 根据用户信息和客户端信息生成访问令牌
 	CreateAccessToken(oauth2Details *OAuth2Details) (*OAuth2Token, error)
+	// 根据刷新令牌获取访问令牌
 	RefreshAccessToken(refreshTokenValue string) (*OAuth2Token, error)
+	// 根据用户信息和客户端信息获取已生成访问令牌
 	GetAccessToken(details *OAuth2Details) (*OAuth2Token, error)
+	// 根据访问令牌值获取访问令牌结构体
 	ReadAccessToken(tokenValue string) (*OAuth2Token, error)
-	CheckTokenService
-
 }
 
 type DefaultTokenService struct {
@@ -189,7 +228,7 @@ func (tokenService *DefaultTokenService) RefreshAccessToken(refreshTokenValue st
 
 	if err == nil{
 		if refreshToken.IsExpired(){
-			return nil, errors.New("Refresh Token " + refreshTokenValue + " is Expired")
+			return nil, ErrExpiredToken
 		}
 		oauth2Details, err := tokenService.tokenStore.ReadOAuth2DetailsForRefreshToken(refreshTokenValue)
 		if err == nil{
@@ -229,7 +268,7 @@ func (tokenService *DefaultTokenService) GetOAuth2DetailsByAccessToken(tokenValu
 	accessToken, err := tokenService.tokenStore.ReadAccessToken(tokenValue)
 	if err == nil{
 		if accessToken.IsExpired(){
-			return nil, errors.New("Access Token " + tokenValue + " is Expired")
+			return nil, ErrExpiredToken
 		}
 		return tokenService.tokenStore.ReadOAuth2Details(tokenValue)
 	}
@@ -289,7 +328,7 @@ func  (tokenStore *JwtTokenStore) ReadOAuth2Details(tokenValue string)(*OAuth2De
 }
 // 根据客户端信息和用户信息获取访问令牌
 func (tokenStore *JwtTokenStore) GetAccessToken(oauth2Details *OAuth2Details)(*OAuth2Token, error){
-	return nil, errors.New("JwtTokenStore not support")
+	return nil, ErrNotSupportOperation
 }
 // 移除存储的访问令牌
 func (tokenStore *JwtTokenStore) RemoveAccessToken(tokenValue string){

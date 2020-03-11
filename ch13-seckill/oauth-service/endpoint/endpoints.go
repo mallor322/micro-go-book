@@ -4,99 +4,131 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/log"
 	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/model"
 	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/service"
-	"github.com/longjoy/micro-go-book/ch13-seckill/pkg/config"
 	"net/http"
 )
 
 // CalculateEndpoint define endpoint
 type OAuth2Endpoints struct {
-	TokenEndpoint       endpoint.Endpoint
-	CheckTokenEndpoint  endpoint.Endpoint
+	TokenEndpoint		endpoint.Endpoint
+	CheckTokenEndpoint	endpoint.Endpoint
 	HealthCheckEndpoint endpoint.Endpoint
+	SimpleEndpoint 		endpoint.Endpoint
+	AdminEndpoint		endpoint.Endpoint
 }
 
-func (oauth2Endpoints *OAuth2Endpoints) GetOAuth2DetailsByAccessToken(tokenValue string) (*model.OAuth2Details, error) {
 
-	resp, _ := oauth2Endpoints.CheckTokenEndpoint(context.Background(), &CheckTokenRequest{
-		Token: tokenValue,
-	})
-	response := resp.(CheckTokenResponse)
-	var err error
-	if response.Error != "" {
-		err = errors.New(response.Error)
+
+func MakeClientAuthorizationMiddleware(logger log.Logger) endpoint.Middleware {
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+
+			if err, ok := ctx.Value(OAuth2ErrorKey).(error); ok{
+				return nil, err
+			}
+			if _, ok := ctx.Value(OAuth2ClientDetailsKey).(*model.ClientDetails); !ok{
+				return  nil, ErrInvalidClientRequest
+			}
+			return next(ctx, request)
+		}
 	}
-	return response.OAuthDetails, err
 }
 
-var (
-	ErrInvalidRequest       = errors.New("invalid username, password")
-	ErrInvalidClientRequest = errors.New("invalid client message")
+func MakeOAuth2AuthorizationMiddleware(logger log.Logger) endpoint.Middleware {
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+
+			if err, ok := ctx.Value(OAuth2ErrorKey).(error); ok{
+				return nil, err
+			}
+			if _, ok := ctx.Value(OAuth2DetailsKey).(*model.OAuth2Details); !ok{
+				return  nil, ErrInvalidUserRequest
+			}
+			return next(ctx, request)
+		}
+	}
+}
+func MakeAuthorityAuthorizationMiddleware(authority string, logger log.Logger) endpoint.Middleware  {
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+
+			if err, ok := ctx.Value(OAuth2ErrorKey).(error); ok{
+				return nil, err
+			}
+			if details, ok := ctx.Value(OAuth2DetailsKey).(*model.OAuth2Details); !ok{
+				return  nil, ErrInvalidClientRequest
+			}else {
+				for _, value := range details.User.Authorities{
+					if value == authority{
+						return next(ctx, request)
+					}
+				}
+				return nil, ErrNotPermit
+			}
+		}
+	}
+}
+
+const (
+
+	OAuth2DetailsKey       = "OAuth2Details"
+	OAuth2ClientDetailsKey = "OAuth2ClientDetails"
+	OAuth2ErrorKey         = "OAuth2Error"
+
 )
 
-type CheckTokenRequest struct {
-	Token  string `json:"token"`
+
+var (
+	ErrInvalidClientRequest = errors.New("invalid client message")
+	ErrInvalidUserRequest = errors.New("invalid user message")
+	ErrNotPermit = errors.New("not permit")
+)
+
+
+
+type TokenRequest struct {
+	GrantType string
 	Reader *http.Request
 }
 
-type CheckTokenResponse struct {
-	OAuthDetails *model.OAuth2Details `json:"o_auth_details"`
-	Error        string               `json:"error"`
-}
-
-type TokenRequest struct {
-	GrantType string `json:"grant_type"`
-	Reader    *http.Request
-}
 
 type TokenResponse struct {
 	AccessToken *model.OAuth2Token `json:"access_token"`
-	Error       string             `json:"error"`
+	Error string `json:"error"`
 }
 
 //  make endpoint
 func MakeTokenEndpoint(svc service.TokenGranter, clientService service.ClientDetailsService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*TokenRequest)
-
-		var clientDetails *model.ClientDetails
-
-		if clientId, clientSecret, ok := req.Reader.BasicAuth(); ok {
-			clientDetails, err = clientService.GetClientDetailByClientId(ctx, clientId)
-			if err != nil {
-				conf.Logger.Log("clientId "+clientId+" is not existed", ErrInvalidRequest)
-				return TokenResponse{
-					Error: err.Error(),
-				}, nil
-			}
-
-			if !clientDetails.IsMatch(clientId, clientSecret) {
-				conf.Logger.Log("clientId and clientSecret not match", ErrInvalidRequest)
-				return TokenResponse{
-					Error: ErrInvalidClientRequest.Error(),
-				}, nil
-			}
-
-		} else {
-			conf.Logger.Log("Error parse clientId and clientSecret in header", ErrInvalidRequest)
-			return TokenResponse{
-				Error: ErrInvalidClientRequest.Error(),
-			}, nil
-		}
-
-		token, err := svc.Grant(ctx, req.GrantType, clientDetails, req.Reader)
-
+		token, err := svc.Grant(ctx, req.GrantType, ctx.Value(OAuth2ClientDetailsKey).(*model.ClientDetails), req.Reader)
 		var errString = ""
-		if err != nil {
+		if err != nil{
 			errString = err.Error()
 		}
 
 		return TokenResponse{
-			AccessToken: token,
-			Error:       errString,
+			AccessToken:token,
+			Error:errString,
 		}, nil
 	}
+}
+
+
+type CheckTokenRequest struct {
+	Token string
+	ClientDetails model.ClientDetails
+}
+
+type CheckTokenResponse struct {
+	OAuthDetails *model.OAuth2Details `json:"o_auth_details"`
+	Error string `json:"error"`
+
 }
 
 func MakeCheckTokenEndpoint(svc service.TokenService) endpoint.Endpoint {
@@ -105,16 +137,34 @@ func MakeCheckTokenEndpoint(svc service.TokenService) endpoint.Endpoint {
 		tokenDetails, err := svc.GetOAuth2DetailsByAccessToken(req.Token)
 
 		var errString = ""
-		if err != nil {
+		if err != nil{
 			errString = err.Error()
 		}
 
 		return CheckTokenResponse{
-			OAuthDetails: tokenDetails,
-			Error:        errString,
+			OAuthDetails:tokenDetails,
+			Error:errString,
 		}, nil
 	}
 }
+
+type SimpleRequest struct {
+}
+
+type SimpleResponse struct {
+	Result string `json:"result"`
+	Error string `json:"error"`
+}
+
+type AdminRequest struct {
+}
+
+type AdminResponse struct {
+	Result string `json:"result"`
+	Error string `json:"error"`
+}
+
+
 
 // HealthRequest 健康检查请求结构
 type HealthRequest struct{}
@@ -129,7 +179,7 @@ func MakeHealthCheckEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		status := svc.HealthCheck()
 		return HealthResponse{
-			Status: status,
+			Status:status,
 		}, nil
 	}
 }

@@ -19,6 +19,7 @@ type UserDetailsService interface {
 type RemoteUserService struct {
 }
 
+// TODO not set RemoteUserService
 func (service *RemoteUserService) GetUserDetailByUsername(ctx context.Context, username, password string) (*model.UserDetails, error) {
 	//res, err := client.Check(username, password)
 	//if err != nil || !res {

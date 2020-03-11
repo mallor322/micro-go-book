@@ -19,33 +19,7 @@ type OAuth2Endpoints struct {
 	AdminEndpoint		endpoint.Endpoint
 }
 
-//const (
-//
-//	OAuth2DetailsKey       = "OAuth2Details"
-//	OAuth2ClientDetailsKey = "OAuth2ClientDetails"
-//	OAuth2ErrorKey         = "OAuth2Error"
-//
-//)
 
-
-//var (
-//	ErrInvalidClientRequest = errors.New("invalid client message")
-//	ErrInvalidUserRequest = errors.New("invalid user message")
-//	ErrNotPermit = errors.New("not permit")
-//)
-//
-//
-//
-//type TokenRequest struct {
-//	GrantType string
-//	Reader *http.Request
-//}
-//
-//
-//type TokenResponse struct {
-//	AccessToken *model.OAuth2Token `json:"access_token"`
-//	Error string `json:"error"`
-//}
 
 func MakeClientAuthorizationMiddleware(logger log.Logger) endpoint.Middleware {
 	return func(next endpoint.Endpoint) endpoint.Endpoint {

@@ -10,6 +10,7 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/endpoint"
+	"github.com/longjoy/micro-go-book/ch13-seckill/oauth-service/service"
 	gozipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
@@ -19,10 +20,12 @@ var (
 	ErrorBadRequest = errors.New("invalid request parameter")
 	ErrorGrantTypeRequest = errors.New("invalid request grant type")
 	ErrorTokenRequest = errors.New("invalid request token")
+	ErrInvalidClientRequest = errors.New("invalid client message")
+
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, tokenService service.TokenService, clientService service.ClientDetailsService,zipkinTracer *gozipkin.Tracer, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 	zipkinServer := zipkin.HTTPServerTrace(zipkinTracer, zipkin.Name("http-transport"))
 
@@ -34,18 +37,26 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zi
 	r.Path("/metrics").Handler(promhttp.Handler())
 
 
+	clientAuthorizationOptions := []kithttp.ServerOption{
+		kithttp.ServerBefore(makeClientAuthorizationContext(clientService, logger)),
+		kithttp.ServerErrorHandler(transport.NewLogErrorHandler(logger)),
+		kithttp.ServerErrorEncoder(encodeError),
+		zipkinServer,
+	}
+
+
 	r.Methods("POST").Path("/oauth/token").Handler(kithttp.NewServer(
 		endpoints.TokenEndpoint,
 		decodeTokenRequest,
 		encodeJsonResponse,
-		options...,
+		clientAuthorizationOptions...,
 	))
 
 	r.Methods("POST").Path("/oauth/check_token").Handler(kithttp.NewServer(
 		endpoints.CheckTokenEndpoint,
 		decodeCheckTokenRequest,
 		encodeJsonResponse,
-		options...,
+		clientAuthorizationOptions...,
 	))
 
 
@@ -59,6 +70,22 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.OAuth2Endpoints, zi
 
 	return r
 }
+
+
+func makeClientAuthorizationContext(clientDetailsService service.ClientDetailsService, logger log.Logger) kithttp.RequestFunc {
+
+	return func(ctx context.Context, r *http.Request) context.Context {
+
+		if clientId, clientSecret, ok := r.BasicAuth(); ok {
+			clientDetails, err := clientDetailsService.GetClientDetailByClientId(ctx, clientId, clientSecret)
+			if err == nil {
+				return context.WithValue(ctx, endpoint.OAuth2ClientDetailsKey, clientDetails)
+			}
+		}
+		return context.WithValue(ctx, endpoint.OAuth2ErrorKey, ErrInvalidClientRequest)
+	}
+}
+
 
 func decodeTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	grantType := r.URL.Query().Get("grant_type")
@@ -83,6 +110,8 @@ func decodeCheckTokenRequest(ctx context.Context, r *http.Request) (interface{},
 	}, nil
 
 }
+
+
 
 // encode errors from business-logic
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
