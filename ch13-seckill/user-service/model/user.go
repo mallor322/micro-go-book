@@ -7,12 +7,11 @@ import (
 )
 
 type User struct {
-	UserId     int    `json:"user_id"`     //Id
+	UserId     int64    `json:"user_id"`     //Id
 	UserName   string `json:"user_name"`   //用户名称
 	Password   string `json:"password"`    //密码
 	Age        int    `json:"age"`         //年龄
-	CreateTime string `json:"create_time"` // 创建时间
-	ModifyTime string `json:"modify_time"` //修改时间
+
 }
 
 type UserModel struct {
@@ -49,18 +48,16 @@ func (p *UserModel) GetUserList() ([]gorose.Data, error) {
 
 func (p *UserModel) CheckUser(username string, password string) (*User, error) {
 	conn := mysql.DB()
-	data, err := conn.Table(p.getTableName()).Where(map[string]interface{}{"username": username, "password": password}).First()
+	data, err := conn.Table(p.getTableName()).Where(map[string]interface{}{"user_name": username, "password": password}).First()
 	if err != nil {
 		log.Printf("Error : %v", err)
 		return nil, err
 	}
 	user := &User{
-		UserId:data["user_id"].(int),
+		UserId:data["user_id"].(int64),
 		UserName:data["user_name"].(string),
 		Password:data["password"].(string),
-		Age:data["age"].(int),
-		CreateTime:data["create_time"].(string),
-		ModifyTime:data["modify_time"].(string),
+		Age:int(data["age"].(int64)),
 
 
 	}
@@ -76,8 +73,7 @@ func (p *UserModel) CreateUser(user *User) error {
 		"user_name":   user.UserName,
 		"password":    user.Password,
 		"age":         user.Age,
-		"create_time": user.CreateTime,
-		"modify_time": user.ModifyTime,
+
 	}).Insert()
 	if err != nil {
 		log.Printf("Error : %v", err)

@@ -50,8 +50,8 @@ func (p *ClientDetailsModel) GetClientDetailsByClientId(clientId string) (*Clien
 		return &ClientDetails{
 			ClientId:                   result["client_id"].(string),
 			ClientSecret:               result["client_secret"].(string),
-			AccessTokenValiditySeconds: result["access_token_validity_seconds"].(int),
-			RefreshTokenValiditySeconds:result["refresh_token_validity_seconds"].(int),
+			AccessTokenValiditySeconds: int(result["access_token_validity_seconds"].(int64)),
+			RefreshTokenValiditySeconds:int(result["refresh_token_validity_seconds"].(int64)),
 			RegisteredRedirectUri:result["registered_redirect_uri"].(string),
 			AuthorizedGrantTypes:authorizedGrantTypes,
 		}, nil

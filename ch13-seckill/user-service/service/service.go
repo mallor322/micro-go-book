@@ -26,7 +26,7 @@ func (s UserService) Check(ctx context.Context, username string, password string
 		log.Printf("UserEntity.CreateUser, err : %v", err)
 		return 0, err
 	}
-	return int64(res.UserId), nil
+	return res.UserId, nil
 }
 
 // HealthCheck implement Service method
