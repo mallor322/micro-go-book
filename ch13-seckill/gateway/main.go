@@ -63,7 +63,7 @@ func main() {
 
 	handler := zipkinhttpsvr.NewServerMiddleware(
 		zipkinTracer,
-		zipkinhttpsvr.SpanName(bootstrap.HttpConfig.ServiceName),
+		zipkinhttpsvr.SpanName(bootstrap.DiscoverConfig.ServiceName),
 		zipkinhttpsvr.TagResponseSize(true),
 		zipkinhttpsvr.ServerTags(tags),
 	)(hystrixRouter)

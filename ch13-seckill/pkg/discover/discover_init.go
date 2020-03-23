@@ -61,7 +61,7 @@ func Register() {
 		map[string]string{
 			"rpcPort": bootstrap.RpcConfig.Port,
 		}, nil, Logger) {
-		Logger.Printf("string-service for service %s failed.", bootstrap.DiscoverConfig.ServiceName)
+		Logger.Printf("register service %s failed.", bootstrap.DiscoverConfig.ServiceName)
 		// 注册失败，服务启动失败
 		panic(0)
 	}

@@ -21,7 +21,7 @@ func LoggingMiddleware(logger log.Logger) service.ServiceMiddleware {
 	}
 }
 
-func (mw loggingMiddleware) Check(ctx context.Context, a, b string) (ret bool, err error) {
+func (mw loggingMiddleware) Check(ctx context.Context, a, b string) (ret int64, err error) {
 
 	defer func(begin time.Time) {
 		_ = mw.logger.Log(

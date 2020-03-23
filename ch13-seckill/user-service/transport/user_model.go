@@ -33,6 +33,7 @@ func EncodeGRPCUserResponse(_ context.Context, r interface{}) (interface{}, erro
 
 	return &pb.UserResponse{
 		Result: bool(resp.Result),
+		UserId:resp.UserId,
 		Err:    "",
 	}, nil
 }

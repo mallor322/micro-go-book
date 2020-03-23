@@ -8,7 +8,7 @@ import (
 
 // Service Define a service interface
 type Service interface {
-	Check(ctx context.Context, username, password string) (bool, error)
+	Check(ctx context.Context, username, password string) (int64, error)
 
 	// HealthCheck check service health status
 	HealthCheck() bool
@@ -19,14 +19,14 @@ type UserService struct {
 }
 
 // Add implement check method
-func (s UserService) Check(ctx context.Context, username string, password string) (bool, error) {
+func (s UserService) Check(ctx context.Context, username string, password string) (int64, error) {
 	userEntity := model.NewUserModel()
 	res, err := userEntity.CheckUser(username, password)
 	if err != nil {
 		log.Printf("UserEntity.CreateUser, err : %v", err)
-		return false, err
+		return 0, err
 	}
-	return res, nil
+	return int64(res.UserId), nil
 }
 
 // HealthCheck implement Service method

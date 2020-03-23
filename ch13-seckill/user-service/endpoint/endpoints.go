@@ -14,7 +14,7 @@ type UserEndpoints struct {
 }
 
 // UserEndpoint define endpoint
-func (u *UserEndpoints) Check(ctx context.Context, username string, password string) (bool, error) {
+func (u *UserEndpoints) Check(ctx context.Context, username string, password string) (int64, error) {
 	//ctx := context.Background()
 	reflect.TypeOf(UserEndpoints{})
 	resp, err := u.UserEndpoint(ctx, UserRequest{
@@ -23,7 +23,7 @@ func (u *UserEndpoints) Check(ctx context.Context, username string, password str
 	})
 	response := resp.(UserResponse)
 	err = errors.New("bad request!")
-	return response.Result, err
+	return response.UserId, err
 }
 
 func (ue *UserEndpoints) HealthCheck() bool {
@@ -43,6 +43,7 @@ type UserRequest struct {
 // UserResponse define response struct
 type UserResponse struct {
 	Result bool  `json:"result"`
+	UserId int64 `json:"user_id"`
 	Error  error `json:"error"`
 }
 
@@ -53,18 +54,18 @@ func MakeUserEndpoint(svc service.Service) endpoint.Endpoint {
 
 		var (
 			username, password string
-			res                bool
+			userId             int64
 			calError           error
 		)
 
 		username = req.Username
 		password = req.Password
 
-		res, calError = svc.Check(ctx, username, password)
+		userId, calError = svc.Check(ctx, username, password)
 		if calError != nil {
 			return UserResponse{Result: false, Error: calError}, nil
 		}
-		return UserResponse{Result: res, Error: calError}, nil
+		return UserResponse{Result: true, UserId:userId, Error: calError}, nil
 	}
 }
 

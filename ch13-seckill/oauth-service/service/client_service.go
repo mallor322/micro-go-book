@@ -21,8 +21,6 @@ type ClientDetailsService interface {
 }
 
 
-
-
 type MysqlClientDetailsService struct {
 }
 
@@ -30,21 +28,17 @@ func NewMysqlClientDetailsService() ClientDetailsService {
 	return &MysqlClientDetailsService{}
 }
 
-var defaultClientDetails = &model.ClientDetails{
-	ClientId:                    "clientId",
-	ClientSecret:                "clientSecret",
-	AccessTokenValiditySeconds:  1800,
-	RefreshTokenValiditySeconds: 18000,
-	RegisteredRedirectUri:       "http://127.0.0.1",
-	AuthorizedGrantTypes:        [] string{"password", "refresh_token"},
-}
-
 func (service *MysqlClientDetailsService)GetClientDetailByClientId(ctx context.Context, clientId string, clientSecret string)(*model.ClientDetails, error) {
 
-	if(clientId == defaultClientDetails.ClientId && clientSecret == defaultClientDetails.ClientSecret){
-		return defaultClientDetails, nil
+	clientDetailsModel := model.NewClientDetailsModel();
+	if clientDetails, err := clientDetailsModel.GetClientDetailsByClientId(clientId); err == nil{
+		if clientSecret == clientDetails.ClientSecret {
+			return clientDetails, nil
+		}else {
+			return nil, ErrClientMessage
+		}
 	}else {
-		return nil, ErrClientMessage
+		return nil, err;
 	}
 
 

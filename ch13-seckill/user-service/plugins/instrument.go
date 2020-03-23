@@ -55,7 +55,7 @@ func Metrics(requestCount metrics.Counter, requestLatency metrics.Histogram) ser
 	}
 }
 
-func (mw metricMiddleware) Check(ctx context.Context, a, b string) (ret bool, err error) {
+func (mw metricMiddleware) Check(ctx context.Context, a, b string) (ret int64, err error) {
 
 	defer func(beign time.Time) {
 		lvs := []string{"method", "Add"}

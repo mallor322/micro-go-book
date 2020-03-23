@@ -13,5 +13,6 @@ message UserRequest {
 
 message UserResponse {
     bool result = 1;
-    string err = 2;
+    int64 userId = 2;
+    string err = 3;
 }
