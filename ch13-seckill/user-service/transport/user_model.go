@@ -16,7 +16,6 @@ func EncodeGRPCUserRequest(_ context.Context, r interface{}) (interface{}, error
 
 func DecodeGRPCUserRequest(ctx context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.UserRequest)
-	println()
 	return endpoint.UserRequest{
 		Username: string(req.Username),
 		Password: string(req.Password),

@@ -53,7 +53,6 @@ func (manager *DefaultClientManager) DecoratorInvoke(path string, hystrixName st
 	if err = hystrix.Do(hystrixName, func() error {
 
 		instances := manager.discoveryClient.DiscoverServices(manager.serviceName, manager.logger)
-		println(instances)
 		if instance, err := manager.loadBalance.SelectService(instances); err == nil {
 			if instance.GrpcPort > 0 {
 				if conn, err := grpc.Dial(instance.Host+":"+strconv.Itoa(instance.GrpcPort), grpc.WithInsecure(),
