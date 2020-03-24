@@ -87,7 +87,7 @@ func main() {
 	checkTokenEndpoint := endpoint.MakeCheckTokenEndpoint(tokenService)
 	checkTokenEndpoint = endpoint.MakeClientAuthorizationMiddleware(config.KitLogger)(checkTokenEndpoint)
 
-	srv = service.NewCommentService()
+	srv = service.NewCommonService()
 
 
 	simpleEndpoint := endpoint.MakeSimpleEndpoint(srv)
